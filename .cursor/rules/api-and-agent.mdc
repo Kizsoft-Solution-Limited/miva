@@ -1,0 +1,31 @@
+---
+description: API controllers and verification agent service patterns
+globs: "**/app/api/**/*.{ts,tsx},**/services/**/*.ts,**/lib/**/*.ts"
+alwaysApply: false
+---
+
+# API & agent services
+
+## Controllers (`app/api`, actions)
+
+- Validate body with Zod; return 400 on failure
+- Call one service method; map result to HTTP JSON
+- No prompts, no model selection logic in the route file
+
+## Verification agent (`services/`)
+
+- Single orchestration entry: e.g. `verifyMilestone(input) → Verdict`
+- Steps are pure-ish helpers: parse proof, web search, PDF extract, score confidence
+- Always return the shared `Verdict` schema (structured output)
+- Log evidence IDs and confidence; never invent sources — mark unconfirmed when unsure
+
+## Orbio / OpenRouter
+
+- One client module (`lib/openrouter.ts`); services import it
+- Key only from `process.env.OPENROUTER_API_KEY`
+- Use structured outputs for verdicts; enable web search / PDF where the claim needs it
+
+```
+❌ invent "confirmed" without a cited check
+✅ confirmed[] with source URLs; unconfirmed[] with reason
+```

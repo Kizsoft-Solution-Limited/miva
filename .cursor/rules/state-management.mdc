@@ -1,0 +1,31 @@
+---
+description: Client and server state management conventions
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# State management
+
+## Server state (source of truth)
+
+- Milestone submissions, verdicts, and investor decisions live on the server
+- Load via Server Components, route handlers, or server actions
+- Prefer refetch / revalidate over mirroring large server trees in client stores
+
+## Client state
+
+- Local UI only: form drafts, modals, tabs, upload progress
+- `useState` / `useReducer` for single-component state
+- Shared client UI state: small React Context or a lightweight store (e.g. Zustand) under `src/stores/`
+- Custom hooks in `src/hooks/` wrap store + side effects; components stay dumb
+
+## Rules
+
+- Never store API keys or secrets in client state
+- Do not duplicate verdict/server entities in a global store unless UX requires optimistic UI
+- Derived values: compute in render or selectors — do not sync with `useEffect` copies
+
+```
+❌ useEffect(() => setFullName(first + last), [first, last])
+✅ const fullName = `${first} ${last}`
+```
