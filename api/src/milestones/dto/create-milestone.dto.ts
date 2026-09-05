@@ -1,4 +1,5 @@
 import { IsIn, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsPublicHttpUrl } from './is-public-http-url.js';
 
 export class CreateMilestoneDto {
   @IsString()
@@ -18,6 +19,7 @@ export class CreateMilestoneDto {
 
   @IsOptional()
   @IsString()
+  @IsPublicHttpUrl()
   proofUrl?: string;
 
   @IsOptional()

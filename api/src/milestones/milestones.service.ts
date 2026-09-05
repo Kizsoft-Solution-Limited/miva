@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InvestorDecision, Recommendation } from '@prisma/client';
+import { sanitizePublicUrl } from '../lib/public-url.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { VerificationService } from '../verification/verification.service.js';
 import { CreateMilestoneDto } from './dto/create-milestone.dto.js';
@@ -13,13 +14,14 @@ export class MilestonesService {
   ) {}
 
   async create(dto: CreateMilestoneDto) {
+    const proofUrl = sanitizePublicUrl(dto.proofUrl);
     const milestone = await this.prisma.milestone.create({
       data: {
         title: dto.title,
         claim: dto.claim,
         founderName: dto.founderName,
         proofType: dto.proofType,
-        proofUrl: dto.proofUrl,
+        proofUrl,
         proofText: dto.proofText,
       },
     });

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
+import { redactSecrets } from '../lib/public-url.js';
 
 export type ChatContentPart =
   | { type: 'text'; text: string }
@@ -128,7 +129,9 @@ export class OpenRouterService {
     };
 
     if (!response.ok) {
-      const msg = payload.error?.message || `OpenRouter HTTP ${response.status}`;
+      const msg = redactSecrets(
+        payload.error?.message || `OpenRouter HTTP ${response.status}`,
+      );
       this.logger.error(`OpenRouter chat failed: ${msg}`);
       throw new Error(msg);
     }

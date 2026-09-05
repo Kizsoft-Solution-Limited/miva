@@ -6,6 +6,7 @@ import {
   normalizeVerdictPayload,
 } from './verdict.schema.js';
 import { OpenRouterService } from '../openrouter/openrouter.service.js';
+import { redactSecrets, sanitizePublicUrl } from '../lib/public-url.js';
 
 export interface VerifyMilestoneInput {
   title: string;
@@ -37,14 +38,16 @@ export class VerificationService {
     try {
       return await this.runAgent(input);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = redactSecrets(
+        error instanceof Error ? error.message : String(error),
+      );
       this.logger.error(`Verification agent failed: ${message}`);
       return this.offlineVerdict(input, true);
     }
   }
 
   private async runAgent(input: VerifyMilestoneInput): Promise<VerdictResult> {
-    const proofUrl = this.sanitizePublicUrl(input.proofUrl);
+    const proofUrl = sanitizePublicUrl(input.proofUrl) ?? undefined;
     const wantsWeb = this.shouldUseWebSearch(input.proofType, proofUrl);
     const pdfUrl =
       input.proofType === 'pdf' && proofUrl && this.looksLikePdf(proofUrl)
@@ -122,30 +125,6 @@ export class VerificationService {
     return lower.includes('.pdf') || lower.includes('application/pdf');
   }
 
-  private sanitizePublicUrl(raw?: string | null): string | undefined {
-    if (!raw?.trim()) return undefined;
-    let url: URL;
-    try {
-      url = new URL(raw.trim());
-    } catch {
-      return undefined;
-    }
-    if (!['http:', 'https:'].includes(url.protocol)) return undefined;
-    const host = url.hostname.toLowerCase();
-    if (
-      host === 'localhost' ||
-      host === '127.0.0.1' ||
-      host === '::1' ||
-      host.endsWith('.local') ||
-      host.startsWith('10.') ||
-      host.startsWith('192.168.') ||
-      host.startsWith('169.254.')
-    ) {
-      return undefined;
-    }
-    return url.toString();
-  }
-
   private attachCitations(
     verdict: VerdictResult,
     citations: Array<{ url: string; title?: string; excerpt?: string }>,
@@ -198,7 +177,7 @@ export class VerificationService {
           evidence: hasProof
             ? 'Proof was submitted but live verification is unavailable in this environment.'
             : 'No proof URL or text was provided.',
-          sourceUrl: input.proofUrl || undefined,
+          sourceUrl: sanitizePublicUrl(input.proofUrl) ?? undefined,
           confidence: 0.1,
         },
       ],
