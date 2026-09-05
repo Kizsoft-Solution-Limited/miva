@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MIVA
 
-## Getting Started
+Investors keep asking founders "did you hit the milestone?" and then either trust the answer or dig through links themselves. MIVA sits in that gap.
 
-First, run the development server:
+Founder drops proof (URL, repo, doc excerpt, whatever). The agent checks what it can against live sources and returns a plain verdict: what checked out, what didn't, and whether it'd approve, reject, or ask for more. The investor still makes the call — we just make the check auditable.
+
+Built for Orbio Build Week on an Orbio/OpenRouter key.
+
+## Repo
+
+| Folder | What |
+| --- | --- |
+| `api/` | NestJS API, Prisma, verification agent |
+| `web/` | Vue (Vite) UI — founder submit + investor review |
+
+## Run it
+
+API:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd api
+cp .env.example .env
+# paste OPENROUTER_API_KEY when you have it
+npx prisma migrate dev
+npm run start:dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+UI (other terminal):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd web
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- API: http://localhost:3000/api
+- App: http://localhost:5173
 
-## Learn More
+No key yet? That's fine — submit still works and you get a cautious placeholder verdict so you can click through the flow. Live checks kick in once `OPENROUTER_API_KEY` is set.
 
-To learn more about Next.js, take a look at the following resources:
+## Env (`api/.env`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+DATABASE_URL=file:./dev.db
+OPENROUTER_API_KEY=
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+PORT=3000
+CORS_ORIGIN=http://localhost:5173
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Keep the key on the API side only. Don't put it in the Vue app.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Day-by-day build order (locked): see `BUILD.md`.

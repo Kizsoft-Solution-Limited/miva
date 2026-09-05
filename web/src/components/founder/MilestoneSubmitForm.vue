@@ -1,0 +1,86 @@
+<script setup lang="ts">
+import { reactive } from 'vue'
+import AppButton from '@/components/ui/AppButton.vue'
+import type { CreateMilestonePayload } from '@/api/types'
+
+const emit = defineEmits<{
+  submit: [payload: CreateMilestonePayload]
+}>()
+
+const form = reactive({
+  title: '',
+  claim: '',
+  founderName: '',
+  proofType: 'url',
+  proofUrl: '',
+  proofText: '',
+})
+
+function onSubmit() {
+  emit('submit', {
+    title: form.title.trim(),
+    claim: form.claim.trim(),
+    founderName: form.founderName.trim(),
+    proofType: form.proofType,
+    proofUrl: form.proofUrl.trim() || undefined,
+    proofText: form.proofText.trim() || undefined,
+  })
+}
+</script>
+
+<template>
+  <form class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200" @submit.prevent="onSubmit">
+    <h2 class="text-lg font-semibold text-slate-900">Submit milestone proof</h2>
+
+    <label class="block text-sm">
+      <span class="mb-1 block font-medium text-slate-700">Founder name</span>
+      <input v-model="form.founderName" required class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+    </label>
+
+    <label class="block text-sm">
+      <span class="mb-1 block font-medium text-slate-700">Milestone title</span>
+      <input
+        v-model="form.title"
+        required
+        minlength="2"
+        class="w-full rounded-lg border border-slate-300 px-3 py-2"
+        placeholder="e.g. 1,000 paying users"
+      />
+    </label>
+
+    <label class="block text-sm">
+      <span class="mb-1 block font-medium text-slate-700">Claim</span>
+      <textarea
+        v-model="form.claim"
+        required
+        minlength="5"
+        rows="3"
+        class="w-full rounded-lg border border-slate-300 px-3 py-2"
+        placeholder="What should the agent verify? At least 5 characters."
+      />
+    </label>
+
+    <label class="block text-sm">
+      <span class="mb-1 block font-medium text-slate-700">Proof type</span>
+      <select v-model="form.proofType" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+        <option value="url">URL</option>
+        <option value="pdf">PDF / doc link</option>
+        <option value="repo">Repo</option>
+        <option value="metric">Metric</option>
+        <option value="text">Text</option>
+      </select>
+    </label>
+
+    <label class="block text-sm">
+      <span class="mb-1 block font-medium text-slate-700">Proof URL</span>
+      <input v-model="form.proofUrl" type="url" class="w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="https://…" />
+    </label>
+
+    <label class="block text-sm">
+      <span class="mb-1 block font-medium text-slate-700">Proof text / excerpt</span>
+      <textarea v-model="form.proofText" rows="4" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+    </label>
+
+    <AppButton type="submit">Run verification</AppButton>
+  </form>
+</template>

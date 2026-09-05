@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Recommendation {
+  approve
+  reject
+  needs_more_info
+}
+
+enum InvestorDecision {
+  pending
+  approved
+  rejected
+  more_info_requested
+}
+
+model Milestone {
+  id          String   @id @default(cuid())
+  title       String
+  claim       String
+  founderName String
+  proofType   String
+  proofUrl    String?
+  proofText   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  verdict     Verdict?
+}
+
+model Verdict {
+  id             String             @id @default(cuid())
+  milestoneId    String             @unique
+  milestone      Milestone          @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  recommendation Recommendation
+  summary        String
+  confirmedJson  String
+  unconfirmedJson String
+  reasoning      String
+  investorDecision InvestorDecision @default(pending)
+  investorNote   String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+}
