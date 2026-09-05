@@ -12,6 +12,7 @@ import { probePublicUrl, type UrlProbe } from '../lib/url-probe.js';
 export interface VerifyMilestoneInput {
   title: string;
   claim: string;
+  founderName?: string | null;
   proofType: string;
   proofUrl?: string | null;
   proofText?: string | null;
@@ -31,23 +32,70 @@ const VERDICT_JSON_SHAPE = `{
 
 const SYSTEM_PROMPT = `You are MIVA, a skeptical milestone verification agent for investors.
 
-Your job is not to cheerlead founders. Your job is to separate what can be verified from what cannot.
+Mission: verify the factual milestone claim against checkable evidence. Do not cheerlead. Do not give investment advice ("good to invest" / "raise" / "pass").
 
-Output valid JSON only. Never invent sources, metrics, press, customers, or URLs.
+Output valid JSON only. Never invent sources, metrics, press, customers, registry filings, LinkedIn profiles, ages, founding years, funding rounds, or URLs.
 
 Decision rubric:
-- approve — only if the core claim is clearly backed by independent, checkable evidence (live URL content, PDF text, reputable search results). Confirmed[] must be non-empty and specific.
-- needs_more_info — default when proof is thin, partial, self-attested only, off-claim, or ambiguous. Prefer this over a weak approve.
-- reject — proof contradicts the claim, URL/doc is clearly bogus or unreachable when the claim depends on it, or there is no usable proof at all.
+- approve — the core claim is clearly backed by independent, checkable evidence. Confirmed[] must include ≥1 PRIMARY finding that directly answers the claim.
+- needs_more_info — default when evidence is thin, partial, self-attested, ambiguous, or only weakly related. Prefer this over a weak approve.
+- reject — proof contradicts the claim, or required proof is clearly bogus / unreachable when the claim depends on it.
 
-Checks to run mentally:
-1) What exact claim is being made?
-2) What evidence was supplied?
-3) What did live web / PDF / server probe actually show?
-4) Does evidence support, contradict, or miss the claim?
-5) Put support in confirmed with real sourceUrl when possible; put gaps/contradictions in unconfirmed.
+PRIMARY vs SECONDARY findings (critical):
+1) PRIMARY (no prefix) — any finding that directly answers THIS milestone claim. Always use primary for the main question, whatever it is (site live, company age, founder identity, metric, repo activity, PDF contents, press coverage, etc.).
+2) SECONDARY context — ONLY bonus extras when the claim is about something else. Prefix exactly:
+   - "Context · Company"
+   - "Context · Founder"
+   - "Context · Metric trend"
+   Secondary context alone never justifies approve.
+   Wrong: claim is "confirm founding year" and you only emit "Context · Company". Right: emit a normal confirmed/unconfirmed finding about the founding year.
 
-Confidence guide: 0.8+ only with direct evidence; 0.4–0.7 partial; below 0.4 weak/hearsay.`;
+Be thorough for EVERY claim type:
+- Live URL / product site: use server probe + page title/content + search. Non-OK probe → do not approve reachability claims.
+- Repo: public repo existence, visibility, recent activity only if checkable; no fake stars/commits.
+- PDF / docs: ground in document text; quote or paraphrase precisely; do not invent clauses.
+- Metric: match the number/timeframe to a public source or mark unconfirmed; no invented dashboards.
+- Company age / registry: WHOIS/domain registration, About/footer copyright, LinkedIn company page, registry, press with an explicit founding year. If the server probe includes domainCreated, cite it as a PRIMARY unconfirmed/partial finding about domain age — clearly label it as domain registration, not company founding. Weak signals alone → needs_more_info. Never invent a year.
+- Founder / team: public LinkedIn/bio/press only with real URLs; do not invent profiles.
+- Press / coverage: find the article; if missing → unconfirmed/reject as appropriate.
+
+Always separate what is proven from what is missing. Put leftovers in unconfirmed even on approve.
+
+Confidence: 0.8+ direct evidence; 0.4–0.7 partial; <0.4 weak/hearsay.`;
+
+export function claimTopics(title: string, claim: string) {
+  const text = `${title} ${claim}`.toLowerCase();
+  return {
+    companyAge:
+      /\b(age|founded|founding|incorporated|incorporation|registry|how old|established|since\s+\d{4}|company age)\b/.test(
+        text,
+      ),
+    founder:
+      /\b(founder|co-?founder|ceo|linkedin|who\s+is|team lead|director)\b/.test(
+        text,
+      ),
+    metric:
+      /\b(metric|users|mau|dau|revenue|mrr|arr|gmv|growth|%\s*mo|customers|subscribers)\b/.test(
+        text,
+      ),
+    liveSite:
+      /\b(live|online|up|reachable|deployed|public site|website|domain|url)\b/.test(
+        text,
+      ),
+    repo: /\b(repo|github|gitlab|commit|open\s*source|pull request)\b/.test(
+      text,
+    ),
+    press: /\b(press|techcrunch|featured|covered|article|news)\b/.test(text),
+  };
+}
+
+function isContextFinding(claim: string) {
+  return claim.toLowerCase().startsWith('context ·');
+}
+
+function stripContextPrefix(claim: string) {
+  return claim.replace(/^context\s*·\s*/i, '').trim();
+}
 
 @Injectable()
 export class VerificationService {
@@ -79,7 +127,11 @@ export class VerificationService {
       (hasUpload || Boolean(proofUrl && this.looksLikePdf(proofUrl)));
     return {
       orbio: this.openRouter.hasKey,
-      webSearch: this.shouldUseWebSearch(input.proofType, proofUrl ?? undefined),
+      webSearch: this.shouldUseWebSearch(
+        input.proofType,
+        proofUrl ?? undefined,
+        input.founderName,
+      ),
       pdf,
       structuredJson: true,
     };
@@ -87,7 +139,11 @@ export class VerificationService {
 
   private async runAgent(input: VerifyMilestoneInput): Promise<VerdictResult> {
     const proofUrl = sanitizePublicUrl(input.proofUrl) ?? undefined;
-    const wantsWeb = this.shouldUseWebSearch(input.proofType, proofUrl);
+    const wantsWeb = this.shouldUseWebSearch(
+      input.proofType,
+      proofUrl,
+      input.founderName,
+    );
     const pdfRef = this.resolvePdfRef(input, proofUrl);
     const hasProof = Boolean(
       proofUrl || input.proofText?.trim() || input.proofData,
@@ -111,7 +167,6 @@ export class VerificationService {
       });
     }
 
-    // Invalid/blocked URL string that founder typed — treat as bad proof early.
     if (input.proofUrl?.trim() && !proofUrl) {
       return VerdictSchema.parse({
         recommendation: 'reject',
@@ -131,17 +186,72 @@ export class VerificationService {
 
     const probe = proofUrl ? await probePublicUrl(proofUrl) : null;
 
+    const topics = claimTopics(input.title, input.claim);
+    const playbook: string[] = [
+      'Web search is enabled. Use live results and cite real sourceUrl values.',
+      'PRIMARY job: answer the milestone claim. Put direct answers in confirmed/unconfirmed with NO Context prefix.',
+      'SECONDARY Context · Company / Founder / Metric trend ONLY for bonus extras when the claim is about something else.',
+      `Proof-type playbook (${input.proofType}):`,
+    ];
+
+    if (input.proofType === 'url' || topics.liveSite) {
+      playbook.push(
+        '- URL/live: trust the server probe for reachability; check page title/content; search for corroboration.',
+      );
+    }
+    if (input.proofType === 'repo' || topics.repo) {
+      playbook.push(
+        '- Repo: confirm the public repo exists and matches the claim; do not invent stars/commits.',
+      );
+    }
+    if (input.proofType === 'pdf') {
+      playbook.push(
+        '- PDF: extract only what the document states; quote/paraphrase; mark missing clauses unconfirmed.',
+      );
+    }
+    if (input.proofType === 'metric' || topics.metric) {
+      playbook.push(
+        '- Metric: verify the number and timeframe against public sources; otherwise unconfirmed.',
+      );
+    }
+    if (input.proofType === 'text') {
+      playbook.push(
+        '- Text-only proof is weak unless search finds independent corroboration.',
+      );
+    }
+    if (topics.companyAge) {
+      playbook.push(
+        '- Age/founding is the PRIMARY claim here → normal findings, not Context ·. Use server probe domainCreated as domain-registration evidence (label clearly; not company founding). Also search About/footer, LinkedIn company, registry, press. Never invent a year.',
+      );
+    }
+    if (topics.founder) {
+      playbook.push(
+        '- Founder identity is PRIMARY → normal findings. Search public LinkedIn/bio/press with real URLs only.',
+      );
+    }
+    if (topics.press) {
+      playbook.push(
+        '- Press claim is PRIMARY → find the actual article URL or mark unconfirmed/reject.',
+      );
+    }
+    playbook.push(
+      'Do not give investment advice. Only verify facts stated in the claim.',
+    );
+
     const userText = [
       `Milestone: ${input.title}`,
       `Claim: ${input.claim}`,
+      input.founderName?.trim()
+        ? `Founder name: ${input.founderName.trim()}`
+        : null,
       `Proof type: ${input.proofType}`,
       proofUrl ? `Proof URL: ${proofUrl}` : null,
       input.proofFileName ? `Uploaded file: ${input.proofFileName}` : null,
       input.proofText ? `Proof text/excerpt:\n${input.proofText}` : null,
-      probe ? `Server probe (authoritative reachability):\n${this.formatProbe(probe)}` : null,
-      wantsWeb
-        ? 'Web search is enabled. Use live results. Prefer the proof URL and reputable sources. Cite real URLs in sourceUrl.'
+      probe
+        ? `Server probe (authoritative reachability):\n${this.formatProbe(probe)}`
         : null,
+      wantsWeb ? playbook.join('\n') : null,
       pdfRef
         ? 'A PDF is attached. Ground findings in what the document actually says — quote or paraphrase precisely.'
         : null,
@@ -150,11 +260,13 @@ export class VerificationService {
       VERDICT_JSON_SHAPE,
       '',
       'Hard rules:',
-      '- Do not invent sources, URLs, metrics, customers, or press.',
+      '- Do not invent sources, URLs, metrics, customers, press, company age, or founder profiles.',
       '- Every confirmed/unconfirmed item MUST include claim, evidence, confidence.',
       '- If the claim is about a live site/page and the server probe failed or returned non-OK, do not approve.',
       '- If evidence is thin, partial, or only the founder asserting it → needs_more_info.',
-      '- approve only when confirmed evidence clearly covers the core claim.',
+      '- Direct answers to THIS claim are PRIMARY findings (no Context · prefix).',
+      '- Context · is bonus only when verifying a different claim; it alone never justifies approve.',
+      '- Never recommend investing or not investing — only whether the claim is verified.',
       '- reject when proof contradicts the claim or is clearly bogus/unreachable for a reachability claim.',
       '- Put leftover gaps in unconfirmed even when recommending approve.',
     ]
@@ -193,17 +305,79 @@ export class VerificationService {
       normalizeVerdictPayload(parsed, input.claim),
     );
     verdict = this.attachCitations(verdict, citations, proofUrl);
+    verdict = this.promoteMisfiledContext(verdict, input);
     verdict = this.enforceConsistency(verdict, input, probe);
     return verdict;
   }
 
+  private promoteMisfiledContext(
+    verdict: VerdictResult,
+    input: VerifyMilestoneInput,
+  ): VerdictResult {
+    const topics = claimTopics(input.title, input.claim);
+    const shouldPromote = (claim: string) => {
+      if (!isContextFinding(claim)) return false;
+      const lower = claim.toLowerCase();
+      if (topics.companyAge && lower.startsWith('context · company')) {
+        return true;
+      }
+      if (topics.founder && lower.startsWith('context · founder')) return true;
+      if (topics.metric && lower.startsWith('context · metric')) return true;
+      if (
+        !topics.liveSite &&
+        (lower.startsWith('context · company') ||
+          lower.startsWith('context · founder') ||
+          lower.startsWith('context · metric'))
+      ) {
+        return true;
+      }
+      return false;
+    };
+
+    const mapFinding = (f: Finding): Finding =>
+      shouldPromote(f.claim)
+        ? { ...f, claim: stripContextPrefix(f.claim) || f.claim }
+        : f;
+
+    const next = {
+      ...verdict,
+      confirmed: verdict.confirmed.map(mapFinding),
+      unconfirmed: verdict.unconfirmed.map(mapFinding),
+    };
+
+    const changed =
+      next.confirmed.some((f, i) => f.claim !== verdict.confirmed[i]?.claim) ||
+      next.unconfirmed.some(
+        (f, i) => f.claim !== verdict.unconfirmed[i]?.claim,
+      );
+
+    if (!changed) return verdict;
+    return {
+      ...next,
+      reasoning: `${verdict.reasoning} Promoted claim-relevant Context findings to primary.`,
+    };
+  }
+
   private formatProbe(probe: UrlProbe): string {
+    const whoisLines = probe.whois
+      ? [
+          `domainHost: ${probe.whois.host}`,
+          probe.whois.created
+            ? `domainCreated: ${probe.whois.created} (domain registration — NOT company founding year)`
+            : null,
+          probe.whois.expires ? `domainExpires: ${probe.whois.expires}` : null,
+          probe.whois.registrar ? `registrar: ${probe.whois.registrar}` : null,
+          probe.whois.error ? `domainWhoisError: ${probe.whois.error}` : null,
+        ].filter(Boolean)
+      : [];
+
     if (!probe.ok) {
       return [
         `url: ${probe.url}`,
         `reachable: no`,
         probe.status != null ? `status: ${probe.status}` : null,
         probe.error ? `error: ${probe.error}` : null,
+        ...whoisLines,
       ]
         .filter(Boolean)
         .join('\n');
@@ -217,12 +391,12 @@ export class VerificationService {
         : null,
       probe.contentType ? `contentType: ${probe.contentType}` : null,
       probe.title ? `title: ${probe.title}` : null,
+      ...whoisLines,
     ]
       .filter(Boolean)
       .join('\n');
   }
 
-  /** Keep the model honest when it over-approves. */
   private enforceConsistency(
     verdict: VerdictResult,
     input: VerifyMilestoneInput,
@@ -236,13 +410,14 @@ export class VerificationService {
         `${input.title} ${input.claim}`,
       );
 
-    if (
-      recommendation === 'approve' &&
-      verdict.confirmed.length === 0
-    ) {
+    const coreConfirmed = verdict.confirmed.filter(
+      (f) => !isContextFinding(f.claim),
+    );
+
+    if (recommendation === 'approve' && coreConfirmed.length === 0) {
       recommendation = 'needs_more_info';
       reasoningBits.push(
-        'Downgraded approve → needs_more_info because confirmed[] was empty.',
+        'Downgraded approve → needs_more_info because confirmed[] had no non-context evidence for the claim.',
       );
     }
 
@@ -260,7 +435,7 @@ export class VerificationService {
 
     if (
       recommendation === 'approve' &&
-      verdict.confirmed.every((f) => f.confidence < 0.55)
+      coreConfirmed.every((f) => f.confidence < 0.55)
     ) {
       recommendation = 'needs_more_info';
       reasoningBits.push(
@@ -295,9 +470,15 @@ export class VerificationService {
     return undefined;
   }
 
-  private shouldUseWebSearch(proofType: string, proofUrl?: string): boolean {
+  private shouldUseWebSearch(
+    proofType: string,
+    proofUrl?: string,
+    founderName?: string | null,
+  ): boolean {
     if (['url', 'metric', 'repo', 'pdf'].includes(proofType)) return true;
-    return Boolean(proofUrl);
+    if (proofUrl) return true;
+    if (founderName?.trim()) return true;
+    return false;
   }
 
   private looksLikePdf(url: string): boolean {

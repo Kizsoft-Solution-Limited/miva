@@ -101,7 +101,28 @@ a { color: inherit; }
 }
 
 .field::placeholder {
-  color: color-mix(in srgb, var(--muted) 80%, transparent);
+  color: #6f9484;
+  opacity: 1;
+}
+
+.field::-webkit-input-placeholder {
+  color: #6f9484;
+  opacity: 1;
+}
+
+.field::-moz-placeholder {
+  color: #6f9484;
+  opacity: 1;
+}
+
+/* Keep iOS from painting autofill as “real” filled text */
+.field:-webkit-autofill,
+.field:-webkit-autofill:hover,
+.field:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ink);
+  caret-color: var(--ink);
+  transition: background-color 99999s ease-out;
+  box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.28) inset;
 }
 
 .field:focus {

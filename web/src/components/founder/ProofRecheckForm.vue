@@ -73,7 +73,7 @@ function onSubmit() {
 </script>
 
 <template>
-  <form class="ws-form space-y-4 border-[var(--warn)]/40" @submit.prevent="onSubmit">
+  <form class="ws-form space-y-4 border-[var(--warn)]/40" autocomplete="off" @submit.prevent="onSubmit">
     <div class="ws-form__head">
       <p class="font-mono text-xs tracking-wide text-[var(--warn)]">more info · update proof</p>
       <h2 class="mt-1 text-xl font-medium text-[var(--ink)]">Update proof & re-run</h2>
@@ -113,7 +113,16 @@ function onSubmit() {
 
     <label class="block text-sm">
       <span class="mb-1.5 block font-bold text-[var(--ink)]">Proof URL</span>
-      <input v-model="form.proofUrl" type="url" class="field" placeholder="https://…" />
+      <input
+        v-model="form.proofUrl"
+        type="text"
+        inputmode="url"
+        name="proofUrl"
+        autocomplete="off"
+        spellcheck="false"
+        class="field"
+        placeholder="Paste a public link"
+      />
     </label>
 
     <label v-if="form.proofType === 'pdf'" class="block text-sm">

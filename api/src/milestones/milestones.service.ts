@@ -158,6 +158,7 @@ export class MilestonesService {
     const input = {
       title: milestone.title,
       claim: milestone.claim,
+      founderName: milestone.founderName,
       proofType: milestone.proofType,
       proofUrl: milestone.proofUrl,
       proofText: milestone.proofText,

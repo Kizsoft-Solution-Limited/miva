@@ -82,7 +82,7 @@ export class OpenRouterService {
         id: 'web',
         max_results: 8,
         search_prompt:
-          'Find live evidence for or against this milestone claim. Prefer the founder proof URL, the live page contents, and reputable primary sources. Never invent URLs. Note contradictions clearly.',
+          'Verify the milestone claim thoroughly with live primary sources. Whatever the claim is (live site, company age/founding, founder identity, metric, repo, press, PDF contents), put direct answers as normal findings — not as bonus context. For age/founding check WHOIS, About/footer, LinkedIn company, registry, press with an explicit year. For metrics match the number/timeframe. For founders use real public profiles only. Never invent URLs, ages, metrics, or profiles. Note gaps clearly. Do not give investment advice.',
       });
     }
     if (input.pdfUrl) {

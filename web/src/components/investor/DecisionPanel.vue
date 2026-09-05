@@ -12,7 +12,7 @@ const note = ref('')
 </script>
 
 <template>
-  <section class="surface space-y-3 p-6">
+  <section class="surface space-y-3 p-4 sm:p-6">
     <div class="flex flex-wrap items-end justify-between gap-3 border-b border-[var(--line)] pb-4">
       <div>
         <h2 class="text-xl font-medium text-[var(--ink)]">Your call</h2>
@@ -24,11 +24,16 @@ const note = ref('')
       <span class="mb-1.5 block font-bold text-[var(--ink)]">Note (optional)</span>
       <textarea v-model="note" rows="2" class="field" />
     </label>
-    <div class="flex flex-wrap gap-2 pt-1">
-      <AppButton :disabled="disabled" @click="emit('decide', 'approved', note.trim() || undefined)">
+    <div class="grid grid-cols-1 gap-2 pt-1 sm:flex sm:flex-row sm:flex-wrap">
+      <AppButton
+        wide
+        :disabled="disabled"
+        @click="emit('decide', 'approved', note.trim() || undefined)"
+      >
         Approve release
       </AppButton>
       <AppButton
+        wide
         variant="secondary"
         :disabled="disabled"
         @click="emit('decide', 'more_info_requested', note.trim() || undefined)"
@@ -36,6 +41,7 @@ const note = ref('')
         Need more info
       </AppButton>
       <AppButton
+        wide
         variant="danger"
         :disabled="disabled"
         @click="emit('decide', 'rejected', note.trim() || undefined)"

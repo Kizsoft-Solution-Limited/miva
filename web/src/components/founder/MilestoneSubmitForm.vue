@@ -45,6 +45,7 @@ watch(
     file.value = null
     localError.message = ''
   },
+  { immediate: true },
 )
 
 function onFileChange(event: Event) {
@@ -95,7 +96,7 @@ function onSubmit() {
 </script>
 
 <template>
-  <form class="ws-form space-y-4" @submit.prevent="onSubmit">
+  <form class="ws-form space-y-4" autocomplete="off" @submit.prevent="onSubmit">
     <div class="ws-form__head">
       <h2 class="text-xl font-medium text-[var(--ink)]">Submit proof</h2>
       <p class="mt-1 text-sm text-[var(--muted)]">Pick a proof type, then add a link, file, or paste.</p>
@@ -132,7 +133,14 @@ function onSubmit() {
     <div class="grid gap-4 sm:grid-cols-2">
       <label class="block text-sm">
         <span class="mb-1.5 block font-bold text-[var(--ink)]">Founder name</span>
-        <input v-model="form.founderName" required class="field" />
+        <input
+          v-model="form.founderName"
+          required
+          name="founderName"
+          autocomplete="name"
+          class="field"
+          placeholder="Your name"
+        />
       </label>
       <label class="block text-sm">
         <span class="mb-1.5 block font-bold text-[var(--ink)]">Milestone title</span>
@@ -140,8 +148,10 @@ function onSubmit() {
           v-model="form.title"
           required
           minlength="2"
+          name="title"
+          autocomplete="off"
           class="field"
-          placeholder="e.g. Public site live"
+          placeholder="Short title"
         />
       </label>
     </div>
@@ -153,6 +163,8 @@ function onSubmit() {
         required
         minlength="5"
         rows="3"
+        name="claim"
+        autocomplete="off"
         class="field"
         placeholder="What should we verify?"
       />
@@ -164,14 +176,18 @@ function onSubmit() {
       </span>
       <input
         v-model="form.proofUrl"
-        type="url"
+        type="text"
+        inputmode="url"
+        name="proofUrl"
+        autocomplete="off"
+        spellcheck="false"
         class="field"
         :placeholder="
           form.proofType === 'repo'
-            ? 'https://github.com/…'
+            ? 'Paste a public repo link'
             : form.proofType === 'pdf'
-              ? 'https://…/doc.pdf'
-              : 'https://…'
+              ? 'Paste a public PDF link'
+              : 'Paste a public link'
         "
       />
     </label>
@@ -198,11 +214,15 @@ function onSubmit() {
         v-model="form.proofText"
         :required="form.proofType === 'text'"
         rows="3"
+        name="proofText"
+        autocomplete="off"
         class="field"
         :placeholder="
           form.proofType === 'metric'
             ? 'Paste the metric and where it came from'
-            : 'Optional paste if the link alone is thin'
+            : form.proofType === 'text'
+              ? 'Paste the excerpt to verify'
+              : 'Optional notes if the link alone is thin'
         "
       />
     </label>
