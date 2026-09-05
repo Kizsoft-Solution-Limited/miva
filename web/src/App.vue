@@ -1,35 +1,19 @@
 <script setup lang="ts">
-import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { computed } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
 
 const route = useRoute()
-
-function linkClass(path: string) {
-  const active = route.path.startsWith(path)
-  return active
-    ? 'text-slate-900 underline decoration-slate-400 underline-offset-4'
-    : 'text-slate-600 hover:text-slate-900'
-}
+const isHome = computed(() => route.path === '/')
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50">
-    <nav class="border-b border-slate-200 bg-white">
-      <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">MIVA</p>
-          <p class="text-sm text-slate-700">Milestone Verification Agent</p>
-        </div>
-        <div class="flex gap-4 text-sm font-medium">
-          <RouterLink :class="linkClass('/founder')" to="/founder">Founder</RouterLink>
-          <RouterLink :class="linkClass('/investor')" to="/investor">Investor</RouterLink>
-        </div>
-      </div>
-    </nav>
-    <main class="mx-auto max-w-5xl px-4 py-8">
+  <div class="flex min-h-screen flex-col" :class="{ 'home-root': isHome }">
+    <AppHeader />
+    <main class="flex-1" :class="isHome ? '' : 'app-main'">
       <RouterView />
     </main>
-    <footer class="border-t border-slate-200 py-4 text-center text-xs text-slate-500">
-      Runs on an Orbio / OpenRouter key — web search, PDF read, structured JSON verdicts.
-    </footer>
+    <AppFooter />
   </div>
 </template>

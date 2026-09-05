@@ -28,28 +28,34 @@ function loadCase(id: string) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-2xl space-y-6">
-    <header>
-      <p class="text-sm font-medium uppercase tracking-wide text-slate-500">Founder</p>
-      <h1 class="text-2xl font-semibold text-slate-900">Milestone proof</h1>
-      <p class="mt-1 text-sm text-slate-600">
-        Drop evidence. Get a verdict the investor can read.
-      </p>
+  <div class="ws-page mx-auto max-w-3xl">
+    <header class="ws-hero">
+      <div>
+        <p class="eyebrow">Founder</p>
+        <h1>Milestone proof</h1>
+        <p>Drop evidence. Get a verdict the investor can read.</p>
+      </div>
+      <div class="ws-chip-row">
+        <span class="ws-chip ws-chip--hot">orbio live</span>
+        <span class="ws-chip">web · pdf · json</span>
+      </div>
     </header>
 
-    <section class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-      <p class="text-sm font-medium text-slate-800">Demo cases</p>
-      <p class="mt-1 text-xs text-slate-500">Fills the form. You still hit Run verification.</p>
-      <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+    <section class="mb-6">
+      <div class="mb-3 flex items-baseline justify-between gap-3">
+        <p class="text-sm font-bold text-[var(--ink)]">Demo cases</p>
+        <p class="text-xs text-[var(--muted)]">Fills the form. You still hit Run.</p>
+      </div>
+      <div class="ws-cases">
         <button
           v-for="item in demoCases"
           :key="item.id"
           type="button"
-          class="rounded-lg bg-slate-100 px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-200"
+          class="ws-case"
           @click="loadCase(item.id)"
         >
-          <span class="font-medium">{{ item.label }}</span>
-          <span class="mt-0.5 block text-xs text-slate-500">{{ item.blurb }}</span>
+          <strong>{{ item.label }}</strong>
+          <span>{{ item.blurb }}</span>
         </button>
       </div>
     </section>

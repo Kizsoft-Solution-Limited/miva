@@ -17,41 +17,80 @@ function tone(rec: Recommendation) {
   if (rec === 'reject') return 'bad'
   return 'warn'
 }
+
+function decisionLabel(item: (typeof store.items)[number]) {
+  if (!item.verdict) return 'Checking…'
+  const d = item.verdict.investorDecision
+  if (d === 'pending') {
+    return item.verdict.recommendation === 'needs_more_info'
+      ? 'needs more info'
+      : item.verdict.recommendation
+  }
+  if (d === 'more_info_requested') return 'more info asked'
+  return d
+}
 </script>
 
 <template>
-  <div class="mx-auto max-w-3xl space-y-6">
-    <header class="flex items-end justify-between gap-4">
+  <div class="ws-page mx-auto max-w-3xl">
+    <header class="ws-hero">
       <div>
-        <p class="text-sm font-medium uppercase tracking-wide text-slate-500">Investor</p>
-        <h1 class="text-2xl font-semibold text-slate-900">Queue</h1>
-        <p class="mt-1 text-sm text-slate-600">Open a milestone. Read the verdict. Decide.</p>
+        <p class="eyebrow">Investor</p>
+        <h1>Queue</h1>
+        <p>Open a milestone. Read the verdict. Decide.</p>
       </div>
-      <RouterLink to="/founder" class="text-sm font-medium text-slate-700 underline">Submit proof</RouterLink>
+      <div class="ws-chip-row">
+        <span class="ws-chip">{{ store.items.length }} in queue</span>
+        <RouterLink to="/founder" class="ws-chip ws-chip--hot no-underline">
+          + submit proof
+        </RouterLink>
+      </div>
     </header>
 
     <ErrorBanner v-if="store.error" :message="store.error" />
-    <p v-if="store.loading && !store.items.length" class="text-sm text-slate-500">Loading…</p>
-    <p v-else-if="!store.items.length" class="text-sm text-slate-500">
-      No milestones yet. Submit one from Founder.
-    </p>
 
-    <ul class="space-y-3">
+    <div
+      v-if="store.loading && !store.items.length"
+      class="space-y-3"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <p class="font-mono text-xs tracking-wide text-[var(--muted)]">Loading queue…</p>
+      <div v-for="n in 3" :key="n" class="surface animate-pulse p-4">
+        <div class="h-4 w-2/5 rounded bg-[var(--paper-2)]" />
+        <div class="mt-3 h-3 w-full rounded bg-[var(--paper-2)]" />
+        <div class="mt-2 h-3 w-3/5 rounded bg-[var(--paper-2)]" />
+      </div>
+    </div>
+
+    <div v-else-if="!store.items.length" class="ws-empty">
+      <p class="font-mono text-xs tracking-wide text-[var(--accent)]">queue · empty</p>
+      <h2 class="mt-2 text-2xl font-medium text-[var(--ink)]">No milestones yet</h2>
+      <p class="mt-2 max-w-md text-[var(--muted)]">
+        Submit proof from Founder. When the agent finishes, the verdict lands here.
+      </p>
+      <RouterLink
+        to="/founder"
+        class="mt-5 inline-flex rounded-full bg-[var(--signal)] px-4 py-2.5 text-sm font-bold text-[#052816] shadow-[0_0_24px_var(--glow)] hover:bg-[var(--accent-hover)]"
+      >
+        Submit proof
+      </RouterLink>
+    </div>
+
+    <ul v-else class="space-y-3">
       <li v-for="item in store.items" :key="item.id">
-        <RouterLink
-          :to="`/investor/${item.id}`"
-          class="block rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200 transition hover:ring-slate-400"
-        >
+        <RouterLink :to="`/investor/${item.id}`" class="ws-queue-item">
           <div class="flex flex-wrap items-center gap-2">
-            <h2 class="font-semibold text-slate-900">{{ item.title }}</h2>
+            <h2 class="font-bold text-[var(--ink)]">{{ item.title }}</h2>
             <StatusBadge
               v-if="item.verdict"
-              :label="item.verdict.recommendation === 'needs_more_info' ? 'needs more info' : item.verdict.recommendation"
+              :label="decisionLabel(item)"
               :tone="tone(item.verdict.recommendation)"
             />
+            <StatusBadge v-else label="verifying" tone="warn" />
           </div>
-          <p class="mt-1 line-clamp-2 text-sm text-slate-600">{{ item.claim }}</p>
-          <p class="mt-2 text-xs text-slate-500">
+          <p class="mt-1 line-clamp-2 text-sm text-[var(--muted)]">{{ item.claim }}</p>
+          <p class="mt-2 font-mono text-[11px] text-[var(--muted)]">
             {{ item.founderName }} · {{ new Date(item.createdAt).toLocaleString() }}
           </p>
         </RouterLink>

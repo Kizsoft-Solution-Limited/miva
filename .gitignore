@@ -14,6 +14,8 @@ dist/
 *.db
 *.db-journal
 api/prisma/dev.db
+api/uploads/
+*.pdf
 
 # OS / IDE
 .DS_Store
@@ -25,6 +27,7 @@ api/prisma/dev.db
 .cursor/
 AGENTS.md
 CLAUDE.md
+BACKLOG.md
 
 # Logs
 npm-debug.log*

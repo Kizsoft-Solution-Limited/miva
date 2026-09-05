@@ -3,7 +3,10 @@ defineProps<{ message: string }>()
 </script>
 
 <template>
-  <p class="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-800 ring-1 ring-rose-100" role="alert">
+  <p
+    class="rounded-[10px] border border-[var(--danger)]/35 bg-[var(--danger-soft)] px-3 py-2.5 text-sm text-[var(--danger)]"
+    role="alert"
+  >
     {{ message }}
   </p>
 </template>

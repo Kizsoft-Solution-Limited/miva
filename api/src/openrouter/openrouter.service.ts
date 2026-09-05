@@ -13,7 +13,9 @@ export type ChatContentPart =
 export interface OpenRouterChatInput {
   system: string;
   userText: string;
+  /** Public https PDF URL or data:application/pdf;base64,... */
   pdfUrl?: string;
+  pdfFilename?: string;
   webSearch?: boolean;
   model?: string;
 }
@@ -64,7 +66,11 @@ export class OpenRouterService {
       userContent.push({
         type: 'file',
         file: {
-          filename: this.filenameFromUrl(input.pdfUrl),
+          filename:
+            input.pdfFilename ||
+            (input.pdfUrl.startsWith('data:')
+              ? 'upload.pdf'
+              : this.filenameFromUrl(input.pdfUrl)),
           file_data: input.pdfUrl,
         },
       });
@@ -74,9 +80,9 @@ export class OpenRouterService {
     if (input.webSearch) {
       plugins.push({
         id: 'web',
-        max_results: 5,
+        max_results: 8,
         search_prompt:
-          'Live web results for this milestone claim. Cite real URLs only. Prefer the founder proof URL and reputable sources.',
+          'Find live evidence for or against this milestone claim. Prefer the founder proof URL, the live page contents, and reputable primary sources. Never invent URLs. Note contradictions clearly.',
       });
     }
     if (input.pdfUrl) {
@@ -86,9 +92,14 @@ export class OpenRouterService {
       });
     }
 
+    const model =
+      input.model ||
+      this.config.get<string>('OPENROUTER_MODEL')?.trim() ||
+      'openai/gpt-4o-mini';
+
     const body: Record<string, unknown> = {
-      model: input.model || 'openai/gpt-4o-mini',
-      temperature: 0.1,
+      model,
+      temperature: 0.05,
       response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: input.system },

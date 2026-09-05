@@ -4,6 +4,7 @@ export type InvestorDecision =
   | 'approved'
   | 'rejected'
   | 'more_info_requested'
+export type ProofType = 'url' | 'pdf' | 'repo' | 'text' | 'metric'
 
 export interface Finding {
   claim: string
@@ -14,6 +15,7 @@ export interface Finding {
 
 export interface Verdict {
   id: string
+  version: number
   recommendation: Recommendation
   summary: string
   confirmed: Finding[]
@@ -32,9 +34,12 @@ export interface Milestone {
   proofType: string
   proofUrl: string | null
   proofText: string | null
+  proofFileName: string | null
+  hasProofFile: boolean
   createdAt: string
   updatedAt: string
   verdict: Verdict | null
+  verdictHistory: Verdict[]
   check?: {
     orbio: boolean
     webSearch: boolean
@@ -47,7 +52,17 @@ export interface CreateMilestonePayload {
   title: string
   claim: string
   founderName: string
-  proofType: string
+  proofType: ProofType
   proofUrl?: string
   proofText?: string
+  file?: File | null
+}
+
+export interface UpdateProofPayload {
+  claim?: string
+  proofType?: ProofType
+  proofUrl?: string
+  proofText?: string
+  clearFile?: boolean
+  file?: File | null
 }

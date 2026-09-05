@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0b1210"/>
+  <circle cx="1040" cy="80" r="220" fill="#1f4d3a" fill-opacity="0.45"/>
+  <circle cx="160" cy="520" r="200" fill="#3ecf8e" fill-opacity="0.12"/>
+  <!-- mark -->
+  <rect x="72" y="160" width="120" height="120" rx="28" fill="#0b1210" stroke="#3ecf8e" stroke-opacity="0.45" stroke-width="3"/>
+  <path d="M96 250V186h12l17 38 17-38h12v64h-11v-36l-14 32h-8l-14-32v36h-11z" fill="#e8f0eb"/>
+  <path d="M148 238l8 8 16-18" stroke="#3ecf8e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="220" y="240" fill="#e8f0eb" font-family="Georgia, serif" font-size="72" font-weight="600">MIVA</text>
+  <text x="220" y="290" fill="#7a9a88" font-family="Arial, sans-serif" font-size="28">The check before capital moves.</text>
+  <text x="72" y="420" fill="#7a9a88" font-family="Arial, sans-serif" font-size="24">Founder proof - agent verdict - investor decision</text>
+  <text x="72" y="540" fill="#3ecf8e" font-family="Arial, sans-serif" font-size="20" font-weight="700">Orbio - web search - PDF - structured JSON</text>
+</svg>

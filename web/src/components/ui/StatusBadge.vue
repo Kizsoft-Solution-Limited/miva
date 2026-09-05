@@ -7,12 +7,12 @@ defineProps<{
 
 <template>
   <span
-    class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+    class="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-bold tracking-wide"
     :class="{
-      'bg-slate-200 text-slate-800': !tone || tone === 'neutral',
-      'bg-emerald-100 text-emerald-800': tone === 'good',
-      'bg-amber-100 text-amber-900': tone === 'warn',
-      'bg-rose-100 text-rose-800': tone === 'bad',
+      'bg-[var(--paper-2)] text-[var(--ink-soft)]': !tone || tone === 'neutral',
+      'bg-[var(--ok-soft)] text-[var(--ok)]': tone === 'good',
+      'bg-[var(--warn-soft)] text-[var(--warn)]': tone === 'warn',
+      'bg-[var(--danger-soft)] text-[var(--danger)]': tone === 'bad',
     }"
   >
     {{ label }}

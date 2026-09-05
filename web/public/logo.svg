@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="MIVA">
+  <defs>
+    <radialGradient id="miva-glow" cx="50%" cy="48%" r="42%">
+      <stop offset="0%" stop-color="#3ecf8e" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#3ecf8e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0a110d"/>
+  <rect x="1.25" y="1.25" width="61.5" height="61.5" rx="12.75" stroke="#3ecf8e" stroke-opacity="0.85"/>
+  <circle cx="32" cy="32" r="22" fill="url(#miva-glow)"/>
+  <!-- Geometric M with check/V notch -->
+  <path
+    fill="#3ecf8e"
+    d="M14 46V18h8.2L32 36.8 41.8 18H50v28h-7.2V28.6L34.2 46h-4.4L21.2 28.6V46H14z"
+  />
+  <path
+    fill="#0a110d"
+    d="M28.2 46h7.6L32 39.4 28.2 46z"
+  />
+</svg>

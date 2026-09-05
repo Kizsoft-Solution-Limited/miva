@@ -55,8 +55,10 @@ CORS_ORIGIN=http://localhost:5173
 When the week’s build is done:
 
 - API: Docker from `api/Dockerfile`, health `GET /api/health`
-- Web: build `web/` with `VITE_API_BASE_URL=https://<api>/api`, publish `dist`
-- Set `CORS_ORIGIN` to the web URL
+- Web: build `web/` with:
+  - `VITE_API_BASE_URL=https://<api>/api`
+  - `VITE_SITE_URL=https://<web>` (canonical, Open Graph, JSON-LD)
+- Publish `dist`, set `CORS_ORIGIN` to the web URL
 
 ## Demo
 

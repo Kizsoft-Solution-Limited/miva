@@ -6,14 +6,24 @@ import {
   decideMilestone,
   getMilestone,
   listMilestones,
+  recheckMilestone,
 } from '@/api/milestones'
-import type { CreateMilestonePayload, Milestone } from '@/api/types'
+import type {
+  CreateMilestonePayload,
+  Milestone,
+  UpdateProofPayload,
+} from '@/api/types'
 
 export const useMilestoneStore = defineStore('milestones', () => {
   const items = ref<Milestone[]>([])
   const current = ref<Milestone | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
+
+  function sync(updated: Milestone) {
+    current.value = updated
+    items.value = items.value.map((m) => (m.id === updated.id ? updated : m))
+  }
 
   async function fetchAll() {
     loading.value = true
@@ -45,7 +55,7 @@ export const useMilestoneStore = defineStore('milestones', () => {
     try {
       const created = await createMilestone(payload)
       current.value = created
-      items.value = [created, ...items.value]
+      items.value = [created, ...items.value.filter((m) => m.id !== created.id)]
       return created
     } catch (e) {
       error.value = apiErrorMessage(e, 'Could not submit milestone')
@@ -64,8 +74,7 @@ export const useMilestoneStore = defineStore('milestones', () => {
     error.value = null
     try {
       const updated = await decideMilestone(id, decision, note)
-      current.value = updated
-      items.value = items.value.map((m) => (m.id === id ? updated : m))
+      sync(updated)
       return updated
     } catch (e) {
       error.value = apiErrorMessage(e, 'Could not record decision')
@@ -75,5 +84,30 @@ export const useMilestoneStore = defineStore('milestones', () => {
     }
   }
 
-  return { items, current, loading, error, fetchAll, fetchOne, submit, decide }
+  async function recheck(id: string, payload: UpdateProofPayload = {}) {
+    loading.value = true
+    error.value = null
+    try {
+      const updated = await recheckMilestone(id, payload)
+      sync(updated)
+      return updated
+    } catch (e) {
+      error.value = apiErrorMessage(e, 'Could not re-run check')
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    items,
+    current,
+    loading,
+    error,
+    fetchAll,
+    fetchOne,
+    submit,
+    decide,
+    recheck,
+  }
 })

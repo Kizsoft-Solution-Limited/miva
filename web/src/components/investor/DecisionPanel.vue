@@ -12,14 +12,19 @@ const note = ref('')
 </script>
 
 <template>
-  <section class="space-y-3 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-    <h2 class="text-lg font-semibold text-slate-900">Your call</h2>
-    <p class="text-sm text-slate-600">Agent recommends. You decide.</p>
+  <section class="surface space-y-3 p-6">
+    <div class="flex flex-wrap items-end justify-between gap-3 border-b border-[var(--line)] pb-4">
+      <div>
+        <h2 class="text-xl font-medium text-[var(--ink)]">Your call</h2>
+        <p class="mt-1 text-sm text-[var(--muted)]">Agent recommends. You decide.</p>
+      </div>
+      <span class="ws-chip ws-chip--hot">human final</span>
+    </div>
     <label class="block text-sm">
-      <span class="mb-1 block font-medium text-slate-700">Note (optional)</span>
-      <textarea v-model="note" rows="2" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+      <span class="mb-1.5 block font-bold text-[var(--ink)]">Note (optional)</span>
+      <textarea v-model="note" rows="2" class="field" />
     </label>
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap gap-2 pt-1">
       <AppButton :disabled="disabled" @click="emit('decide', 'approved', note.trim() || undefined)">
         Approve release
       </AppButton>

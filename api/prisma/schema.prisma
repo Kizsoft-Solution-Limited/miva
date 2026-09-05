@@ -21,29 +21,38 @@ enum InvestorDecision {
 }
 
 model Milestone {
-  id          String   @id @default(cuid())
-  title       String
-  claim       String
-  founderName String
-  proofType   String
-  proofUrl    String?
-  proofText   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  verdict     Verdict?
+  id            String    @id @default(cuid())
+  title         String
+  claim         String
+  founderName   String
+  proofType     String
+  proofUrl      String?
+  proofText     String?
+  proofFileName String?
+  proofMime     String?
+  /// Base64 PDF (small uploads only; demo-sized)
+  proofData     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  verdicts      Verdict[]
 }
 
 model Verdict {
-  id             String             @id @default(cuid())
-  milestoneId    String             @unique
-  milestone      Milestone          @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
-  recommendation Recommendation
-  summary        String
-  confirmedJson  String
-  unconfirmedJson String
-  reasoning      String
-  investorDecision InvestorDecision @default(pending)
-  investorNote   String?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  id               String             @id @default(cuid())
+  milestoneId      String
+  milestone        Milestone          @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  version          Int
+  recommendation   Recommendation
+  summary          String
+  confirmedJson    String
+  unconfirmedJson  String
+  reasoning        String
+  checkJson        String?
+  investorDecision InvestorDecision   @default(pending)
+  investorNote     String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@unique([milestoneId, version])
+  @@index([milestoneId])
 }

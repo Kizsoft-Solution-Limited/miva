@@ -2,12 +2,54 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>web</title>
+    <title>MIVA — Milestone Verification Agent</title>
+    <meta
+      name="description"
+      content="MIVA checks founder milestone proof against live sources and returns an auditable verdict. Investors still decide."
+    />
+    <meta name="application-name" content="MIVA" />
+    <meta name="theme-color" content="#0f9f6e" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="robots" content="index,follow" />
+    <meta name="author" content="MIVA" />
+    <meta name="keywords" content="MIVA, milestone verification, funding, Orbio, investor, founder proof" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <!-- canonical + absolute OG URLs set at runtime via src/seo.ts -->
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MIVA" />
+    <meta property="og:title" content="MIVA — Milestone Verification Agent" />
+    <meta
+      property="og:description"
+      content="MIVA checks founder milestone proof against live sources and returns an auditable verdict. Investors still decide."
+    />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MIVA — Milestone Verification Agent" />
+    <meta
+      name="twitter:description"
+      content="MIVA checks founder milestone proof against live sources and returns an auditable verdict. Investors still decide."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="app"></div>
+    <noscript>
+      <p style="padding: 2rem; font-family: system-ui, sans-serif">
+        MIVA needs JavaScript to run. Enable it to submit proof and review verdicts.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

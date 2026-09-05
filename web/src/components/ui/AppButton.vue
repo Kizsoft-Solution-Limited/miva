@@ -10,11 +10,13 @@ defineProps<{
   <button
     :type="type || 'button'"
     :disabled="disabled"
-    class="rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
+    class="inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-50"
     :class="{
-      'bg-slate-900 text-white hover:bg-slate-800': !variant || variant === 'primary',
-      'bg-white text-slate-900 ring-1 ring-slate-300 hover:bg-slate-50': variant === 'secondary',
-      'bg-rose-700 text-white hover:bg-rose-600': variant === 'danger',
+      'bg-[var(--signal)] text-[#052816] shadow-[0_0_24px_var(--glow)] hover:bg-[var(--accent-hover)]':
+        !variant || variant === 'primary',
+      'border border-[var(--line-strong)] bg-black/25 text-[var(--ink)] hover:border-[var(--signal)] hover:text-[var(--signal)]':
+        variant === 'secondary',
+      'bg-[var(--danger)] text-[#1a0808] hover:brightness-110': variant === 'danger',
     }"
   >
     <slot />
