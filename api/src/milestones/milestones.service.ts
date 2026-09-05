@@ -134,6 +134,14 @@ export class MilestonesService {
             createdAt: verdict.createdAt,
           }
         : null,
+      check: {
+        orbio: true,
+        webSearch: ['url', 'metric', 'repo', 'pdf'].includes(milestone.proofType),
+        pdf:
+          milestone.proofType === 'pdf' &&
+          Boolean(milestone.proofUrl?.toLowerCase().includes('.pdf')),
+        structuredJson: Boolean(verdict),
+      },
     };
   }
 }

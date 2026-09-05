@@ -76,7 +76,11 @@ async function onDecide(decision: 'approved' | 'rejected' | 'more_info_requested
         </dl>
       </section>
 
-      <VerdictCard v-if="store.current.verdict" :verdict="store.current.verdict" />
+      <VerdictCard
+        v-if="store.current.verdict"
+        :verdict="store.current.verdict"
+        :check="store.current.check"
+      />
       <p v-else class="text-sm text-slate-500">No verdict on this milestone yet.</p>
       <DecisionPanel :disabled="store.loading" @decide="onDecide" />
     </template>

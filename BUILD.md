@@ -11,8 +11,8 @@ Seven days. Public by day 7. Path: submit proof → agent verdict → investor d
 | 3 Demo polish | done |
 | 4 Hardening | done |
 | 5 Deploy | Coolify when week is done |
-| 6 Package | next |
-| 7 Freeze | |
+| 6 Package | done |
+| 7 Freeze | next |
 
 ---
 
@@ -34,11 +34,11 @@ Rate-limit verify (8/min/IP) and decisions (30/min/IP). OpenRouter times out at 
 
 ### Day 5 — live link (Coolify, at the end)
 
-Docker API (`api/Dockerfile`) + static Vue. Web uses `VITE_API_BASE_URL`. Health at `/api/health`. Host on Coolify after Days 6–7 work is solid — set `CORS_ORIGIN`, build web against the API URL, then record a short happy-path video.
+Docker API (`api/Dockerfile`) + static Vue. Web uses `VITE_API_BASE_URL`. Health at `/api/health`. Host on Coolify after the week’s code is solid — set `CORS_ORIGIN`, build web against the API URL, then record a short happy-path video.
 
-### Day 6 — package for judges
+### Day 6 — package for judges ✅
 
-README: problem, what MIVA does, Orbio bits we use. Show search / PDF / structured JSON in the product. Bugs only after that.
+README covers problem, product, Orbio bits. Verdict screen shows what ran (web search / PDF / structured JSON) plus expandable JSON. No TTS.
 
 ### Day 7 — stop
 

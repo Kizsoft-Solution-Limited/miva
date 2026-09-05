@@ -28,5 +28,8 @@ function linkClass(path: string) {
     <main class="mx-auto max-w-5xl px-4 py-8">
       <RouterView />
     </main>
+    <footer class="border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+      Runs on an Orbio / OpenRouter key — web search, PDF read, structured JSON verdicts.
+    </footer>
   </div>
 </template>

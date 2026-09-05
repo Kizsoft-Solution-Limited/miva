@@ -1,22 +1,33 @@
 # MIVA
 
-Milestone Verification Agent.
+Milestone Verification Agent — trust layer before funding moves.
 
-Investors ask “did you hit the milestone?” and usually get a screenshot or a link. MIVA checks the proof against what it can verify and returns a verdict: confirmed, unconfirmed, and approve / reject / needs more info. The investor still decides.
+Founders claim they hit a milestone. Investors either believe them or dig through links. MIVA sits in between: founder submits proof, the agent checks what it can, investor gets a verdict (approve / reject / needs more info) and still makes the call.
 
-Built for Orbio Build Week.
+Built for Orbio Build Week on an Orbio key (OpenRouter).
+
+## What it uses from Orbio
+
+| Bit | Where |
+| --- | --- |
+| Multi-model / chat | Verification agent |
+| Web search | URL, metric, repo, PDF claims |
+| PDF read | Proof type PDF + public PDF URL |
+| Structured JSON | Verdict schema every run |
+
+You can see that on the investor verdict screen (“This check used …”) and in the expandable JSON.
 
 ## Layout
 
-- `api/` — NestJS, Prisma, verification agent (Orbio / OpenRouter)
-- `web/` — Vue + Vite + Tailwind (founder + investor)
+- `api/` — NestJS, Prisma, agent
+- `web/` — Vue (founder submit + investor review)
 
 ## Run locally
 
 ```bash
 cd api
 cp .env.example .env
-# put OPENROUTER_API_KEY in .env
+# OPENROUTER_API_KEY=...
 npx prisma migrate dev
 npm run start:dev
 ```
@@ -41,21 +52,14 @@ CORS_ORIGIN=http://localhost:5173
 
 ## Host (Coolify)
 
-We ship on Coolify when the week’s build is done — not mid-flight.
+When the week’s build is done:
 
-**API** — Docker from `api/Dockerfile`
+- API: Docker from `api/Dockerfile`, health `GET /api/health`
+- Web: build `web/` with `VITE_API_BASE_URL=https://<api>/api`, publish `dist`
+- Set `CORS_ORIGIN` to the web URL
 
-- Health: `GET /api/health`
-- Env: `OPENROUTER_API_KEY`, `DATABASE_URL`, `CORS_ORIGIN` (your Coolify web URL), `PORT=3000`
-- Start already runs `prisma migrate deploy`
+## Demo
 
-**Web** — static build of `web/`
-
-- Build: `npm ci && npm run build`
-- Publish: `dist`
-- Build env: `VITE_API_BASE_URL=https://<your-api-host>/api`
-- SPA fallback to `index.html` (Coolify / nginx)
-
-After both are up, open the web URL and run a Strong demo case. Drop a short screen recording link here when you have it.
+Founder page has three cases: Strong (live URL), Weak (no proof), Thin (bad link). Run Strong → open the verdict → decide.
 
 Build plan: `BUILD.md`.

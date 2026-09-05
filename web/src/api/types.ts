@@ -35,6 +35,12 @@ export interface Milestone {
   createdAt: string
   updatedAt: string
   verdict: Verdict | null
+  check?: {
+    orbio: boolean
+    webSearch: boolean
+    pdf: boolean
+    structuredJson: boolean
+  }
 }
 
 export interface CreateMilestonePayload {
