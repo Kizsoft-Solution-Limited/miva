@@ -1,8 +1,10 @@
 import axios from 'axios'
 import type { CreateMilestonePayload, Milestone } from './types'
 
+const baseURL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') || '/api'
+
 const client = axios.create({
-  baseURL: '/api',
+  baseURL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 90_000,
 })

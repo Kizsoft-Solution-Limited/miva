@@ -10,8 +10,8 @@ Seven days. Public by day 7. Path: submit proof → agent verdict → investor d
 | 2 Search + PDF | done |
 | 3 Demo polish | done |
 | 4 Hardening | done |
-| 5 Deploy | next |
-| 6 Package | |
+| 5 Deploy | Coolify when week is done |
+| 6 Package | next |
 | 7 Freeze | |
 
 ---
@@ -32,9 +32,9 @@ Founder + investor screens readable. Verdict obvious. Three demo cases on Founde
 
 Rate-limit verify (8/min/IP) and decisions (30/min/IP). OpenRouter times out at 60s. Public http(s) only. `CORS_ORIGIN` can be a comma list. Don’t log the key.
 
-### Day 5 — live link
+### Day 5 — live link (Coolify, at the end)
 
-Deploy API + web. Set `CORS_ORIGIN`. README with how to try it. Short screen recording of the happy path.
+Docker API (`api/Dockerfile`) + static Vue. Web uses `VITE_API_BASE_URL`. Health at `/api/health`. Host on Coolify after Days 6–7 work is solid — set `CORS_ORIGIN`, build web against the API URL, then record a short happy-path video.
 
 ### Day 6 — package for judges
 
