@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
+  Finding,
   VerdictResult,
   VerdictSchema,
   normalizeVerdictPayload,
@@ -43,43 +44,51 @@ export class VerificationService {
   }
 
   private async runAgent(input: VerifyMilestoneInput): Promise<VerdictResult> {
-    const userContent = [
+    const proofUrl = this.sanitizePublicUrl(input.proofUrl);
+    const wantsWeb = this.shouldUseWebSearch(input.proofType, proofUrl);
+    const pdfUrl =
+      input.proofType === 'pdf' && proofUrl && this.looksLikePdf(proofUrl)
+        ? proofUrl
+        : undefined;
+
+    const userText = [
       `Milestone: ${input.title}`,
       `Claim: ${input.claim}`,
       `Proof type: ${input.proofType}`,
-      input.proofUrl ? `Proof URL: ${input.proofUrl}` : null,
+      proofUrl ? `Proof URL: ${proofUrl}` : null,
       input.proofText ? `Proof text/excerpt:\n${input.proofText}` : null,
+      wantsWeb
+        ? 'Web search is enabled. Use live results. Put real source URLs in sourceUrl fields.'
+        : null,
+      pdfUrl
+        ? 'A PDF is attached. Ground the verdict in what the document actually says.'
+        : null,
       '',
       'Return ONLY JSON with this exact shape:',
       VERDICT_JSON_SHAPE,
       '',
       'Rules:',
-      '- Do not invent sources or URLs.',
+      '- Do not invent sources, URLs, metrics, or press mentions.',
       '- Every confirmed/unconfirmed item MUST include claim, evidence, confidence.',
-      '- If you cannot verify live, use needs_more_info and explain in unconfirmed.evidence.',
-      '- Prefer needs_more_info over a weak approve.',
+      '- confirmed[].sourceUrl should be a real URL you used (proof URL or search citation).',
+      '- If evidence is thin, partial, or only the founder saying so → needs_more_info (not approve).',
+      '- approve only when the claim is clearly backed by verifiable evidence.',
+      '- reject when the proof contradicts the claim or is clearly bogus.',
     ]
       .filter(Boolean)
       .join('\n');
 
-    const response = await this.openRouter.openai.chat.completions.create({
-      model: 'openai/gpt-4o-mini',
-      temperature: 0.1,
-      response_format: { type: 'json_object' },
-      messages: [
-        {
-          role: 'system',
-          content:
-            'You are MIVA, a milestone verification agent for investors. Be skeptical. Output valid JSON only.',
-        },
-        { role: 'user', content: userContent },
-      ],
+    const { content, citations } = await this.openRouter.chatForVerification({
+      system:
+        'You are MIVA, a milestone verification agent for investors. Be skeptical. Prefer needs_more_info over a weak approve. Output valid JSON only.',
+      userText,
+      webSearch: wantsWeb,
+      pdfUrl,
     });
 
-    const raw = response.choices[0]?.message?.content ?? '{}';
     let parsed: unknown;
     try {
-      parsed = JSON.parse(raw);
+      parsed = JSON.parse(content);
     } catch {
       this.logger.warn('Model returned non-JSON; wrapping as unconfirmed');
       parsed = {
@@ -89,7 +98,7 @@ export class VerificationService {
         unconfirmed: [
           {
             claim: input.claim,
-            evidence: raw.slice(0, 500),
+            evidence: content.slice(0, 500),
             confidence: 0.2,
           },
         ],
@@ -97,7 +106,79 @@ export class VerificationService {
       };
     }
 
-    return VerdictSchema.parse(normalizeVerdictPayload(parsed, input.claim));
+    const verdict = VerdictSchema.parse(
+      normalizeVerdictPayload(parsed, input.claim),
+    );
+    return this.attachCitations(verdict, citations, proofUrl);
+  }
+
+  private shouldUseWebSearch(proofType: string, proofUrl?: string): boolean {
+    if (['url', 'metric', 'repo', 'pdf'].includes(proofType)) return true;
+    return Boolean(proofUrl);
+  }
+
+  private looksLikePdf(url: string): boolean {
+    const lower = url.toLowerCase();
+    return lower.includes('.pdf') || lower.includes('application/pdf');
+  }
+
+  private sanitizePublicUrl(raw?: string | null): string | undefined {
+    if (!raw?.trim()) return undefined;
+    let url: URL;
+    try {
+      url = new URL(raw.trim());
+    } catch {
+      return undefined;
+    }
+    if (!['http:', 'https:'].includes(url.protocol)) return undefined;
+    const host = url.hostname.toLowerCase();
+    if (
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === '::1' ||
+      host.endsWith('.local') ||
+      host.startsWith('10.') ||
+      host.startsWith('192.168.') ||
+      host.startsWith('169.254.')
+    ) {
+      return undefined;
+    }
+    return url.toString();
+  }
+
+  private attachCitations(
+    verdict: VerdictResult,
+    citations: Array<{ url: string; title?: string; excerpt?: string }>,
+    proofUrl?: string,
+  ): VerdictResult {
+    if (!citations.length && !proofUrl) return verdict;
+
+    const fill = (items: Finding[]): Finding[] =>
+      items.map((item) => {
+        if (item.sourceUrl) return item;
+        const match =
+          citations.find((c) => {
+            try {
+              const host = new URL(c.url).hostname.toLowerCase();
+              return item.evidence.toLowerCase().includes(host);
+            } catch {
+              return false;
+            }
+          }) || citations[0];
+        if (match?.url) {
+          return { ...item, sourceUrl: match.url };
+        }
+        if (proofUrl && item.confidence >= 0.5) {
+          return { ...item, sourceUrl: proofUrl };
+        }
+        return item;
+      });
+
+    return {
+      ...verdict,
+      confirmed: fill(verdict.confirmed),
+      unconfirmed: fill(verdict.unconfirmed),
+    };
   }
 
   private offlineVerdict(

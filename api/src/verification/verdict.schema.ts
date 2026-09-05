@@ -61,13 +61,16 @@ export function normalizeVerdictPayload(
   if (
     recommendationRaw === 'approve' ||
     recommendationRaw === 'approved' ||
-    recommendationRaw === 'accept'
+    recommendationRaw === 'accept' ||
+    recommendationRaw === 'confirmed' ||
+    recommendationRaw === 'pass'
   ) {
     recommendation = 'approve';
   } else if (
     recommendationRaw === 'reject' ||
     recommendationRaw === 'rejected' ||
-    recommendationRaw === 'deny'
+    recommendationRaw === 'deny' ||
+    recommendationRaw === 'failed'
   ) {
     recommendation = 'reject';
   } else if (

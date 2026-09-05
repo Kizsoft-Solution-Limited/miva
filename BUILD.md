@@ -2,13 +2,18 @@
 
 Do not reshuffle this plan mid-week unless we explicitly change it. Contest window is 7 days once approved. Project public by day 7. Demo path only: submit proof → agent verdict → investor decides.
 
+## Status
+
+- Day 1: done (live Orbio key + end-to-end verdict)
+- Day 2: done (OpenRouter web search + PDF plugin path + stricter prompts)
+
 ## Already done (before the clock)
 
 - Nest API + Prisma + Vue UI scaffold
 - Verdict schema, basic agent loop, founder/investor screens
 - Cursor rules local only (not in git)
 
-## Day 1 — Wire the key + prove the loop
+## Day 1 — Wire the key + prove the loop ✅
 
 - Claim Orbio $100 key → `api/.env` as `OPENROUTER_API_KEY`
 - Run a real verification (URL + text claim) end to end
@@ -17,7 +22,7 @@ Do not reshuffle this plan mid-week unless we explicitly change it. Contest wind
 
 **Done when:** one live milestone shows a real agent verdict in the UI
 
-## Day 2 — Make verification actually check things
+## Day 2 — Make verification actually check things ✅
 
 - Turn on OpenRouter web search for URL/press/metric claims
 - PDF / doc path: accept link or upload, extract text, feed the agent

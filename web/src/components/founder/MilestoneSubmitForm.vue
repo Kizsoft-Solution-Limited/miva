@@ -73,7 +73,12 @@ function onSubmit() {
 
     <label class="block text-sm">
       <span class="mb-1 block font-medium text-slate-700">Proof URL</span>
-      <input v-model="form.proofUrl" type="url" class="w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="https://…" />
+      <input
+        v-model="form.proofUrl"
+        type="url"
+        class="w-full rounded-lg border border-slate-300 px-3 py-2"
+        placeholder="https://… (site, repo, or public PDF link)"
+      />
     </label>
 
     <label class="block text-sm">
