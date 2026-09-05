@@ -11,19 +11,30 @@ function toneFor(recommendation: Verdict['recommendation']) {
 }
 
 function labelFor(recommendation: Verdict['recommendation']) {
-  return recommendation.replaceAll('_', ' ')
+  if (recommendation === 'needs_more_info') return 'needs more info'
+  return recommendation
+}
+
+function panelClass(recommendation: Verdict['recommendation']) {
+  if (recommendation === 'approve') return 'bg-emerald-50 ring-emerald-200'
+  if (recommendation === 'reject') return 'bg-rose-50 ring-rose-200'
+  return 'bg-amber-50 ring-amber-200'
 }
 </script>
 
 <template>
   <section class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-    <div class="flex flex-wrap items-center gap-3">
-      <h2 class="text-lg font-semibold text-slate-900">Agent verdict</h2>
-      <StatusBadge :label="labelFor(verdict.recommendation)" :tone="toneFor(verdict.recommendation)" />
-      <StatusBadge :label="`investor: ${verdict.investorDecision.replaceAll('_', ' ')}`" />
+    <div
+      class="rounded-xl px-4 py-3 ring-1"
+      :class="panelClass(verdict.recommendation)"
+    >
+      <div class="flex flex-wrap items-center gap-2">
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-600">Agent says</p>
+        <StatusBadge :label="labelFor(verdict.recommendation)" :tone="toneFor(verdict.recommendation)" />
+        <StatusBadge :label="`you: ${verdict.investorDecision.replaceAll('_', ' ')}`" />
+      </div>
+      <p class="mt-2 text-sm font-medium text-slate-900">{{ verdict.summary }}</p>
     </div>
-
-    <p class="text-sm text-slate-700">{{ verdict.summary }}</p>
 
     <div class="grid gap-4 md:grid-cols-2">
       <div>
@@ -43,11 +54,11 @@ function labelFor(recommendation: Verdict['recommendation']) {
               rel="noreferrer"
               class="mt-1 inline-block text-emerald-700 underline"
             >
-              source
+              {{ item.sourceUrl }}
             </a>
           </li>
         </ul>
-        <p v-else class="text-sm text-slate-500">Nothing confirmed yet.</p>
+        <p v-else class="text-sm text-slate-500">Nothing confirmed.</p>
       </div>
 
       <div>
@@ -60,6 +71,15 @@ function labelFor(recommendation: Verdict['recommendation']) {
           >
             <p class="font-medium">{{ item.claim }}</p>
             <p class="mt-1 opacity-90">{{ item.evidence }}</p>
+            <a
+              v-if="item.sourceUrl"
+              :href="item.sourceUrl"
+              target="_blank"
+              rel="noreferrer"
+              class="mt-1 inline-block text-amber-800 underline"
+            >
+              {{ item.sourceUrl }}
+            </a>
           </li>
         </ul>
         <p v-else class="text-sm text-slate-500">No open gaps.</p>

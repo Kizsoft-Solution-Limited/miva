@@ -13,18 +13,30 @@ const note = ref('')
 
 <template>
   <section class="space-y-3 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-    <h2 class="text-lg font-semibold text-slate-900">Investor decision</h2>
-    <p class="text-sm text-slate-600">The agent recommends. You decide.</p>
+    <h2 class="text-lg font-semibold text-slate-900">Your call</h2>
+    <p class="text-sm text-slate-600">Agent recommends. You decide.</p>
     <label class="block text-sm">
       <span class="mb-1 block font-medium text-slate-700">Note (optional)</span>
       <textarea v-model="note" rows="2" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
     </label>
     <div class="flex flex-wrap gap-2">
-      <AppButton :disabled="disabled" @click="emit('decide', 'approved', note)">Approve release</AppButton>
-      <AppButton variant="secondary" :disabled="disabled" @click="emit('decide', 'more_info_requested', note)">
+      <AppButton :disabled="disabled" @click="emit('decide', 'approved', note.trim() || undefined)">
+        Approve release
+      </AppButton>
+      <AppButton
+        variant="secondary"
+        :disabled="disabled"
+        @click="emit('decide', 'more_info_requested', note.trim() || undefined)"
+      >
         Need more info
       </AppButton>
-      <AppButton variant="danger" :disabled="disabled" @click="emit('decide', 'rejected', note)">Reject</AppButton>
+      <AppButton
+        variant="danger"
+        :disabled="disabled"
+        @click="emit('decide', 'rejected', note.trim() || undefined)"
+      >
+        Reject
+      </AppButton>
     </div>
   </section>
 </template>

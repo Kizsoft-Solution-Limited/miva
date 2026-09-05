@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
+
+const route = useRoute()
+
+function linkClass(path: string) {
+  const active = route.path.startsWith(path)
+  return active
+    ? 'text-slate-900 underline decoration-slate-400 underline-offset-4'
+    : 'text-slate-600 hover:text-slate-900'
+}
 </script>
 
 <template>
@@ -11,8 +20,8 @@ import { RouterLink, RouterView } from 'vue-router'
           <p class="text-sm text-slate-700">Milestone Verification Agent</p>
         </div>
         <div class="flex gap-4 text-sm font-medium">
-          <RouterLink class="text-slate-700 hover:text-slate-900" to="/founder">Founder</RouterLink>
-          <RouterLink class="text-slate-700 hover:text-slate-900" to="/investor">Investor</RouterLink>
+          <RouterLink :class="linkClass('/founder')" to="/founder">Founder</RouterLink>
+          <RouterLink :class="linkClass('/investor')" to="/investor">Investor</RouterLink>
         </div>
       </div>
     </nav>
