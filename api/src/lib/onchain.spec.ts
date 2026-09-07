@@ -16,8 +16,7 @@ describe('parseOnchainTarget', () => {
   });
 
   it('parses etherscan tx URLs', () => {
-    const full =
-      '0xd5c504ed432cb51138bcf09aa5e8a410dd4a1e204ef14777e5c7df2e4bce19000';
+    const full = `0x${'ab'.repeat(32)}`;
     expect(full.length).toBe(66);
     const parsed = parseOnchainTarget(`https://etherscan.io/tx/${full}`);
     expect(parsed?.kind).toBe('tx');

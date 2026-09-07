@@ -33,8 +33,9 @@ function loadCase(id: string) {
 
 onMounted(() => {
   const fromQuery = typeof route.query.case === 'string' ? route.query.case : ''
-  const id = demoCases.some((c) => c.id === fromQuery) ? fromQuery : 'repo'
-  loadCase(id)
+  if (fromQuery && demoCases.some((c) => c.id === fromQuery)) {
+    loadCase(fromQuery)
+  }
 })
 
 onBeforeRouteLeave(() => {
