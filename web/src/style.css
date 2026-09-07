@@ -217,6 +217,58 @@ a { color: inherit; }
   background: #7af7c0;
 }
 
+.app-chrome-header__menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex-shrink: 0;
+  border: 1px solid rgba(94, 242, 176, 0.28);
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--signal);
+  cursor: pointer;
+}
+
+.app-chrome-header__menu-btn:hover {
+  background: rgba(94, 242, 176, 0.08);
+}
+
+@media (min-width: 640px) {
+  .app-chrome-header__menu-btn { display: none; }
+}
+
+.app-chrome-header__mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.35rem 1.25rem 1rem;
+  border-top: 1px solid rgba(94, 242, 176, 0.12);
+}
+
+@media (min-width: 640px) {
+  .app-chrome-header__mobile-nav { display: none !important; }
+}
+
+.app-mobile-nav-link {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--signal-dim);
+  text-decoration: none;
+  padding: 0.7rem 0.15rem;
+  border-bottom: 1px solid rgba(94, 242, 176, 0.08);
+}
+
+.app-mobile-nav-link:last-child {
+  border-bottom: none;
+}
+
+.app-mobile-nav-link:hover,
+.app-mobile-nav-link.is-active {
+  color: var(--signal);
+}
+
 .app-chrome-footer {
   margin-top: auto;
   background: var(--night-2);
