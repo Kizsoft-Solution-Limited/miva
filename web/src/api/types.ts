@@ -44,6 +44,7 @@ export interface Milestone {
     orbio: boolean
     webSearch: boolean
     pdf: boolean
+    github?: boolean
     structuredJson: boolean
   }
 }

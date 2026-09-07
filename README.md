@@ -65,3 +65,17 @@ When the week’s build is done:
 Founder page has three cases: Strong (live URL), Weak (no proof), Thin (bad link). Run Strong → open the verdict → decide.
 
 Build plan: `BUILD.md`.
+
+
+## Demo auth
+
+Demo login for the contest build. Server issues a signed Bearer token.
+
+| Role | Password |
+| --- | --- |
+| Founder | `founder` |
+| Investor | `investor` |
+
+Use **/login** (Founder or Investor). Submit / recheck need Founder. Decide needs Investor. Queue stays readable without login.
+
+Set on API: `AUTH_SECRET`, `DEMO_FOUNDER_PASSWORD`, `DEMO_INVESTOR_PASSWORD` (see `api/.env.example`).

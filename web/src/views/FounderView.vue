@@ -16,7 +16,7 @@ async function onSubmit(payload: CreateMilestonePayload) {
     const created = await store.submit(payload)
     await router.push(`/investor/${created.id}`)
   } catch {
-    // store.error already set
+    // store error already set
   }
 }
 
@@ -37,7 +37,7 @@ function loadCase(id: string) {
       </div>
       <div class="ws-chip-row">
         <span class="ws-chip ws-chip--hot">orbio live</span>
-        <span class="ws-chip">web · pdf · json</span>
+        <span class="ws-chip">web · repo · pdf · json</span>
       </div>
     </header>
 

@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
+import AppToast from '@/components/ui/AppToast.vue'
+import { useRoleStore } from '@/stores/role'
 
 const route = useRoute()
+const roleStore = useRoleStore()
 const isHome = computed(() => route.path === '/')
+
+onMounted(() => {
+  void roleStore.restore()
+})
 </script>
 
 <template>
@@ -15,5 +22,6 @@ const isHome = computed(() => route.path === '/')
       <RouterView />
     </main>
     <AppFooter />
+    <AppToast />
   </div>
 </template>

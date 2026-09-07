@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import DecisionPanel from '@/components/investor/DecisionPanel.vue'
 import VerdictCard from '@/components/investor/VerdictCard.vue'
 import VerdictHistory from '@/components/investor/VerdictHistory.vue'
@@ -9,10 +9,14 @@ import ErrorBanner from '@/components/ui/ErrorBanner.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppBack from '@/components/ui/AppBack.vue'
 import { useMilestoneStore } from '@/stores/milestones'
+import { goSignIn } from '@/lib/goSignIn'
+import { useRoleStore } from '@/stores/role'
 import type { UpdateProofPayload } from '@/api/types'
 
 const route = useRoute()
+const router = useRouter()
 const store = useMilestoneStore()
+const roleStore = useRoleStore()
 const copied = ref(false)
 let copyTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -25,10 +29,12 @@ const needsMoreInfo = computed(
   () => store.current?.verdict?.investorDecision === 'more_info_requested',
 )
 
-const canDecide = computed(() => {
+const pendingDecision = computed(() => {
   const d = store.current?.verdict?.investorDecision
   return Boolean(store.current?.verdict) && d === 'pending'
 })
+
+const canDecide = computed(() => pendingDecision.value && roleStore.isInvestor)
 
 async function load() {
   const id = String(route.params.id)
@@ -44,6 +50,7 @@ watch(() => route.params.id, () => {
 })
 
 async function onDecide(decision: 'approved' | 'rejected' | 'more_info_requested', note?: string) {
+  if (!roleStore.isInvestor) return
   const id = String(route.params.id)
   try {
     await store.decide(id, decision, note)
@@ -72,6 +79,24 @@ async function copyLink() {
   } catch {
     window.prompt('Copy this link', shareUrl.value)
   }
+}
+
+async function requireInvestor() {
+  await goSignIn(
+    router,
+    'investor',
+    route.fullPath,
+    'Sign in as Investor to record a decision.',
+  )
+}
+
+async function requireFounder() {
+  await goSignIn(
+    router,
+    'founder',
+    route.fullPath,
+    'Sign in as Founder to update proof.',
+  )
 }
 </script>
 
@@ -163,17 +188,37 @@ async function copyLink() {
       />
 
       <ProofRecheckForm
-        v-if="needsMoreInfo"
+        v-if="needsMoreInfo && roleStore.isFounder"
         :milestone="store.current"
         :busy="store.loading"
         @recheck="onRecheck"
       />
+      <p
+        v-else-if="needsMoreInfo && !roleStore.isFounder"
+        class="surface p-4 text-sm text-[var(--muted)]"
+      >
+        More info requested.
+        <button type="button" class="font-bold text-[var(--accent)] underline" @click="requireFounder">
+          Sign in as Founder
+        </button>
+        to update proof and re-run the check.
+      </p>
 
       <DecisionPanel
         v-if="canDecide"
         :disabled="store.loading || !store.current.verdict"
         @decide="onDecide"
       />
+      <section
+        v-else-if="pendingDecision && !roleStore.isInvestor"
+        class="surface space-y-3 p-4 sm:p-6"
+      >
+        <h2 class="text-xl font-medium text-[var(--ink)]">Investor only</h2>
+        <p class="text-sm text-[var(--muted)]">
+          Sign in as Investor to record Approve / Need more / Reject.
+        </p>
+        <AppButton @click="requireInvestor">Sign in</AppButton>
+      </section>
       <p
         v-else-if="store.current.verdict && !needsMoreInfo"
         class="text-sm text-[var(--muted)]"

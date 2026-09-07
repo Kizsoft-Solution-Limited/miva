@@ -3,7 +3,10 @@ import HomeView from '@/views/HomeView.vue'
 import FounderView from '@/views/FounderView.vue'
 import InvestorQueueView from '@/views/InvestorQueueView.vue'
 import InvestorDetailView from '@/views/InvestorDetailView.vue'
+import LoginView from '@/views/LoginView.vue'
 import { applySeo, DEFAULT_DESCRIPTION, installJsonLd } from '@/seo'
+import { useRoleStore } from '@/stores/role'
+import { useToastStore } from '@/stores/toast'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -17,12 +20,21 @@ export const router = createRouter({
       },
     },
     {
+      path: '/login',
+      component: LoginView,
+      meta: {
+        title: 'Sign in',
+        description: 'Sign in as Founder or Investor to submit proof or record a decision.',
+      },
+    },
+    {
       path: '/founder',
       component: FounderView,
       meta: {
         title: 'Submit milestone proof',
         description:
           'Submit a URL, repo, PDF, or excerpt. MIVA verifies what it can and returns a verdict for the investor.',
+        requiresFounder: true,
       },
     },
     {
@@ -31,7 +43,7 @@ export const router = createRouter({
       meta: {
         title: 'Investor verification queue',
         description:
-          'Review agent verdicts for milestone claims. Approve release, reject, or ask for more info.',
+          'Review agent verdicts for milestone claims. Approve, reject, or ask for more info.',
       },
     },
     {
@@ -51,6 +63,22 @@ export const router = createRouter({
     }
     return { top: 0 }
   },
+})
+
+router.beforeEach(async (to) => {
+  if (!to.meta.requiresFounder) return true
+
+  const roleStore = useRoleStore()
+  if (!roleStore.hydrated) {
+    await roleStore.restore()
+  }
+  if (roleStore.isFounder) return true
+
+  useToastStore().show('Sign in as Founder to submit proof.', 'warn')
+  return {
+    path: '/login',
+    query: { as: 'founder', next: to.fullPath },
+  }
 })
 
 router.afterEach((to) => {

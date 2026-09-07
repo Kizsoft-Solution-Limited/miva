@@ -18,6 +18,25 @@ vi.mock('../lib/url-probe.js', () => ({
   })),
 }));
 
+vi.mock('../lib/github-repo.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../lib/github-repo.js')>();
+  return {
+    ...actual,
+    probeGithubRepo: vi.fn(async (raw: string) => ({
+      url: raw,
+      ok: true,
+      fullName: 'nestjs/nest',
+      htmlUrl: 'https://github.com/nestjs/nest',
+      description: 'A progressive Node.js framework',
+      stars: 50000,
+      forks: 5000,
+      latestReleaseTag: 'v11.0.0',
+      latestReleaseUrl: 'https://github.com/nestjs/nest/releases/tag/v11.0.0',
+      latestReleasePublishedAt: '2025-01-01',
+    })),
+  };
+});
+
 function mockOpenRouter(
   overrides: Partial<OpenRouterService> & {
     chatForVerification?: OpenRouterService['chatForVerification'];
@@ -160,7 +179,58 @@ describe('VerificationService', () => {
     ).toMatchObject({
       orbio: true,
       webSearch: true,
+      github: false,
       structuredJson: true,
     });
+  });
+
+  it('buildCheckMeta marks github for repo proof', () => {
+    const service = new VerificationService(mockOpenRouter());
+    expect(
+      service.buildCheckMeta({
+        title: 'Repo live',
+        claim: 'Public repo has releases',
+        proofType: 'repo',
+        proofUrl: 'https://github.com/nestjs/nest',
+      }),
+    ).toMatchObject({ github: true, webSearch: true });
+  });
+
+  it('downgrades approve when GitHub probe fails for a repo claim', async () => {
+    const { probeGithubRepo } = await import('../lib/github-repo.js');
+    vi.mocked(probeGithubRepo).mockResolvedValueOnce({
+      url: 'https://github.com/no/such-repo-miva',
+      ok: false,
+      error: 'GitHub API: repository not found or private',
+    });
+
+    const chat = vi.fn().mockResolvedValue({
+      content: JSON.stringify({
+        recommendation: 'approve',
+        summary: 'Repo exists',
+        confirmed: [
+          {
+            claim: 'Repo public',
+            evidence: 'Found it',
+            confidence: 0.9,
+          },
+        ],
+        unconfirmed: [],
+        reasoning: 'Ok',
+      }),
+      citations: [],
+    });
+    const service = new VerificationService(
+      mockOpenRouter({ chatForVerification: chat }),
+    );
+
+    const result = await service.verifyMilestone({
+      title: 'Open source release',
+      claim: 'Public GitHub repo with a tagged release',
+      proofType: 'repo',
+      proofUrl: 'https://github.com/no/such-repo-miva',
+    });
+
+    expect(result.recommendation).toBe('reject');
   });
 });

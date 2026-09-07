@@ -22,24 +22,25 @@ import { RouterLink } from 'vue-router'
             <h1 id="home-brand" class="home-brand">MIVA</h1>
           </div>
 
-          <p class="home-headline">Trust layer for milestone capital.</p>
+          <p class="home-headline">Milestone proof, checked — then you decide.</p>
 
           <p class="home-lede">
-            Founders submit proof. The agent checks live sources and returns a
-            sealed JSON verdict. You still decide if capital moves.
+            Founders submit proof. The agent checks what it can against live
+            sources and returns a structured verdict. Investors keep the pen.
+            Escrow is later.
           </p>
 
           <div class="home-cta">
             <RouterLink to="/founder" class="home-btn home-btn--primary">
-              Launch verify
+              Submit proof
             </RouterLink>
             <a href="#protocol" class="home-btn home-btn--ghost">Why it exists</a>
           </div>
 
           <div class="land-trust" aria-label="Stack">
             <span>orbio agent</span>
-            <span>auditable JSON</span>
-            <span>no custody</span>
+            <span>structured JSON</span>
+            <span>human final</span>
           </div>
         </div>
 
@@ -56,7 +57,7 @@ import { RouterLink } from 'vue-router'
               Claim
             </p>
             <p class="mt-2 text-[15px] leading-snug text-[var(--night-fg)]">
-              billspot.co is live and serving the product site.
+              vuejs.org is live and serving the public docs.
             </p>
 
             <div class="mt-5">
@@ -83,7 +84,7 @@ import { RouterLink } from 'vue-router'
                   source
                 </span>
                 <p class="mt-1 truncate font-mono text-xs text-[var(--signal)]">
-                  https://billspot.co
+                  https://vuejs.org
                 </p>
               </div>
             </div>
@@ -106,21 +107,21 @@ import { RouterLink } from 'vue-router'
     <div class="land-ticker" aria-hidden="true">
       <div class="land-ticker__track">
         <span>VERIFY</span><span>·</span>
-        <span>ATTEST</span><span>·</span>
+        <span>CHECK</span><span>·</span>
         <span>DECIDE</span><span>·</span>
         <span>ORBIO</span><span>·</span>
         <span>WEB SEARCH</span><span>·</span>
         <span>PDF READ</span><span>·</span>
         <span>JSON VERDICT</span><span>·</span>
-        <span>NO BLACK BOX</span><span>·</span>
+        <span>HUMAN FINAL</span><span>·</span>
         <span>VERIFY</span><span>·</span>
-        <span>ATTEST</span><span>·</span>
+        <span>CHECK</span><span>·</span>
         <span>DECIDE</span><span>·</span>
         <span>ORBIO</span><span>·</span>
         <span>WEB SEARCH</span><span>·</span>
         <span>PDF READ</span><span>·</span>
         <span>JSON VERDICT</span><span>·</span>
-        <span>NO BLACK BOX</span><span>·</span>
+        <span>HUMAN FINAL</span><span>·</span>
       </div>
     </div>
 
@@ -149,12 +150,12 @@ import { RouterLink } from 'vue-router'
       <div class="home-shell">
         <p class="land-manifesto__eye font-mono">01 · why miva exists</p>
         <h2 id="protocol-heading" class="land-manifesto__title">
-          Capital still moves on
+          Milestone claims still land as
           <em>vibes and screenshots.</em>
         </h2>
         <p class="land-manifesto__lede">
           In crypto and early-stage funding, “we shipped” often means a Discord dump,
-          a Notion link, or a dashboard nobody re-checked. That’s not an attestation —
+          a Notion link, or a dashboard nobody re-checked. That’s not a check —
           that’s hope with a URL.
         </p>
 
@@ -165,8 +166,8 @@ import { RouterLink } from 'vue-router'
             <ul>
               <li>Claim dropped in a chat</li>
               <li>One person “looks fine”</li>
-              <li>No sealed record of what was checked</li>
-              <li>Money moves on memory</li>
+              <li>No shared record of what was checked</li>
+              <li>Decision made on memory</li>
             </ul>
           </article>
           <div class="land-versus__arrow" aria-hidden="true">
@@ -187,9 +188,9 @@ import { RouterLink } from 'vue-router'
             <h3>Verification pass</h3>
             <ul>
               <li>Proof submitted once</li>
-              <li>Agent hits live sources</li>
-              <li>Confirmed / unconfirmed with URLs</li>
-              <li>Human still signs the release</li>
+              <li>Agent checks what it can</li>
+              <li>Confirmed / unconfirmed with sources</li>
+              <li>Investor still makes the call</li>
             </ul>
           </article>
         </div>
@@ -218,11 +219,11 @@ import { RouterLink } from 'vue-router'
             <div class="land-window__body">
               <label class="land-field land-field--dark">
                 <span>Claim</span>
-                <div>Public site is live at billspot.co</div>
+                <div>Public docs site is live at vuejs.org</div>
               </label>
               <label class="land-field land-field--dark">
                 <span>Proof URL</span>
-                <div class="font-mono text-[var(--signal)]">https://billspot.co</div>
+                <div class="font-mono text-[var(--signal)]">https://vuejs.org</div>
               </label>
               <div class="land-window__actions">
                 <span class="land-fake-btn land-fake-btn--ok">Run verification</span>
@@ -251,7 +252,7 @@ import { RouterLink } from 'vue-router'
                 <li>Traffic / revenue not in proof</li>
               </ul>
               <div class="land-window__actions mt-5">
-                <span class="land-fake-btn land-fake-btn--ok">Approve release</span>
+                <span class="land-fake-btn land-fake-btn--ok">Approve</span>
                 <span class="land-fake-btn land-fake-btn--ghost">Need more info</span>
               </div>
             </div>
@@ -265,10 +266,10 @@ import { RouterLink } from 'vue-router'
         <div class="home-section__head home-section__head--center">
           <p class="eyebrow text-[var(--signal)]">03 · pipeline</p>
           <h2 id="flow-heading" class="home-section__title text-[var(--night-fg)]">
-            Submit. Attest. Decide.
+            Submit. Check. Decide.
           </h2>
           <p class="mt-3 max-w-xl text-[var(--signal-dim)] mx-auto">
-            Three clear handoffs. Nothing invented in the middle.
+            Three clear handoffs. Gaps stay unconfirmed — nothing invented.
           </p>
         </div>
 
@@ -307,10 +308,10 @@ import { RouterLink } from 'vue-router'
                 <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <p class="flow-node__verb font-mono">02 · attest</p>
+            <p class="flow-node__verb font-mono">02 · check</p>
             <h3 class="flow-node__title">Agent verifies</h3>
             <p class="flow-node__text">
-              Live web + docs. Gaps stay unconfirmed — never fabricated.
+              Live web + docs when the claim needs them. Unconfirmed stays unconfirmed.
             </p>
           </li>
 
@@ -336,9 +337,9 @@ import { RouterLink } from 'vue-router'
               </svg>
             </div>
             <p class="flow-node__verb font-mono">03 · decide</p>
-            <h3 class="flow-node__title">Investor signs</h3>
+            <h3 class="flow-node__title">Investor decides</h3>
             <p class="flow-node__text">
-              Approve, reject, or demand more. Custody stays on your rails.
+              Approve, reject, or ask for more. No escrow in v1 — you keep the pen.
             </p>
           </li>
         </ol>
@@ -410,10 +411,10 @@ import { RouterLink } from 'vue-router'
         <div class="home-section__head">
           <p class="eyebrow text-[var(--signal)]">05 · try</p>
           <h2 id="try-heading" class="home-section__title text-[var(--night-fg)]">
-            Three cases. One cold demo.
+            Four cases. One cold demo.
           </h2>
           <p class="mt-3 max-w-2xl text-[var(--signal-dim)]">
-            Strong hits a live site. Weak has no proof. Thin breaks the link.
+            Strong is a live site. Hard checks a public repo release. Weak has no proof. Thin breaks the link.
           </p>
         </div>
 
@@ -421,7 +422,12 @@ import { RouterLink } from 'vue-router'
           <RouterLink to="/founder" class="land-case land-case--night">
             <span class="font-mono text-[11px] text-[var(--signal)]">strong</span>
             <h3>Live URL</h3>
-            <p>billspot.co against a real public site.</p>
+            <p>vuejs.org — neutral public docs site.</p>
+          </RouterLink>
+          <RouterLink to="/founder" class="land-case land-case--night">
+            <span class="font-mono text-[11px] text-[var(--signal)]">hard</span>
+            <h3>Public repo</h3>
+            <p>GitHub API — existence + release tag.</p>
           </RouterLink>
           <RouterLink to="/founder" class="land-case land-case--night">
             <span class="font-mono text-[11px] text-[#e8b84a]">weak</span>
@@ -443,8 +449,8 @@ import { RouterLink } from 'vue-router'
           <p class="font-mono text-[var(--signal)] text-xs tracking-[0.18em] uppercase">ready</p>
           <h2 id="close-heading" class="land-close__title">Run a real check in two minutes.</h2>
           <p class="mt-3 max-w-lg text-[var(--signal-dim)]">
-            Load Strong on Founder, open the verdict, make the call.
-            That’s the whole product story.
+            Run Strong, Hard (repo), Weak, and Thin. Sign in first — Founder submits,
+            Investor decides. Escrow is not in this build.
           </p>
         </div>
         <div class="land-close__actions">

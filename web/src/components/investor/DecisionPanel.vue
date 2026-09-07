@@ -30,7 +30,7 @@ const note = ref('')
         :disabled="disabled"
         @click="emit('decide', 'approved', note.trim() || undefined)"
       >
-        Approve release
+        Approve
       </AppButton>
       <AppButton
         wide

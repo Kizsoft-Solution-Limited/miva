@@ -15,9 +15,22 @@ export const demoCases: DemoCase[] = [
     payload: {
       founderName: 'Demo Founder',
       title: 'Public site live',
-      claim: 'BillSpot marketing site is live at billspot.co',
+      claim: 'Vue.js documentation site is live at vuejs.org',
       proofType: 'url',
-      proofUrl: 'https://billspot.co',
+      proofUrl: 'https://vuejs.org',
+    },
+  },
+  {
+    id: 'repo',
+    label: 'Hard (public repo)',
+    blurb: 'GitHub repo + tagged release — not just HTTP 200.',
+    payload: {
+      founderName: 'Demo Founder',
+      title: 'Open-source release shipped',
+      claim:
+        'NestJS maintains a public GitHub repository at github.com/nestjs/nest with a published release tag',
+      proofType: 'repo',
+      proofUrl: 'https://github.com/nestjs/nest',
     },
   },
   {

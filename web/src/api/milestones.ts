@@ -1,18 +1,9 @@
-import axios from 'axios'
 import type {
   CreateMilestonePayload,
   Milestone,
   UpdateProofPayload,
 } from './types'
-
-const baseURL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') ||
-  '/api'
-
-const client = axios.create({
-  baseURL,
-  timeout: 90_000,
-})
+import { http } from './http'
 
 function toFormData(
   fields: Record<string, string | boolean | undefined>,
@@ -28,12 +19,12 @@ function toFormData(
 }
 
 export async function listMilestones(): Promise<Milestone[]> {
-  const { data } = await client.get<Milestone[]>('/milestones')
+  const { data } = await http.get<Milestone[]>('/milestones')
   return data
 }
 
 export async function getMilestone(id: string): Promise<Milestone> {
-  const { data } = await client.get<Milestone>(`/milestones/${id}`)
+  const { data } = await http.get<Milestone>(`/milestones/${id}`)
   return data
 }
 
@@ -52,11 +43,11 @@ export async function createMilestone(
       },
       payload.file,
     )
-    const { data } = await client.post<Milestone>('/milestones', body)
+    const { data } = await http.post<Milestone>('/milestones', body)
     return data
   }
 
-  const { data } = await client.post<Milestone>('/milestones', {
+  const { data } = await http.post<Milestone>('/milestones', {
     title: payload.title,
     claim: payload.claim,
     founderName: payload.founderName,
@@ -72,7 +63,7 @@ export async function decideMilestone(
   decision: 'approved' | 'rejected' | 'more_info_requested',
   note?: string,
 ): Promise<Milestone> {
-  const { data } = await client.patch<Milestone>(`/milestones/${id}/decision`, {
+  const { data } = await http.patch<Milestone>(`/milestones/${id}/decision`, {
     decision,
     note,
   })
@@ -94,11 +85,11 @@ export async function recheckMilestone(
       },
       payload.file,
     )
-    const { data } = await client.post<Milestone>(`/milestones/${id}/recheck`, body)
+    const { data } = await http.post<Milestone>(`/milestones/${id}/recheck`, body)
     return data
   }
 
-  const { data } = await client.post<Milestone>(`/milestones/${id}/recheck`, {
+  const { data } = await http.post<Milestone>(`/milestones/${id}/recheck`, {
     claim: payload.claim,
     proofType: payload.proofType,
     proofUrl: payload.proofUrl || undefined,

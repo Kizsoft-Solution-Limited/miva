@@ -27,7 +27,7 @@ vi.mock('@/api/milestones', () => ({
     claim: 'c',
     founderName: 'f',
     proofType: 'url',
-    proofUrl: 'https://billspot.co',
+    proofUrl: 'https://vuejs.org',
     proofText: null,
     proofFileName: null,
     hasProofFile: false,
@@ -60,7 +60,7 @@ describe('useMilestoneStore', () => {
       claim: 'live',
       founderName: 'Ada',
       proofType: 'url',
-      proofUrl: 'https://billspot.co',
+      proofUrl: 'https://vuejs.org',
     })
     expect(created.id).toBe('new')
     expect(store.current?.id).toBe('new')

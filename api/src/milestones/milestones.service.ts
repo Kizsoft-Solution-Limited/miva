@@ -293,6 +293,9 @@ export class MilestonesService {
           milestone.proofType === 'pdf' &&
           (Boolean(milestone.proofData) ||
             Boolean(milestone.proofUrl?.toLowerCase().includes('.pdf'))),
+        github:
+          milestone.proofType === 'repo' ||
+          Boolean(milestone.proofUrl?.includes('github.com')),
         structuredJson: Boolean(current),
       },
     };

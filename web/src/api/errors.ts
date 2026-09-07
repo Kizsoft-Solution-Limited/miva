@@ -29,6 +29,11 @@ export function apiErrorMessage(error: unknown, fallback: string): string {
     return 'Too many requests. Wait a bit and try again.'
   }
 
+  if (status === 401) {
+    if (typeof data?.message === 'string') return data.message
+    return 'Sign in as Founder or Investor first.'
+  }
+
   if (status === 404) return 'That milestone was not found.'
   if (status >= 500) {
     return 'Server error while verifying. Check API logs and retry.'

@@ -10,6 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { FounderGuard, InvestorGuard } from '../auth/role.guard.js';
 import {
   DecideRateLimitGuard,
   VerifyRateLimitGuard,
@@ -31,7 +32,7 @@ export class MilestonesController {
   constructor(private readonly milestonesService: MilestonesService) {}
 
   @Post()
-  @UseGuards(VerifyRateLimitGuard)
+  @UseGuards(VerifyRateLimitGuard, FounderGuard)
   @UseInterceptors(FileInterceptor('file'))
   create(@Body() dto: CreateMilestoneDto, @UploadedFile() file?: IncomingFile) {
     return this.milestonesService.create(dto, file);
@@ -48,12 +49,13 @@ export class MilestonesController {
   }
 
   @Patch(':id/decision')
-  @UseGuards(DecideRateLimitGuard)
+  @UseGuards(DecideRateLimitGuard, InvestorGuard)
   decide(@Param('id') id: string, @Body() dto: InvestorDecisionDto) {
     return this.milestonesService.decide(id, dto);
   }
 
   @Patch(':id/proof')
+  @UseGuards(FounderGuard)
   @UseInterceptors(FileInterceptor('file'))
   updateProof(
     @Param('id') id: string,
@@ -64,7 +66,7 @@ export class MilestonesController {
   }
 
   @Post(':id/recheck')
-  @UseGuards(VerifyRateLimitGuard)
+  @UseGuards(VerifyRateLimitGuard, FounderGuard)
   @UseInterceptors(FileInterceptor('file'))
   recheck(
     @Param('id') id: string,

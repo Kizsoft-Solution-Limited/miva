@@ -8,6 +8,11 @@ import {
 import { OpenRouterService } from '../openrouter/openrouter.service.js';
 import { redactSecrets, sanitizePublicUrl } from '../lib/public-url.js';
 import { probePublicUrl, type UrlProbe } from '../lib/url-probe.js';
+import {
+  parseGithubRepoUrl,
+  probeGithubRepo,
+  type GithubRepoProbe,
+} from '../lib/github-repo.js';
 
 export interface VerifyMilestoneInput {
   title: string;
@@ -125,6 +130,8 @@ export class VerificationService {
     const pdf =
       input.proofType === 'pdf' &&
       (hasUpload || Boolean(proofUrl && this.looksLikePdf(proofUrl)));
+    const github =
+      input.proofType === 'repo' || Boolean(proofUrl && parseGithubRepoUrl(proofUrl));
     return {
       orbio: this.openRouter.hasKey,
       webSearch: this.shouldUseWebSearch(
@@ -133,6 +140,7 @@ export class VerificationService {
         input.founderName,
       ),
       pdf,
+      github,
       structuredJson: true,
     };
   }
@@ -185,6 +193,10 @@ export class VerificationService {
     }
 
     const probe = proofUrl ? await probePublicUrl(proofUrl) : null;
+    const github =
+      input.proofType === 'repo' || (proofUrl && parseGithubRepoUrl(proofUrl))
+        ? await probeGithubRepo(proofUrl)
+        : null;
 
     const topics = claimTopics(input.title, input.claim);
     const playbook: string[] = [
@@ -199,9 +211,9 @@ export class VerificationService {
         '- URL/live: trust the server probe for reachability; check page title/content; search for corroboration.',
       );
     }
-    if (input.proofType === 'repo' || topics.repo) {
+    if (input.proofType === 'repo' || topics.repo || github) {
       playbook.push(
-        '- Repo: confirm the public repo exists and matches the claim; do not invent stars/commits.',
+        '- Repo: trust the server GitHub API probe for existence, visibility, stars, and latest release tag. Do not invent stars/commits/releases. Cite htmlUrl / release URL as sourceUrl.',
       );
     }
     if (input.proofType === 'pdf') {
@@ -251,6 +263,9 @@ export class VerificationService {
       probe
         ? `Server probe (authoritative reachability):\n${this.formatProbe(probe)}`
         : null,
+      github
+        ? `Server GitHub probe (authoritative for public repos):\n${this.formatGithub(github)}`
+        : null,
       wantsWeb ? playbook.join('\n') : null,
       pdfRef
         ? 'A PDF is attached. Ground findings in what the document actually says — quote or paraphrase precisely.'
@@ -263,6 +278,7 @@ export class VerificationService {
       '- Do not invent sources, URLs, metrics, customers, press, company age, or founder profiles.',
       '- Every confirmed/unconfirmed item MUST include claim, evidence, confidence.',
       '- If the claim is about a live site/page and the server probe failed or returned non-OK, do not approve.',
+      '- If the claim is about a public repo/release and the GitHub probe failed or found no repo, do not approve.',
       '- If evidence is thin, partial, or only the founder asserting it → needs_more_info.',
       '- Direct answers to THIS claim are PRIMARY findings (no Context · prefix).',
       '- Context · is bonus only when verifying a different claim; it alone never justifies approve.',
@@ -306,8 +322,46 @@ export class VerificationService {
     );
     verdict = this.attachCitations(verdict, citations, proofUrl);
     verdict = this.promoteMisfiledContext(verdict, input);
-    verdict = this.enforceConsistency(verdict, input, probe);
+    verdict = this.enforceConsistency(verdict, input, probe, github);
     return verdict;
+  }
+
+  private formatGithub(github: GithubRepoProbe): string {
+    if (!github.ok) {
+      return [
+        `url: ${github.url}`,
+        'ok: false',
+        github.fullName ? `fullName: ${github.fullName}` : null,
+        github.error ? `error: ${github.error}` : null,
+      ]
+        .filter(Boolean)
+        .join('\n');
+    }
+    return [
+      `url: ${github.url}`,
+      'ok: true',
+      github.fullName ? `fullName: ${github.fullName}` : null,
+      github.htmlUrl ? `htmlUrl: ${github.htmlUrl}` : null,
+      github.description != null
+        ? `description: ${github.description || '(none)'}`
+        : null,
+      github.defaultBranch ? `defaultBranch: ${github.defaultBranch}` : null,
+      github.createdAt ? `createdAt: ${github.createdAt}` : null,
+      github.pushedAt ? `pushedAt: ${github.pushedAt}` : null,
+      github.stars != null ? `stars: ${github.stars}` : null,
+      github.forks != null ? `forks: ${github.forks}` : null,
+      github.latestReleaseTag
+        ? `latestReleaseTag: ${github.latestReleaseTag}`
+        : 'latestReleaseTag: (none or not found)',
+      github.latestReleasePublishedAt
+        ? `latestReleasePublishedAt: ${github.latestReleasePublishedAt}`
+        : null,
+      github.latestReleaseUrl
+        ? `latestReleaseUrl: ${github.latestReleaseUrl}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join('\n');
   }
 
   private promoteMisfiledContext(
@@ -401,12 +455,18 @@ export class VerificationService {
     verdict: VerdictResult,
     input: VerifyMilestoneInput,
     probe: UrlProbe | null,
+    github: GithubRepoProbe | null = null,
   ): VerdictResult {
     let recommendation = verdict.recommendation;
     const reasoningBits: string[] = [];
 
     const claimLooksLive =
       /\b(live|online|up|reachable|deployed|public site|website|url|domain)\b/i.test(
+        `${input.title} ${input.claim}`,
+      );
+    const claimLooksRepo =
+      input.proofType === 'repo' ||
+      /\b(repo|github|gitlab|release|open\s*source)\b/i.test(
         `${input.title} ${input.claim}`,
       );
 
@@ -430,6 +490,31 @@ export class VerificationService {
       recommendation = 'reject';
       reasoningBits.push(
         'Downgraded approve → reject because the proof URL was not reachable.',
+      );
+    }
+
+    if (
+      recommendation === 'approve' &&
+      github &&
+      !github.ok &&
+      claimLooksRepo
+    ) {
+      recommendation = 'reject';
+      reasoningBits.push(
+        'Downgraded approve → reject because the GitHub repo probe failed or the repo is not public.',
+      );
+    }
+
+    if (
+      recommendation === 'approve' &&
+      claimLooksRepo &&
+      /\brelease\b/i.test(`${input.title} ${input.claim}`) &&
+      github?.ok &&
+      !github.latestReleaseTag
+    ) {
+      recommendation = 'needs_more_info';
+      reasoningBits.push(
+        'Downgraded approve → needs_more_info because the claim mentions a release but GitHub returned no latest release tag.',
       );
     }
 

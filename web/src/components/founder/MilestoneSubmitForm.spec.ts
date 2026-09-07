@@ -9,9 +9,9 @@ describe('MilestoneSubmitForm', () => {
         preset: {
           founderName: 'Demo Founder',
           title: 'Public site live',
-          claim: 'BillSpot is live at billspot.co',
+          claim: 'Vue.js docs are live at vuejs.org',
           proofType: 'url',
-          proofUrl: 'https://billspot.co',
+          proofUrl: 'https://vuejs.org',
         },
       },
     })
@@ -40,13 +40,13 @@ describe('MilestoneSubmitForm', () => {
     await wrapper.find('input[name="founderName"]').setValue('Ada')
     await wrapper.find('input[name="title"]').setValue('Site live')
     await wrapper.find('textarea[name="claim"]').setValue('Site should be live now')
-    await wrapper.find('input[name="proofUrl"]').setValue('https://billspot.co')
+    await wrapper.find('input[name="proofUrl"]').setValue('https://vuejs.org')
     await wrapper.find('form').trigger('submit.prevent')
     expect(wrapper.emitted('submit')?.[0]?.[0]).toMatchObject({
       founderName: 'Ada',
       title: 'Site live',
       proofType: 'url',
-      proofUrl: 'https://billspot.co',
+      proofUrl: 'https://vuejs.org',
     })
   })
 })

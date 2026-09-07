@@ -5,6 +5,7 @@ declare module 'vue-router' {
     title?: string
     description?: string
     noindex?: boolean
+    requiresFounder?: boolean
   }
 }
 
