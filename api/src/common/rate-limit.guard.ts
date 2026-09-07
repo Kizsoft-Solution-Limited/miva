@@ -70,3 +70,11 @@ export class DecideRateLimitGuard extends BaseRateLimitGuard {
     super(30, 60_000, 'decide');
   }
 }
+
+/** 20 login/register attempts / minute / IP */
+@Injectable()
+export class AuthRateLimitGuard extends BaseRateLimitGuard {
+  constructor() {
+    super(20, 60_000, 'auth');
+  }
+}

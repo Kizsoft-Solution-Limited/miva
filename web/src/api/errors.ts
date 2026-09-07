@@ -31,7 +31,12 @@ export function apiErrorMessage(error: unknown, fallback: string): string {
 
   if (status === 401) {
     if (typeof data?.message === 'string') return data.message
-    return 'Sign in as Founder or Investor first.'
+    return 'Sign in first.'
+  }
+
+  if (status === 409) {
+    if (typeof data?.message === 'string') return data.message
+    return 'That email is already registered.'
   }
 
   if (status === 404) return 'That milestone is gone. It may have been cleared after a restart.'

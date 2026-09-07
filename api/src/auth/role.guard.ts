@@ -7,9 +7,9 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { AuthService } from './auth.service.js';
-import type { DemoRole } from './session.js';
+import type { AuthRole } from './session.js';
 
-export function RoleGuard(role: DemoRole): Type<CanActivate> {
+export function RoleGuard(role: AuthRole): Type<CanActivate> {
   @Injectable()
   class RoleGuardMixin implements CanActivate {
     constructor(private readonly auth: AuthService) {}

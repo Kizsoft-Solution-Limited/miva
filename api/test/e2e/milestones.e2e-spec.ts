@@ -10,8 +10,6 @@ import { VerificationService } from '../../src/verification/verification.service
 const dbPath = resolve(process.cwd(), 'prisma', 'test-e2e.db');
 process.env.DATABASE_URL = `file:${dbPath}`;
 process.env.AUTH_SECRET = 'e2e-auth-secret';
-process.env.DEMO_FOUNDER_PASSWORD = 'founder';
-process.env.DEMO_INVESTOR_PASSWORD = 'investor';
 
 const mockVerdict = {
   recommendation: 'approve' as const,
@@ -28,8 +26,19 @@ const mockVerdict = {
   reasoning: 'Probe ok',
 };
 
+function cookieHeader(res: request.Response): string {
+  const raw = res.headers['set-cookie'];
+  const lines = Array.isArray(raw) ? raw : raw ? [raw] : [];
+  const session = lines.find((line) => line.startsWith('miva_session='));
+  if (!session) throw new Error('missing miva_session cookie');
+  return session.split(';')[0]!;
+}
+
 describe('Milestones (e2e, mocked verification)', () => {
   let app: INestApplication;
+  const stamp = Date.now();
+  const founderEmail = `founder-${stamp}@example.com`;
+  const investorEmail = `investor-${stamp}@example.com`;
 
   beforeAll(async () => {
     execSync('npx prisma migrate deploy', {
@@ -70,19 +79,28 @@ describe('Milestones (e2e, mocked verification)', () => {
     await app.close();
   });
 
-  async function login(role: 'founder' | 'investor') {
+  async function register(email: string, role: 'founder' | 'investor') {
+    const res = await request(app.getHttpServer())
+      .post('/api/auth/register')
+      .send({ email, password: 'password1', role })
+      .expect(201);
+    expect(res.body.token).toBeUndefined();
+    return cookieHeader(res);
+  }
+
+  async function login(email: string) {
     const res = await request(app.getHttpServer())
       .post('/api/auth/login')
-      .send({ role, password: role })
+      .send({ email, password: 'password1' })
       .expect(201);
-    return res.body.token as string;
+    return cookieHeader(res);
   }
 
   it('POST /api/milestones → GET → decide', async () => {
-    const founderToken = await login('founder');
+    const founderCookie = await register(founderEmail, 'founder');
     const created = await request(app.getHttpServer())
       .post('/api/milestones')
-      .set('Authorization', `Bearer ${founderToken}`)
+      .set('Cookie', founderCookie)
       .field('title', 'Public site live')
       .field('claim', 'Vue.js documentation site is live at vuejs.org')
       .field('founderName', 'Demo Founder')
@@ -104,10 +122,10 @@ describe('Milestones (e2e, mocked verification)', () => {
       .send({ decision: 'approved', note: 'Looks good' })
       .expect(401);
 
-    const investorToken = await login('investor');
+    const investorCookie = await register(investorEmail, 'investor');
     const decided = await request(app.getHttpServer())
       .patch(`/api/milestones/${created.body.id}/decision`)
-      .set('Authorization', `Bearer ${investorToken}`)
+      .set('Cookie', investorCookie)
       .send({ decision: 'approved', note: 'Looks good' })
       .expect(200);
 
@@ -115,10 +133,10 @@ describe('Milestones (e2e, mocked verification)', () => {
   });
 
   it('rejects private proof URLs on create', async () => {
-    const founderToken = await login('founder');
+    const founderCookie = await login(founderEmail);
     await request(app.getHttpServer())
       .post('/api/milestones')
-      .set('Authorization', `Bearer ${founderToken}`)
+      .set('Cookie', founderCookie)
       .field('title', 'Bad link')
       .field('claim', 'Internal host should fail')
       .field('founderName', 'Demo')

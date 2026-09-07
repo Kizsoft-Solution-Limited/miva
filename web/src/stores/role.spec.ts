@@ -3,11 +3,19 @@ import { createPinia, setActivePinia } from 'pinia'
 import { useRoleStore } from '@/stores/role'
 
 vi.mock('@/api/auth', () => ({
-  login: vi.fn(async (role: 'founder' | 'investor') => ({
-    role,
-    token: `tok-${role}`,
+  login: vi.fn(async () => ({
+    userId: 'u1',
+    email: 'inv@example.com',
+    role: 'investor' as const,
     expiresAt: new Date().toISOString(),
   })),
+  register: vi.fn(async () => ({
+    userId: 'u2',
+    email: 'f@example.com',
+    role: 'founder' as const,
+    expiresAt: new Date().toISOString(),
+  })),
+  logout: vi.fn(async () => undefined),
   fetchMe: vi.fn(),
 }))
 
@@ -24,20 +32,20 @@ describe('useRoleStore', () => {
     expect(store.isFounder).toBe(false)
   })
 
-  it('signs in as investor via login', async () => {
+  it('signs in with email and password', async () => {
     const store = useRoleStore()
-    await store.setRole('investor')
+    await store.signIn({ email: 'inv@example.com', password: 'password1' })
     expect(store.isInvestor).toBe(true)
-    expect(store.isFounder).toBe(false)
-    expect(store.isSignedIn).toBe(true)
-    expect(localStorage.getItem('miva.authToken')).toBe('tok-investor')
+    expect(store.email).toBe('inv@example.com')
   })
 
-  it('ignores stale role without token', () => {
-    localStorage.setItem('miva.demoRole', 'founder')
-    setActivePinia(createPinia())
+  it('registers a founder account', async () => {
     const store = useRoleStore()
-    expect(store.isFounder).toBe(false)
-    expect(localStorage.getItem('miva.demoRole')).toBeNull()
+    await store.signUp({
+      email: 'f@example.com',
+      password: 'password1',
+      role: 'founder',
+    })
+    expect(store.isFounder).toBe(true)
   })
 })

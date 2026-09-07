@@ -5,11 +5,8 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import LoginView from '@/views/LoginView.vue'
 
 vi.mock('@/api/auth', () => ({
-  login: vi.fn(async (role: 'founder' | 'investor') => ({
-    role,
-    token: `tok-${role}`,
-    expiresAt: new Date().toISOString(),
-  })),
+  login: vi.fn(),
+  register: vi.fn(),
   fetchMe: vi.fn(),
 }))
 
@@ -19,25 +16,24 @@ describe('LoginView', () => {
     setActivePinia(createPinia())
   })
 
-  it('offers Founder and Investor sign-in with AppBack', async () => {
+  it('shows sign in and create account', async () => {
     const pinia = createPinia()
     setActivePinia(pinia)
     const router = createRouter({
       history: createMemoryHistory(),
       routes: [
         { path: '/login', component: LoginView },
+        { path: '/', component: { template: '<div />' } },
         { path: '/founder', component: { template: '<div />' } },
         { path: '/investor', component: { template: '<div />' } },
-        { path: '/', component: { template: '<div />' } },
       ],
     })
     await router.push('/login')
     await router.isReady()
     const wrapper = mount(LoginView, { global: { plugins: [router, pinia] } })
     expect(wrapper.text()).toContain('Sign in')
-    expect(wrapper.text()).toContain('Founder')
-    expect(wrapper.text()).toContain('Investor')
-    expect(wrapper.find('.app-back').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Home')
+    expect(wrapper.text()).toContain('Create account')
+    expect(wrapper.find('input[name="email"]').exists()).toBe(true)
+    expect(wrapper.find('input[name="password"]').exists()).toBe(true)
   })
 })

@@ -1,9 +1,11 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
-export type DemoRole = 'founder' | 'investor';
+export type AuthRole = 'founder' | 'investor';
 
 export interface AuthSession {
-  role: DemoRole;
+  userId: string;
+  email: string;
+  role: AuthRole;
   exp: number;
 }
 
@@ -26,20 +28,15 @@ export function authSecret(): string {
   return process.env.AUTH_SECRET?.trim() || 'miva-demo-auth-secret';
 }
 
-export function demoPassword(role: DemoRole): string {
-  if (role === 'founder') {
-    return process.env.DEMO_FOUNDER_PASSWORD?.trim() || 'founder';
-  }
-  return process.env.DEMO_INVESTOR_PASSWORD?.trim() || 'investor';
-}
-
 export function signSession(
-  role: DemoRole,
+  input: { userId: string; email: string; role: AuthRole },
   ttlSec = 60 * 60 * 24 * 7,
   secret = authSecret(),
 ): { token: string; session: AuthSession } {
   const session: AuthSession = {
-    role,
+    userId: input.userId,
+    email: input.email,
+    role: input.role,
     exp: Math.floor(Date.now() / 1000) + ttlSec,
   };
   const payload = b64url(JSON.stringify(session));
@@ -61,17 +58,10 @@ export function verifyToken(
   try {
     const session = JSON.parse(fromB64url(payload).toString('utf8')) as AuthSession;
     if (session.role !== 'founder' && session.role !== 'investor') return null;
+    if (!session.userId || !session.email) return null;
     if (!session.exp || session.exp < Math.floor(Date.now() / 1000)) return null;
     return session;
   } catch {
     return null;
   }
-}
-
-export function passwordMatches(role: DemoRole, password: string): boolean {
-  const expected = demoPassword(role);
-  const a = Buffer.from(password);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
 }

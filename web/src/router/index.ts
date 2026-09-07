@@ -24,7 +24,7 @@ export const router = createRouter({
       component: LoginView,
       meta: {
         title: 'Sign in',
-        description: 'Sign in as Founder or Investor to submit proof or record a decision.',
+        description: 'Create an account or sign in.',
       },
     },
     {

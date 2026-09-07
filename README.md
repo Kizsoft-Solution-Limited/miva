@@ -67,15 +67,10 @@ Founder page has three cases: Strong (live URL), Weak (no proof), Thin (bad link
 Build plan: `BUILD.md`.
 
 
-## Demo auth
+## Auth
 
-Demo login for the contest build. Server issues a signed Bearer token.
+Register or sign in at **/login** (email + password, no email verify). Role is set at signup. Session cookie is **httpOnly** (`miva_session`).
 
-| Role | Password |
-| --- | --- |
-| Founder | `founder` |
-| Investor | `investor` |
+- Founder: submit / recheck · Investor: decide · Queue: readable without login
 
-Use **/login** (Founder or Investor). Submit / recheck need Founder. Decide needs Investor. Queue stays readable without login.
-
-Set on API: `AUTH_SECRET`, `DEMO_FOUNDER_PASSWORD`, `DEMO_INVESTOR_PASSWORD` (see `api/.env.example`).
+Set `AUTH_SECRET` on the API. Production cross-site cookies use `SameSite=None` when `NODE_ENV=production`.

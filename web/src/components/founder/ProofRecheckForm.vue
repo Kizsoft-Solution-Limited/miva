@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import VerifyProgressPopover from '@/components/ui/VerifyProgressPopover.vue'
 import type { Milestone, ProofType, UpdateProofPayload } from '@/api/types'
 
 const props = defineProps<{
@@ -141,5 +142,7 @@ function onSubmit() {
     <AppButton type="submit" :disabled="busy">
       {{ busy ? 'Re-checking…' : 'Update & re-run check' }}
     </AppButton>
+
+    <VerifyProgressPopover :busy="Boolean(busy)" title="Re-running check" />
   </form>
 </template>

@@ -213,7 +213,7 @@ export class VerificationService {
     }
     if (input.proofType === 'repo' || topics.repo || github) {
       playbook.push(
-        '- Repo: trust the server GitHub API probe for existence, visibility, stars, and latest release tag. Do not invent stars/commits/releases. Cite htmlUrl / release URL as sourceUrl.',
+        '- Repo: trust the server GitHub probe (API, or HTML fallback when API is rate-limited/403). Do not invent stars/commits/releases. If probe.ok with latestReleaseTag, that supports a public-release claim. Cite htmlUrl / release URL as sourceUrl. A rate-limited note is not a failed claim when ok is true.',
       );
     }
     if (input.proofType === 'pdf') {
@@ -331,6 +331,8 @@ export class VerificationService {
       return [
         `url: ${github.url}`,
         'ok: false',
+        github.source ? `source: ${github.source}` : null,
+        github.rateLimited ? 'rateLimited: true' : null,
         github.fullName ? `fullName: ${github.fullName}` : null,
         github.error ? `error: ${github.error}` : null,
       ]
@@ -340,6 +342,10 @@ export class VerificationService {
     return [
       `url: ${github.url}`,
       'ok: true',
+      github.source ? `source: ${github.source}` : null,
+      github.rateLimited
+        ? 'rateLimited: true (API blocked; HTML fallback — still usable)'
+        : null,
       github.fullName ? `fullName: ${github.fullName}` : null,
       github.htmlUrl ? `htmlUrl: ${github.htmlUrl}` : null,
       github.description != null
@@ -359,6 +365,7 @@ export class VerificationService {
       github.latestReleaseUrl
         ? `latestReleaseUrl: ${github.latestReleaseUrl}`
         : null,
+      github.error ? `note: ${github.error}` : null,
     ]
       .filter(Boolean)
       .join('\n');
@@ -504,6 +511,7 @@ export class VerificationService {
         'Downgraded approve → reject because the GitHub repo probe failed or the repo is not public.',
       );
     }
+
 
     if (
       recommendation === 'approve' &&

@@ -22,7 +22,7 @@ function toggleMenu() {
 }
 
 async function signOut() {
-  roleStore.signOut()
+  await roleStore.signOut()
   closeMenu()
   await router.push('/login')
 }
@@ -61,7 +61,7 @@ watch(() => route.fullPath, closeMenu)
 
       <div class="app-chrome-header__auth">
         <template v-if="roleStore.isSignedIn">
-          <span class="app-chrome-header__who font-mono">
+          <span class="app-chrome-header__who font-mono" :title="roleStore.email || ''">
             {{ roleStore.role }}
           </span>
           <button type="button" class="app-nav-link" @click="signOut">Sign out</button>
@@ -123,7 +123,7 @@ watch(() => route.fullPath, closeMenu)
         Queue
       </RouterLink>
       <p v-if="roleStore.isSignedIn" class="app-mobile-nav-meta">
-        Signed in as {{ roleStore.role }}
+        {{ roleStore.email }} · {{ roleStore.role }}
       </p>
       <RouterLink
         v-if="!roleStore.isSignedIn"

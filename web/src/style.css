@@ -1195,141 +1195,156 @@ a { color: inherit; }
   padding: 2rem 1.5rem;
 }
 
-.ws-verify {
-  margin-top: 0.85rem;
-  border-radius: 12px;
-  border: 1px solid rgba(94, 242, 176, 0.3);
-  background: linear-gradient(135deg, rgba(94, 242, 176, 0.1), rgba(0, 0, 0, 0.2));
-  padding: 0.95rem 1rem;
+.verify-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(4, 10, 8, 0.62);
+  backdrop-filter: blur(6px);
+}
+
+.verify-pop__card {
+  width: min(22rem, 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(94, 242, 176, 0.32);
+  background: color-mix(in srgb, var(--night-2) 94%, transparent);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  padding: 1.35rem 1.4rem 1.25rem;
+}
+
+.verify-pop__eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.verify-pop__title {
+  margin: 0.35rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.verify-pop__pct {
+  margin: 1rem 0 0.55rem;
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--signal);
+  font-variant-numeric: tabular-nums;
+}
+
+.verify-pop__track {
+  height: 0.45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.verify-pop__bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--signal-dim), var(--signal));
+  box-shadow: 0 0 14px var(--glow);
+  transition: width 0.25s ease;
+}
+
+.verify-pop__step {
+  margin: 0.85rem 0 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.verify-pop-enter-active,
+.verify-pop-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.verify-pop-enter-active .verify-pop__card,
+.verify-pop-leave-active .verify-pop__card {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.verify-pop-enter-from,
+.verify-pop-leave-to {
+  opacity: 0;
+}
+
+.verify-pop-enter-from .verify-pop__card,
+.verify-pop-leave-to .verify-pop__card {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
 }
 
 
 /* ——— Sign in ——— */
 
-.login-roles {
+.login-mode {
   display: grid;
-  gap: 0.9rem;
-}
-
-@media (min-width: 640px) {
-  .login-roles { grid-template-columns: 1fr 1fr; }
-}
-
-.login-role {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  text-align: left;
-  padding: 1.25rem 1.2rem 1.1rem;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--night-2) 88%, transparent);
-  color: inherit;
-  cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.login-role:hover:not(:disabled) {
-  border-color: rgba(94, 242, 176, 0.45);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
-}
-
-.login-role:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.login-role.is-preferred,
-.login-role.is-active {
-  border-color: rgba(94, 242, 176, 0.55);
-  box-shadow: 0 0 0 1px rgba(94, 242, 176, 0.2), 0 12px 28px rgba(0, 0, 0, 0.25);
-}
-
-.login-role__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.login-role__mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.7rem;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #052816;
-  background: var(--signal);
-  box-shadow: 0 0 18px var(--glow);
-}
-
-.login-role__mark--inv {
-  color: var(--signal);
-  background: rgba(94, 242, 176, 0.12);
-  box-shadow: none;
-  border: 1px solid rgba(94, 242, 176, 0.35);
-}
-
-.login-role__title {
-  margin: 1rem 0 0;
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.login-role__text {
-  margin: 0.45rem 0 0;
-  flex: 1;
-  font-size: 0.92rem;
-  line-height: 1.45;
-  color: var(--muted);
-}
-
-.login-role__foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-top: 1.25rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--line);
-}
-
-.login-role__cta {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #052816;
-  background: var(--signal);
-  padding: 0.4rem 0.75rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  padding: 0.3rem;
   border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.22);
 }
 
-.login-role.is-active .login-role__cta {
-  box-shadow: 0 0 16px var(--glow);
-}
-
-.login-session {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.15rem;
-}
-
-.login-session__out {
+.login-mode__btn {
   border: 0;
   background: transparent;
-  color: var(--signal);
-  font-size: 0.875rem;
+  color: var(--muted);
+  font-size: 0.88rem;
   font-weight: 700;
+  padding: 0.55rem 0.75rem;
+  border-radius: 999px;
   cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+}
+
+.login-mode__btn.is-active {
+  background: rgba(94, 242, 176, 0.16);
+  color: var(--signal);
+}
+
+.login-role-pick {
+  display: grid;
+  gap: 0.6rem;
+}
+
+@media (min-width: 480px) {
+  .login-role-pick { grid-template-columns: 1fr 1fr; }
+}
+
+.login-role-pick__option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 0.95rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.18);
+  text-align: center;
+}
+
+.login-role-pick__option.is-active {
+  border-color: rgba(94, 242, 176, 0.5);
+  box-shadow: 0 0 0 1px rgba(94, 242, 176, 0.18);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .app-toast-host {

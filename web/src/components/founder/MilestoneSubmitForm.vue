@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import VerifyProgressPopover from '@/components/ui/VerifyProgressPopover.vue'
 import type { CreateMilestonePayload, ProofType } from '@/api/types'
 
 const props = defineProps<{
@@ -231,14 +232,6 @@ function onSubmit() {
       {{ busy ? 'Checking…' : 'Run verification' }}
     </AppButton>
 
-    <div v-if="busy" class="ws-verify" aria-live="polite">
-      <p class="font-mono text-xs tracking-wide text-[var(--accent)]">orbio · verifying</p>
-      <p class="mt-1 text-sm font-bold text-[var(--ink)]">Running the check…</p>
-      <ul class="mt-2 space-y-1 text-xs text-[var(--muted)]">
-        <li>Reading the claim and proof</li>
-        <li>Web search / PDF if needed</li>
-        <li>Building structured JSON verdict</li>
-      </ul>
-    </div>
+    <VerifyProgressPopover :busy="Boolean(busy)" title="Running check" />
   </form>
 </template>

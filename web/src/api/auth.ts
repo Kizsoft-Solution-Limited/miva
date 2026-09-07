@@ -1,31 +1,41 @@
 import { http } from './http'
 
-export type DemoRole = 'founder' | 'investor'
+export type AuthRole = 'founder' | 'investor'
 
 export interface AuthSessionResponse {
-  role: DemoRole
-  token: string
+  userId: string
+  email: string
+  role: AuthRole
   expiresAt: string
 }
 
-/** Demo passwords — same defaults as API .env.example */
-export const DEMO_PASSWORDS: Record<DemoRole, string> = {
-  founder: 'founder',
-  investor: 'investor',
-}
-
-export async function login(
-  role: DemoRole,
-  password = DEMO_PASSWORDS[role],
-): Promise<AuthSessionResponse> {
-  const { data } = await http.post<AuthSessionResponse>('/auth/login', {
-    role,
-    password,
-  })
+export async function register(input: {
+  email: string
+  password: string
+  role: AuthRole
+}): Promise<AuthSessionResponse> {
+  const { data } = await http.post<AuthSessionResponse>('/auth/register', input)
   return data
 }
 
-export async function fetchMe(): Promise<{ role: DemoRole; expiresAt: string }> {
-  const { data } = await http.get<{ role: DemoRole; expiresAt: string }>('/auth/me')
+export async function login(input: {
+  email: string
+  password: string
+}): Promise<AuthSessionResponse> {
+  const { data } = await http.post<AuthSessionResponse>('/auth/login', input)
+  return data
+}
+
+export async function logout(): Promise<void> {
+  await http.post('/auth/logout')
+}
+
+export async function fetchMe(): Promise<{
+  userId: string
+  email: string
+  role: AuthRole
+  expiresAt: string
+}> {
+  const { data } = await http.get('/auth/me')
   return data
 }

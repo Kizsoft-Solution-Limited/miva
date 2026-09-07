@@ -39,7 +39,7 @@ import MivaLogo from '@/components/brand/MivaLogo.vue'
           orbio build week · miva
         </p>
         <p class="text-xs text-[var(--signal-dim)]">
-          Founder / Investor login · escrow later
+          Register or sign in · escrow later
         </p>
       </div>
     </div>
