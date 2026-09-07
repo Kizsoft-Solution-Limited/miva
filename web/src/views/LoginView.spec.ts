@@ -1,13 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import LoginView from '@/views/LoginView.vue'
+import { useRoleStore } from '@/stores/role'
 
 vi.mock('@/api/auth', () => ({
   login: vi.fn(),
   register: vi.fn(),
   fetchMe: vi.fn(),
+  logout: vi.fn(),
 }))
 
 describe('LoginView', () => {
@@ -16,7 +18,7 @@ describe('LoginView', () => {
     setActivePinia(createPinia())
   })
 
-  it('shows sign in and create account', async () => {
+  async function mountLogin() {
     const pinia = createPinia()
     setActivePinia(pinia)
     const router = createRouter({
@@ -31,6 +33,11 @@ describe('LoginView', () => {
     await router.push('/login')
     await router.isReady()
     const wrapper = mount(LoginView, { global: { plugins: [router, pinia] } })
+    return { wrapper, router, pinia }
+  }
+
+  it('shows sign in and create account', async () => {
+    const { wrapper } = await mountLogin()
     expect(wrapper.text()).toContain('Sign in')
     expect(wrapper.text()).toContain('Create account')
     expect(wrapper.find('input[name="email"]').exists()).toBe(true)
@@ -38,5 +45,18 @@ describe('LoginView', () => {
     expect(wrapper.find('input[name="password"]').attributes('type')).toBe('password')
     await wrapper.get('button[aria-label="Show password"]').trigger('click')
     expect(wrapper.find('input[name="password"]').attributes('type')).toBe('text')
+  })
+
+  it('redirects signed-in founders away from login', async () => {
+    const { router, pinia } = await mountLogin()
+    const store = useRoleStore(pinia)
+    store.role = 'founder'
+    store.email = 'founder@example.com'
+    store.hydrated = true
+    await router.push('/login')
+    const wrapper = mount(LoginView, { global: { plugins: [router, pinia] } })
+    await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/founder')
+    wrapper.unmount()
   })
 })

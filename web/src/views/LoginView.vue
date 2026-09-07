@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ErrorBanner from '@/components/ui/ErrorBanner.vue'
 import AppBack from '@/components/ui/AppBack.vue'
@@ -23,6 +23,23 @@ const blurb = computed(() =>
     : 'No email verification.',
 )
 
+function homeForRole() {
+  return roleStore.role === 'investor' ? '/investor' : '/founder'
+}
+
+async function bounceIfSignedIn() {
+  if (!roleStore.hydrated) {
+    await roleStore.restore()
+  }
+  if (roleStore.isSignedIn) {
+    await router.replace(homeForRole())
+  }
+}
+
+onMounted(() => {
+  void bounceIfSignedIn()
+})
+
 async function submit() {
   localError.value = null
   const mail = email.value.trim()
@@ -41,8 +58,7 @@ async function submit() {
     } else {
       await roleStore.signIn({ email: mail, password: pass })
     }
-    const next = roleStore.role === 'investor' ? '/investor' : '/founder'
-    await router.replace(next)
+    await router.replace(homeForRole())
   } catch {
     localError.value = roleStore.error
   }
