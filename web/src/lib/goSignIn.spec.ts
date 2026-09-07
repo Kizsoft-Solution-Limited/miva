@@ -44,6 +44,7 @@ describe('goSignIn', () => {
     const signOut = vi.spyOn(store, 'signOut')
     await goSignIn(router, 'Switch', '/investor/abc')
     expect(signOut).toHaveBeenCalled()
-    expect(router.currentRoute.value.fullPath).toBe('/login?next=%2Finvestor%2Fabc')
+    expect(router.currentRoute.value.path).toBe('/login')
+    expect(router.currentRoute.value.query.next).toBe('/investor/abc')
   })
 })
