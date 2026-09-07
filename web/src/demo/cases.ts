@@ -9,23 +9,11 @@ export interface DemoCase {
 
 export const demoCases: DemoCase[] = [
   {
-    id: 'strong',
-    label: 'Strong (live URL)',
-    blurb: 'Public site that should confirm.',
-    payload: {
-      founderName: 'Demo Founder',
-      title: 'Public site live',
-      claim: 'Vue.js documentation site is live at vuejs.org',
-      proofType: 'url',
-      proofUrl: 'https://vuejs.org',
-    },
-  },
-  {
     id: 'repo',
     label: 'Hard (public repo)',
-    blurb: 'GitHub repo + tagged release — not just HTTP 200.',
+    blurb: 'Repo + release tag — more than a 200.',
     payload: {
-      founderName: 'Demo Founder',
+      founderName: 'NestJS',
       title: 'Open-source release shipped',
       claim:
         'NestJS maintains a public GitHub repository at github.com/nestjs/nest with a published release tag',
@@ -38,7 +26,7 @@ export const demoCases: DemoCase[] = [
     label: 'Weak (no proof)',
     blurb: 'Bold claim, nothing to check.',
     payload: {
-      founderName: 'Demo Founder',
+      founderName: 'Founder',
       title: '10k users',
       claim: 'We hit 10,000 monthly active users last month',
       proofType: 'metric',
@@ -47,13 +35,25 @@ export const demoCases: DemoCase[] = [
   {
     id: 'thin',
     label: 'Thin (bad link)',
-    blurb: 'URL that should not fake-approve.',
+    blurb: 'Broken link — should not approve.',
     payload: {
-      founderName: 'Demo Founder',
+      founderName: 'Founder',
       title: 'Featured in TechCrunch',
       claim: 'TechCrunch covered our Series A last week',
       proofType: 'url',
       proofUrl: 'https://example.com/this-page-does-not-exist-miva-demo',
+    },
+  },
+  {
+    id: 'strong',
+    label: 'Strong (live URL)',
+    blurb: 'Public site that should confirm.',
+    payload: {
+      founderName: 'Founder',
+      title: 'Public site live',
+      claim: 'Vue.js documentation site is live at vuejs.org',
+      proofType: 'url',
+      proofUrl: 'https://vuejs.org',
     },
   },
 ]

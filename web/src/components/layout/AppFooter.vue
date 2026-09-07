@@ -11,7 +11,7 @@ import MivaLogo from '@/components/brand/MivaLogo.vue'
           <MivaLogo :size="40" wordmark />
         </RouterLink>
         <p class="mt-3 max-w-sm text-sm text-[var(--signal-dim)]">
-          Milestone verification for funding. Agent recommends. You keep the pen.
+          Milestone verification. Agent checks claims. You keep the pen.
         </p>
       </div>
 
@@ -39,7 +39,7 @@ import MivaLogo from '@/components/brand/MivaLogo.vue'
           orbio build week · miva
         </p>
         <p class="text-xs text-[var(--signal-dim)]">
-          Register or sign in · escrow later
+          Sign in · Founder or Investor
         </p>
       </div>
     </div>

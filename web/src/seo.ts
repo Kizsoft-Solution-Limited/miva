@@ -1,7 +1,7 @@
 export const SITE_NAME = 'MIVA'
 export const SITE_TAGLINE = 'Milestone Verification Agent'
 export const DEFAULT_DESCRIPTION =
-  'MIVA checks founder milestone proof against live sources and returns an auditable verdict. Investors still decide.'
+  'MIVA checks founder milestone proof against live sources and returns a verdict. You still decide.'
 
 export function siteUrl(): string {
   const raw = (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, '')

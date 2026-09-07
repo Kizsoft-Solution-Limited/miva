@@ -9,7 +9,7 @@ import type { CreateMilestonePayload } from '@/api/types'
 
 const store = useMilestoneStore()
 const router = useRouter()
-const preset = ref<CreateMilestonePayload | null>(null)
+const preset = ref<CreateMilestonePayload | null>({ ...demoCases[0]!.payload })
 
 async function onSubmit(payload: CreateMilestonePayload) {
   try {
@@ -32,7 +32,7 @@ function loadCase(id: string) {
     <header class="ws-hero">
       <div>
         <p class="eyebrow">Founder</p>
-        <h1>Milestone proof</h1>
+        <h1>Submit proof</h1>
         <p>Drop evidence. Get a verdict the investor can read.</p>
       </div>
       <div class="ws-chip-row">

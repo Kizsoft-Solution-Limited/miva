@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { demoCases } from '@/demo/cases'
 
 describe('demoCases', () => {
-  it('ships strong / repo / weak / thin for the cold demo', () => {
-    expect(demoCases.map((c) => c.id)).toEqual(['strong', 'repo', 'weak', 'thin'])
+  it('leads with Hard (repo), then weak / thin / strong', () => {
+    expect(demoCases.map((c) => c.id)).toEqual(['repo', 'weak', 'thin', 'strong'])
+    expect(demoCases[0]?.payload.founderName).toBe('NestJS')
   })
 
   it('strong case has a public proof URL', () => {

@@ -196,6 +196,49 @@ describe('VerificationService', () => {
     ).toMatchObject({ github: true, webSearch: true });
   });
 
+  it('drops founder-name label noise when claim is not about the founder', async () => {
+    const chat = vi.fn().mockResolvedValue({
+      content: JSON.stringify({
+        recommendation: 'approve',
+        summary: 'Repo and release look real.',
+        confirmed: [
+          {
+            claim: 'Public NestJS repo',
+            evidence: 'github.com/nestjs/nest',
+            confidence: 0.9,
+            sourceUrl: 'https://github.com/nestjs/nest',
+          },
+        ],
+        unconfirmed: [
+          {
+            claim: 'Founder name: NestJS',
+            evidence: 'No identity proof for that label',
+            confidence: 0.4,
+          },
+        ],
+        reasoning: 'GitHub probe ok',
+      }),
+      citations: [],
+    });
+    const service = new VerificationService(
+      mockOpenRouter({ chatForVerification: chat }),
+    );
+    const result = await service.verifyMilestone({
+      title: 'Open-source release shipped',
+      claim:
+        'NestJS maintains a public GitHub repository at github.com/nestjs/nest with a published release tag',
+      founderName: 'NestJS',
+      proofType: 'repo',
+      proofUrl: 'https://github.com/nestjs/nest',
+    });
+    expect(result.recommendation).toBe('approve');
+    expect(
+      result.unconfirmed.some((f) =>
+        f.claim.toLowerCase().includes('founder name'),
+      ),
+    ).toBe(false);
+  });
+
   it('downgrades approve when GitHub probe fails for a repo claim', async () => {
     const { probeGithubRepo } = await import('../lib/github-repo.js');
     vi.mocked(probeGithubRepo).mockResolvedValueOnce({

@@ -26,8 +26,7 @@ import { RouterLink } from 'vue-router'
 
           <p class="home-lede">
             Founders submit proof. The agent checks what it can against live
-            sources and returns a structured verdict. Investors keep the pen.
-            Escrow is later.
+            sources and returns a verdict. You still make the call.
           </p>
 
           <div class="home-cta">
@@ -40,7 +39,7 @@ import { RouterLink } from 'vue-router'
           <div class="land-trust" aria-label="Stack">
             <span>orbio agent</span>
             <span>structured JSON</span>
-            <span>human final</span>
+            <span>you decide</span>
           </div>
         </div>
 
@@ -154,9 +153,8 @@ import { RouterLink } from 'vue-router'
           <em>vibes and screenshots.</em>
         </h2>
         <p class="land-manifesto__lede">
-          In crypto and early-stage funding, “we shipped” often means a Discord dump,
-          a Notion link, or a dashboard nobody re-checked. That’s not a check —
-          that’s hope with a URL.
+          “We shipped” often means a Discord dump, a Notion link, or a dashboard
+          nobody re-checked. That’s not a check — that’s hope with a URL.
         </p>
 
         <div class="land-versus">
@@ -339,7 +337,7 @@ import { RouterLink } from 'vue-router'
             <p class="flow-node__verb font-mono">03 · decide</p>
             <h3 class="flow-node__title">Investor decides</h3>
             <p class="flow-node__text">
-              Approve, reject, or ask for more. No escrow in v1 — you keep the pen.
+              Approve, reject, or ask for more. Agent recommends; you decide.
             </p>
           </li>
         </ol>
@@ -414,20 +412,15 @@ import { RouterLink } from 'vue-router'
             Four cases. One cold demo.
           </h2>
           <p class="mt-3 max-w-2xl text-[var(--signal-dim)]">
-            Strong is a live site. Hard checks a public repo release. Weak has no proof. Thin breaks the link.
+            Hard is the real one (repo + release). Weak and Thin show the honest fails. Strong is a simple live site.
           </p>
         </div>
 
         <div class="land-cases land-cases--night">
           <RouterLink to="/founder" class="land-case land-case--night">
-            <span class="font-mono text-[11px] text-[var(--signal)]">strong</span>
-            <h3>Live URL</h3>
-            <p>vuejs.org — neutral public docs site.</p>
-          </RouterLink>
-          <RouterLink to="/founder" class="land-case land-case--night">
             <span class="font-mono text-[11px] text-[var(--signal)]">hard</span>
             <h3>Public repo</h3>
-            <p>GitHub API — existence + release tag.</p>
+            <p>GitHub repo + a release tag.</p>
           </RouterLink>
           <RouterLink to="/founder" class="land-case land-case--night">
             <span class="font-mono text-[11px] text-[#e8b84a]">weak</span>
@@ -439,6 +432,11 @@ import { RouterLink } from 'vue-router'
             <h3>Bad link</h3>
             <p>Broken URL — shows the failure path.</p>
           </RouterLink>
+          <RouterLink to="/founder" class="land-case land-case--night">
+            <span class="font-mono text-[11px] text-[var(--signal-dim)]">strong</span>
+            <h3>Live URL</h3>
+            <p>vuejs.org — quick reachability check.</p>
+          </RouterLink>
         </div>
       </div>
     </section>
@@ -449,8 +447,7 @@ import { RouterLink } from 'vue-router'
           <p class="font-mono text-[var(--signal)] text-xs tracking-[0.18em] uppercase">ready</p>
           <h2 id="close-heading" class="land-close__title">Run a real check in two minutes.</h2>
           <p class="mt-3 max-w-lg text-[var(--signal-dim)]">
-            Run Strong, Hard (repo), Weak, and Thin. Sign in first — Founder submits,
-            Investor decides. Escrow is not in this build.
+            Try Hard first, then Weak or Thin. Sign in — Founder submits, Investor decides.
           </p>
         </div>
         <div class="land-close__actions">

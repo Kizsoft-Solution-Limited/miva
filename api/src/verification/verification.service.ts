@@ -276,6 +276,7 @@ export class VerificationService {
       '',
       'Hard rules:',
       '- Do not invent sources, URLs, metrics, customers, press, company age, or founder profiles.',
+      '- Founder name is a form label only — never put it in confirmed or unconfirmed unless the claim itself is about that person.',
       '- Every confirmed/unconfirmed item MUST include claim, evidence, confidence.',
       '- If the claim is about a live site/page and the server probe failed or returned non-OK, do not approve.',
       '- If the claim is about a public repo/release and the GitHub probe failed or found no repo, do not approve.',
@@ -322,8 +323,36 @@ export class VerificationService {
     );
     verdict = this.attachCitations(verdict, citations, proofUrl);
     verdict = this.promoteMisfiledContext(verdict, input);
+    verdict = this.stripFounderLabelNoise(verdict, input);
     verdict = this.enforceConsistency(verdict, input, probe, github);
     return verdict;
+  }
+
+  private stripFounderLabelNoise(
+    verdict: VerdictResult,
+    input: VerifyMilestoneInput,
+  ): VerdictResult {
+    const name = input.founderName?.trim().toLowerCase();
+    if (!name) return verdict;
+    if (claimTopics(input.title, input.claim).founder) return verdict;
+
+    const isLabel = (claim: string) => {
+      const c = claim.toLowerCase().trim();
+      if (c === name || c === `founder name: ${name}` || c === `founder: ${name}`) {
+        return true;
+      }
+      return (
+        (c.includes('founder name') || c.startsWith('founder ')) &&
+        c.includes(name) &&
+        c.length < name.length + 40
+      );
+    };
+
+    return {
+      ...verdict,
+      confirmed: verdict.confirmed.filter((f) => !isLabel(f.claim)),
+      unconfirmed: verdict.unconfirmed.filter((f) => !isLabel(f.claim)),
+    };
   }
 
   private formatGithub(github: GithubRepoProbe): string {

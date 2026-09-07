@@ -16,7 +16,7 @@ const steps = [
   { at: 0, label: 'Reading claim and proof' },
   { at: 18, label: 'Checking live sources' },
   { at: 42, label: 'Web search / PDF if needed' },
-  { at: 68, label: 'Building structured verdict' },
+  { at: 68, label: 'Building the verdict' },
   { at: 90, label: 'Almost there…' },
 ]
 
