@@ -12,6 +12,7 @@ const roleStore = useRoleStore()
 const mode = ref<'signin' | 'register'>('signin')
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const role = ref<AuthRole>('founder')
 const localError = ref<string | null>(null)
 
@@ -100,15 +101,56 @@ async function submit() {
 
       <label class="block text-sm">
         <span class="mb-1.5 block font-bold text-[var(--ink)]">Password</span>
-        <input
-          v-model="password"
-          class="field"
-          type="password"
-          name="password"
-          :autocomplete="mode === 'register' ? 'new-password' : 'current-password'"
-          :minlength="mode === 'register' ? 8 : undefined"
-          required
-        />
+        <div class="field-password">
+          <input
+            v-model="password"
+            class="field field-password__input"
+            :type="showPassword ? 'text' : 'password'"
+            name="password"
+            :autocomplete="mode === 'register' ? 'new-password' : 'current-password'"
+            :minlength="mode === 'register' ? 8 : undefined"
+            required
+          />
+          <button
+            type="button"
+            class="field-password__toggle"
+            :aria-label="showPassword ? 'Hide password' : 'Show password'"
+            :aria-pressed="showPassword"
+            @click="showPassword = !showPassword"
+          >
+            <svg
+              v-if="!showPassword"
+              class="field-password__icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12s-3.75 6.75-9.75 6.75S2.25 12 2.25 12z"
+              />
+              <circle cx="12" cy="12" r="2.75" />
+            </svg>
+            <svg
+              v-else
+              class="field-password__icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.5 3.5l17 17M9.9 9.9A2.75 2.75 0 0012 14.75c.55 0 1.06-.16 1.49-.44M6.5 6.7C4.4 8.1 2.75 10.4 2.25 12c0 0 3.75 6.75 9.75 6.75 1.7 0 3.2-.4 4.5-1M14.1 5.4A10.4 10.4 0 0112 5.25C6 5.25 2.25 12 2.25 12"
+              />
+            </svg>
+          </button>
+        </div>
       </label>
 
       <div v-if="mode === 'register'" class="login-role-pick">

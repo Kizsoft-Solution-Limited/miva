@@ -130,6 +130,40 @@ a { color: inherit; }
   box-shadow: 0 0 0 3px rgba(94, 242, 176, 0.16);
 }
 
+.field-password {
+  position: relative;
+}
+
+.field-password__input {
+  padding-right: 2.75rem;
+}
+
+.field-password__toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.field-password__toggle:hover {
+  color: var(--signal);
+  background: rgba(94, 242, 176, 0.1);
+}
+
+.field-password__icon {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
 .field option {
   background: var(--night-2);
   color: var(--ink);

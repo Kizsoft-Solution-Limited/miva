@@ -35,5 +35,8 @@ describe('LoginView', () => {
     expect(wrapper.text()).toContain('Create account')
     expect(wrapper.find('input[name="email"]').exists()).toBe(true)
     expect(wrapper.find('input[name="password"]').exists()).toBe(true)
+    expect(wrapper.find('input[name="password"]').attributes('type')).toBe('password')
+    await wrapper.get('button[aria-label="Show password"]').trigger('click')
+    expect(wrapper.find('input[name="password"]').attributes('type')).toBe('text')
   })
 })
