@@ -1,6 +1,6 @@
 # Build week
 
-Seven days. Public by day 7. Path: submit proof → agent verdict → investor decides.
+Seven days. Path: submit proof → agent verdict → investor decides.
 
 ## Where we are
 
@@ -10,9 +10,11 @@ Seven days. Public by day 7. Path: submit proof → agent verdict → investor d
 | 2 Search + PDF | done |
 | 3 Demo polish | done |
 | 4 Hardening | done |
-| 5 Deploy | Coolify when week is done |
+| 5 Deploy | done (live API + web) |
 | 6 Package | done |
-| 7 Freeze | next |
+| 7 Freeze + submit | **video left** — then smoke-test and submit |
+
+Almost finished. What’s left: short demo recording, last smoke, submit.
 
 ---
 
@@ -26,20 +28,27 @@ Web search on URL / metric / repo / PDF. PDF links through the file parser. No i
 
 ### Day 3 — can demo cold ✅
 
-Founder + investor screens readable. Verdict obvious. Three demo cases on Founder (strong / weak / thin). Errors that say what broke.
+Founder + investor screens. Verdict obvious. Demo cases: Hard (repo + release), Weak, Thin, Strong. Errors that say what broke. Sign in: Founder submits, Investor decides.
 
 ### Day 4 — don’t get embarrassed ✅
 
-Rate-limit verify (8/min/IP) and decisions (30/min/IP). OpenRouter times out at 60s. Public http(s) only. `CORS_ORIGIN` can be a comma list. Don’t log the key.
+Rate-limit verify and decisions. Auth rate limit. OpenRouter times out at 60s. Public http(s) only. GitHub HTML fallback if the API blocks. Don’t log the key.
 
-### Day 5 — live link (Coolify, at the end)
+### Day 5 — live link ✅
 
-Docker API (`api/Dockerfile`) + static Vue. Web uses `VITE_API_BASE_URL`. Health at `/api/health`. Host on Coolify after the week’s code is solid — set `CORS_ORIGIN`, build web against the API URL, then record a short happy-path video.
+API + web are up. CORS set. Health at `/api/health`. (Coolify was the original plan; live host is fine.)
 
 ### Day 6 — package for judges ✅
 
-README covers problem, product, Orbio bits. Verdict screen shows what ran (web search / PDF / structured JSON) plus expandable JSON. No TTS.
+README covers what it is, how to run, Orbio bits. Verdict shows what ran + expandable JSON. No TTS.
 
-### Day 7 — stop
+### Day 7 — freeze + submit
 
-No new features after noon. Smoke-test twice. Public repo + live URL + short video. Submit how Orbio asks. Keep 1k+ $ORBIO in the wallet.
+**Still to do**
+
+- Shoot a short clip: Hard (NestJS repo + tag) → Weak or Thin → Investor decides
+- Hit the live site once more and make sure nothing’s broken
+- Submit the way Orbio wants
+- Don’t let the wallet drop under 1k $ORBIO
+
+No new features. Wording stays plain. Ship it.
