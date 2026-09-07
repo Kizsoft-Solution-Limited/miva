@@ -10,6 +10,7 @@ import AppButton from '@/components/ui/AppButton.vue'
 import AppBack from '@/components/ui/AppBack.vue'
 import { useMilestoneStore } from '@/stores/milestones'
 import { goSignIn } from '@/lib/goSignIn'
+import { useToastStore } from '@/stores/toast'
 import { useRoleStore } from '@/stores/role'
 import type { UpdateProofPayload } from '@/api/types'
 
@@ -39,6 +40,13 @@ const canDecide = computed(() => pendingDecision.value && roleStore.isInvestor)
 async function load() {
   const id = String(route.params.id)
   await store.fetchOne(id)
+  if (!store.current && store.error) {
+    useToastStore().show(
+      'That milestone is gone — open the queue for what’s live.',
+      'warn',
+    )
+    await router.replace('/investor')
+  }
 }
 
 onMounted(() => {
@@ -82,21 +90,11 @@ async function copyLink() {
 }
 
 async function requireInvestor() {
-  await goSignIn(
-    router,
-    'investor',
-    route.fullPath,
-    'Sign in as Investor to record a decision.',
-  )
+  await goSignIn(router, 'Sign in as Investor to record a decision.')
 }
 
 async function requireFounder() {
-  await goSignIn(
-    router,
-    'founder',
-    route.fullPath,
-    'Sign in as Founder to update proof.',
-  )
+  await goSignIn(router, 'Sign in as Founder to update proof.')
 }
 </script>
 

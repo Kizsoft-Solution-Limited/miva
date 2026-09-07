@@ -37,7 +37,7 @@ describe('LoginView', () => {
     expect(wrapper.text()).toContain('Sign in')
     expect(wrapper.text()).toContain('Founder')
     expect(wrapper.text()).toContain('Investor')
-    expect(wrapper.text()).toContain('Home')
     expect(wrapper.find('.app-back').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Home')
   })
 })

@@ -34,7 +34,7 @@ export function apiErrorMessage(error: unknown, fallback: string): string {
     return 'Sign in as Founder or Investor first.'
   }
 
-  if (status === 404) return 'That milestone was not found.'
+  if (status === 404) return 'That milestone is gone. It may have been cleared after a restart.'
   if (status >= 500) {
     return 'Server error while verifying. Check API logs and retry.'
   }

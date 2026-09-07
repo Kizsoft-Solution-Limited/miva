@@ -75,10 +75,7 @@ router.beforeEach(async (to) => {
   if (roleStore.isFounder) return true
 
   useToastStore().show('Sign in as Founder to submit proof.', 'warn')
-  return {
-    path: '/login',
-    query: { as: 'founder', next: to.fullPath },
-  }
+  return '/login'
 })
 
 router.afterEach((to) => {

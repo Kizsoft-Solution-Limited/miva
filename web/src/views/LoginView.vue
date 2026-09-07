@@ -1,42 +1,18 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import ErrorBanner from '@/components/ui/ErrorBanner.vue'
 import AppBack from '@/components/ui/AppBack.vue'
 import { useRoleStore, type DemoRole } from '@/stores/role'
 
-const route = useRoute()
 const router = useRouter()
 const roleStore = useRoleStore()
 const localError = ref<string | null>(null)
-
-const preferred = computed(() => {
-  const as = String(route.query.as || '')
-  return as === 'investor' || as === 'founder' ? as : null
-})
-
-const backTo = computed(() => {
-  const next = String(route.query.next || '')
-  if (next.startsWith('/') && !next.startsWith('//')) return next
-  return '/'
-})
-
-const backLabel = computed(() => {
-  const to = backTo.value
-  if (to.startsWith('/investor')) return 'Queue'
-  if (to === '/founder') return 'Founder'
-  return 'Home'
-})
 
 async function signIn(role: DemoRole) {
   localError.value = null
   try {
     await roleStore.setRole(role)
-    const next = String(route.query.next || '')
-    if (next.startsWith('/') && !next.startsWith('//')) {
-      await router.replace(next)
-      return
-    }
     await router.replace(role === 'investor' ? '/investor' : '/founder')
   } catch {
     localError.value = roleStore.error
@@ -46,7 +22,7 @@ async function signIn(role: DemoRole) {
 
 <template>
   <div class="ws-page mx-auto max-w-2xl space-y-6">
-    <AppBack :to="backTo" :label="backLabel" />
+    <AppBack to="/" label="Home" />
 
     <header class="ws-hero !mb-0">
       <div>
@@ -79,10 +55,7 @@ async function signIn(role: DemoRole) {
       <button
         type="button"
         class="login-role"
-        :class="{
-          'is-preferred': preferred === 'founder',
-          'is-active': roleStore.isFounder,
-        }"
+        :class="{ 'is-active': roleStore.isFounder }"
         :disabled="roleStore.busy"
         @click="signIn('founder')"
       >
@@ -100,10 +73,7 @@ async function signIn(role: DemoRole) {
       <button
         type="button"
         class="login-role"
-        :class="{
-          'is-preferred': preferred === 'investor',
-          'is-active': roleStore.isInvestor,
-        }"
+        :class="{ 'is-active': roleStore.isInvestor }"
         :disabled="roleStore.busy"
         @click="signIn('investor')"
       >
