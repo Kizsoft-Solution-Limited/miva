@@ -56,20 +56,22 @@ watch(() => route.fullPath, closeMenu)
         </RouterLink>
       </nav>
 
-      <template v-if="roleStore.isSignedIn">
-        <span class="app-chrome-header__who font-mono">
-          {{ roleStore.role }}
-        </span>
-        <button type="button" class="app-nav-link" @click="signOut">Sign out</button>
-      </template>
-      <RouterLink
-        v-else
-        to="/login"
-        class="app-nav-link"
-        :class="{ 'is-active': isActive('/login') }"
-      >
-        Sign in
-      </RouterLink>
+      <div class="app-chrome-header__auth">
+        <template v-if="roleStore.isSignedIn">
+          <span class="app-chrome-header__who font-mono">
+            {{ roleStore.role }}
+          </span>
+          <button type="button" class="app-nav-link" @click="signOut">Sign out</button>
+        </template>
+        <RouterLink
+          v-else
+          to="/login"
+          class="app-nav-link"
+          :class="{ 'is-active': isActive('/login') }"
+        >
+          Sign in
+        </RouterLink>
+      </div>
 
       <RouterLink to="/founder" class="app-chrome-header__cta">Submit proof</RouterLink>
 
@@ -117,6 +119,9 @@ watch(() => route.fullPath, closeMenu)
       >
         Queue
       </RouterLink>
+      <p v-if="roleStore.isSignedIn" class="app-mobile-nav-meta">
+        Signed in as {{ roleStore.role }}
+      </p>
       <RouterLink
         v-if="!roleStore.isSignedIn"
         class="app-mobile-nav-link"
@@ -132,7 +137,7 @@ watch(() => route.fullPath, closeMenu)
         class="app-mobile-nav-link text-left"
         @click="signOut(); closeMenu()"
       >
-        Sign out ({{ roleStore.role }})
+        Sign out
       </button>
     </nav>
   </header>

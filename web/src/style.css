@@ -217,6 +217,17 @@ a { color: inherit; }
   background: #7af7c0;
 }
 
+.app-chrome-header__auth {
+  display: none;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .app-chrome-header__auth { display: inline-flex; }
+}
+
 .app-chrome-header__who {
   margin-left: 0.25rem;
   font-size: 0.72rem;
@@ -302,6 +313,16 @@ a { color: inherit; }
 
 @media (min-width: 640px) {
   .app-chrome-header__mobile-nav { display: none !important; }
+}
+
+.app-mobile-nav-meta {
+  margin: 0.35rem 0 0;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--signal);
+  padding: 0.35rem 0.15rem 0.15rem;
 }
 
 .app-mobile-nav-link {
