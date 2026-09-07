@@ -56,12 +56,12 @@ AUTH_SECRET=change-me
 
 ## Demo
 
-Open Founder. Form starts on **Hard** (NestJS repo + release). Also Weak, Thin, and Strong (simple live URL). Sign in as Founder to submit, Investor to decide.
+Open Founder — form starts on **Hard** (NestJS repo + release). Weak / Thin for bad proof. Strong is a simple live URL. Founder submits, Investor decides.
 
 Build plan: `BUILD.md`.
 
 ## Auth
 
-**/login** — email + password, no email verify. Pick Founder or Investor when you create the account. Session is an httpOnly cookie.
+**/login** — email + password. Pick Founder or Investor when you create the account. Session is an httpOnly cookie.
 
 Set `AUTH_SECRET` on the API.

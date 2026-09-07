@@ -20,7 +20,7 @@ const title = computed(() => (mode.value === 'signin' ? 'Sign in' : 'Create acco
 const blurb = computed(() =>
   mode.value === 'signin'
     ? 'Email and password for your account.'
-    : 'No email verification.',
+    : 'Pick Founder or Investor. No email hop.',
 )
 
 function homeForRole() {

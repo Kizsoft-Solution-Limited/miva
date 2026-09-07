@@ -11,7 +11,7 @@ export const demoCases: DemoCase[] = [
   {
     id: 'repo',
     label: 'Hard (public repo)',
-    blurb: 'Repo + release tag — more than a 200.',
+    blurb: 'Repo + release tag.',
     payload: {
       founderName: 'NestJS',
       title: 'Open-source release shipped',
@@ -47,7 +47,7 @@ export const demoCases: DemoCase[] = [
   {
     id: 'strong',
     label: 'Strong (live URL)',
-    blurb: 'Public site that should confirm.',
+    blurb: 'Simple live site.',
     payload: {
       founderName: 'Founder',
       title: 'Public site live',

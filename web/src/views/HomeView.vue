@@ -56,7 +56,7 @@ import { RouterLink } from 'vue-router'
               Claim
             </p>
             <p class="mt-2 text-[15px] leading-snug text-[var(--night-fg)]">
-              vuejs.org is live and serving the public docs.
+              NestJS ships a public GitHub repo with a release tag.
             </p>
 
             <div class="mt-5">
@@ -64,10 +64,10 @@ import { RouterLink } from 'vue-router'
                 <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal-dim)]">
                   confidence
                 </span>
-                <span class="font-mono text-[12px] text-[var(--signal)]">0.86</span>
+                <span class="font-mono text-[12px] text-[var(--signal)]">0.91</span>
               </div>
               <div class="land-meter" aria-hidden="true">
-                <span class="land-meter__fill" style="width: 86%" />
+                <span class="land-meter__fill" style="width: 91%" />
               </div>
             </div>
 
@@ -76,14 +76,14 @@ import { RouterLink } from 'vue-router'
                 <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal)]">
                   confirmed
                 </span>
-                <p class="mt-1 text-sm text-[var(--night-fg)]">Public URL resolves · TLS ok</p>
+                <p class="mt-1 text-sm text-[var(--night-fg)]">Repo live · release tag found</p>
               </div>
               <div class="verdict-chip">
                 <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal-dim)]">
                   source
                 </span>
                 <p class="mt-1 truncate font-mono text-xs text-[var(--signal)]">
-                  https://vuejs.org
+                  github.com/nestjs/nest
                 </p>
               </div>
             </div>
@@ -93,7 +93,7 @@ import { RouterLink } from 'vue-router'
                 Agent stack
               </p>
               <ul class="mt-3 flex flex-wrap gap-2">
-                <li class="orbio-tag">web search</li>
+                <li class="orbio-tag">GitHub probe</li>
                 <li class="orbio-tag">structured JSON</li>
                 <li class="orbio-tag">Orbio key</li>
               </ul>
@@ -217,11 +217,11 @@ import { RouterLink } from 'vue-router'
             <div class="land-window__body">
               <label class="land-field land-field--dark">
                 <span>Claim</span>
-                <div>Public docs site is live at vuejs.org</div>
+                <div>NestJS public repo has a published release tag</div>
               </label>
               <label class="land-field land-field--dark">
                 <span>Proof URL</span>
-                <div class="font-mono text-[var(--signal)]">https://vuejs.org</div>
+                <div class="font-mono text-[var(--signal)]">https://github.com/nestjs/nest</div>
               </label>
               <div class="land-window__actions">
                 <span class="land-fake-btn land-fake-btn--ok">Run verification</span>
@@ -240,14 +240,14 @@ import { RouterLink } from 'vue-router'
                 confirmed
               </p>
               <ul class="land-findings">
-                <li>Site responds 200 over HTTPS</li>
-                <li>Title matches product claim</li>
+                <li>github.com/nestjs/nest is public</li>
+                <li>Latest release tag present</li>
               </ul>
               <p class="mt-4 font-mono text-[11px] uppercase tracking-wider text-[var(--signal-dim)]">
                 unconfirmed
               </p>
               <ul class="land-findings land-findings--dim">
-                <li>Traffic / revenue not in proof</li>
+                <li>Stars / forks not part of the claim</li>
               </ul>
               <div class="land-window__actions mt-5">
                 <span class="land-fake-btn land-fake-btn--ok">Approve</span>
@@ -412,7 +412,7 @@ import { RouterLink } from 'vue-router'
             Four cases. One cold demo.
           </h2>
           <p class="mt-3 max-w-2xl text-[var(--signal-dim)]">
-            Hard is the real one (repo + release). Weak and Thin show the honest fails. Strong is a simple live site.
+            Start on Hard. Weak and Thin show when proof is thin. Strong is a simple live URL if you want it.
           </p>
         </div>
 
@@ -435,7 +435,7 @@ import { RouterLink } from 'vue-router'
           <RouterLink to="/founder" class="land-case land-case--night">
             <span class="font-mono text-[11px] text-[var(--signal-dim)]">strong</span>
             <h3>Live URL</h3>
-            <p>vuejs.org — quick reachability check.</p>
+            <p>vuejs.org — site is up.</p>
           </RouterLink>
         </div>
       </div>
@@ -447,7 +447,7 @@ import { RouterLink } from 'vue-router'
           <p class="font-mono text-[var(--signal)] text-xs tracking-[0.18em] uppercase">ready</p>
           <h2 id="close-heading" class="land-close__title">Run a real check in two minutes.</h2>
           <p class="mt-3 max-w-lg text-[var(--signal-dim)]">
-            Try Hard first, then Weak or Thin. Sign in — Founder submits, Investor decides.
+            Try Hard, then Weak or Thin. Sign in — Founder submits, Investor decides.
           </p>
         </div>
         <div class="land-close__actions">
