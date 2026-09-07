@@ -59,4 +59,28 @@ describe('LoginView', () => {
     expect(router.currentRoute.value.path).toBe('/founder')
     wrapper.unmount()
   })
+
+  it('keeps login when next is set for role switch', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const store = useRoleStore(pinia)
+    store.role = 'founder'
+    store.email = 'founder@example.com'
+    store.hydrated = true
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/login', component: LoginView },
+        { path: '/', component: { template: '<div />' } },
+        { path: '/founder', component: { template: '<div />' } },
+        { path: '/investor/:id', component: { template: '<div />' } },
+      ],
+    })
+    await router.push('/login?next=/investor/abc')
+    await router.isReady()
+    mount(LoginView, { global: { plugins: [router, pinia] } })
+    await flushPromises()
+    expect(router.currentRoute.value.fullPath).toContain('/login')
+    expect(router.currentRoute.value.query.next).toBe('/investor/abc')
+  })
 })

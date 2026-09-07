@@ -270,9 +270,12 @@ export async function probeGithubRepo(
         latestReleasePublishedAt = rel.published_at?.slice(0, 10);
       } else if (relRes.status === 403 || relRes.status === 429) {
         const html = await probeGithubHtml(url, parsed.owner, parsed.repo, true);
+        // Repo already proven public via API; keep ok even if HTML release scrape is thin.
         return {
-          ...html,
+          url,
           ok: true,
+          source: html.ok ? html.source : 'api',
+          rateLimited: true,
           fullName: repo.full_name || html.fullName,
           description: repo.description ?? null,
           htmlUrl: repo.html_url || html.htmlUrl,
@@ -283,6 +286,10 @@ export async function probeGithubRepo(
           forks: repo.forks_count,
           latestReleaseTag: html.latestReleaseTag,
           latestReleaseUrl: html.latestReleaseUrl,
+          error: html.latestReleaseTag
+            ? html.error
+            : html.error ||
+              'GitHub releases API blocked; no release tag from HTML fallback',
         };
       }
     } catch {

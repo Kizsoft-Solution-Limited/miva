@@ -138,7 +138,7 @@ function onSubmit() {
           v-model="form.founderName"
           required
           name="founderName"
-          autocomplete="name"
+          autocomplete="off"
           class="field"
           placeholder="Your name"
         />

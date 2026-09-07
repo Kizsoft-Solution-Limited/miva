@@ -35,7 +35,13 @@ const pendingDecision = computed(() => {
   return Boolean(store.current?.verdict) && d === 'pending'
 })
 
-const canDecide = computed(() => pendingDecision.value && roleStore.isInvestor)
+const canDecide = computed(
+  () => pendingDecision.value && roleStore.hydrated && roleStore.isInvestor,
+)
+
+const showInvestorGate = computed(
+  () => pendingDecision.value && roleStore.hydrated && !roleStore.isInvestor,
+)
 
 async function load() {
   const id = String(route.params.id)
@@ -50,7 +56,12 @@ async function load() {
 }
 
 onMounted(() => {
-  void load()
+  void (async () => {
+    if (!roleStore.hydrated) {
+      await roleStore.restore()
+    }
+    await load()
+  })()
 })
 
 watch(() => route.params.id, () => {
@@ -90,11 +101,15 @@ async function copyLink() {
 }
 
 async function requireInvestor() {
-  await goSignIn(router, 'Sign in as Investor to record a decision.')
+  await goSignIn(
+    router,
+    'Sign in as Investor to record a decision.',
+    route.fullPath,
+  )
 }
 
 async function requireFounder() {
-  await goSignIn(router, 'Sign in as Founder to update proof.')
+  await goSignIn(router, 'Sign in as Founder to update proof.', route.fullPath)
 }
 </script>
 
@@ -208,7 +223,7 @@ async function requireFounder() {
         @decide="onDecide"
       />
       <section
-        v-else-if="pendingDecision && !roleStore.isInvestor"
+        v-else-if="showInvestorGate"
         class="surface space-y-3 p-4 sm:p-6"
       >
         <h2 class="text-xl font-medium text-[var(--ink)]">Investor only</h2>

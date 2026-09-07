@@ -28,7 +28,7 @@ Web search on URL / metric / repo / PDF. PDF links through the file parser. No i
 
 ### Day 3 — can demo cold ✅
 
-Founder + investor screens. Verdict obvious. Demo cases: Hard (repo + release), Weak, Thin, Strong. Errors that say what broke. Sign in: Founder submits, Investor decides.
+Founder + investor screens. Verdict obvious. Demo cases: Hard (repo + release), Weak, Thin, Strong — tap to fill. Errors that say what broke. Sign in: Founder submits, Investor decides.
 
 ### Day 4 — don’t get embarrassed ✅
 

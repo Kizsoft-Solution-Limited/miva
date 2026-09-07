@@ -56,7 +56,7 @@ AUTH_SECRET=change-me
 
 ## Demo
 
-Open Founder — form starts on **Hard** (NestJS repo + release). Weak / Thin for bad proof. Strong is a simple live URL. Founder submits, Investor decides.
+Open Founder. Tap **Hard** (NestJS repo + release) to fill the form. Weak / Thin for bad proof. Strong is a simple live URL. Founder submits, Investor decides.
 
 Build plan: `BUILD.md`.
 

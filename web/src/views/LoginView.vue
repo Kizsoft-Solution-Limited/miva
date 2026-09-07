@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ErrorBanner from '@/components/ui/ErrorBanner.vue'
 import AppBack from '@/components/ui/AppBack.vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import { safeLoginNext } from '@/lib/goSignIn'
 import { useRoleStore, type AuthRole } from '@/stores/role'
 
 const router = useRouter()
+const route = useRoute()
 const roleStore = useRoleStore()
 
 const mode = ref<'signin' | 'register'>('signin')
@@ -27,11 +29,16 @@ function homeForRole() {
   return roleStore.role === 'investor' ? '/investor' : '/founder'
 }
 
+function destinationAfterAuth() {
+  return safeLoginNext(route.query.next) || homeForRole()
+}
+
 async function bounceIfSignedIn() {
   if (!roleStore.hydrated) {
     await roleStore.restore()
   }
-  if (roleStore.isSignedIn) {
+  // Keep the form when switching roles (?next=...) so Sign out / new account works.
+  if (roleStore.isSignedIn && !safeLoginNext(route.query.next)) {
     await router.replace(homeForRole())
   }
 }
@@ -58,7 +65,7 @@ async function submit() {
     } else {
       await roleStore.signIn({ email: mail, password: pass })
     }
-    await router.replace(homeForRole())
+    await router.replace(destinationAfterAuth())
   } catch {
     localError.value = roleStore.error
   }

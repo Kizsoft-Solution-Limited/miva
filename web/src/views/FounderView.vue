@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import MilestoneSubmitForm from '@/components/founder/MilestoneSubmitForm.vue'
 import ErrorBanner from '@/components/ui/ErrorBanner.vue'
 import { demoCases } from '@/demo/cases'
@@ -9,11 +9,14 @@ import type { CreateMilestonePayload } from '@/api/types'
 
 const store = useMilestoneStore()
 const router = useRouter()
-const preset = ref<CreateMilestonePayload | null>({ ...demoCases[0]!.payload })
+const preset = ref<CreateMilestonePayload | null>(null)
+const formKey = ref(0)
 
 async function onSubmit(payload: CreateMilestonePayload) {
   try {
     const created = await store.submit(payload)
+    preset.value = null
+    formKey.value += 1
     await router.push(`/investor/${created.id}`)
   } catch {
     // store error already set
@@ -24,7 +27,12 @@ function loadCase(id: string) {
   const match = demoCases.find((c) => c.id === id)
   if (!match) return
   preset.value = { ...match.payload }
+  formKey.value += 1
 }
+
+onBeforeRouteLeave(() => {
+  store.error = null
+})
 </script>
 
 <template>
@@ -44,7 +52,7 @@ function loadCase(id: string) {
     <section class="mb-6">
       <div class="mb-3 flex items-baseline justify-between gap-3">
         <p class="text-sm font-bold text-[var(--ink)]">Demo cases</p>
-        <p class="text-xs text-[var(--muted)]">Fills the form. You still hit Run.</p>
+        <p class="text-xs text-[var(--muted)]">Tap Hard first. Fills the form — you still hit Run.</p>
       </div>
       <div class="ws-cases">
         <button
@@ -61,6 +69,11 @@ function loadCase(id: string) {
     </section>
 
     <ErrorBanner v-if="store.error" :message="store.error" />
-    <MilestoneSubmitForm :preset="preset" :busy="store.loading" @submit="onSubmit" />
+    <MilestoneSubmitForm
+      :key="formKey"
+      :preset="preset"
+      :busy="store.loading"
+      @submit="onSubmit"
+    />
   </div>
 </template>
