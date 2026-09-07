@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import MivaLogo from '@/components/brand/MivaLogo.vue'
 import { useRoleStore } from '@/stores/role'
 
 const route = useRoute()
+const router = useRouter()
 const roleStore = useRoleStore()
 const menuOpen = ref(false)
 
@@ -20,8 +21,10 @@ function toggleMenu() {
   menuOpen.value = !menuOpen.value
 }
 
-function signOut() {
+async function signOut() {
   roleStore.signOut()
+  closeMenu()
+  await router.push('/login')
 }
 
 watch(() => route.fullPath, closeMenu)
@@ -135,7 +138,7 @@ watch(() => route.fullPath, closeMenu)
         v-else
         type="button"
         class="app-mobile-nav-link text-left"
-        @click="signOut(); closeMenu()"
+        @click="signOut()"
       >
         Sign out
       </button>
