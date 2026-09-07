@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { onBeforeRouteLeave, useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import MilestoneSubmitForm from '@/components/founder/MilestoneSubmitForm.vue'
 import ErrorBanner from '@/components/ui/ErrorBanner.vue'
 import { demoCases } from '@/demo/cases'
@@ -9,6 +9,7 @@ import type { CreateMilestonePayload } from '@/api/types'
 
 const store = useMilestoneStore()
 const router = useRouter()
+const route = useRoute()
 const preset = ref<CreateMilestonePayload | null>(null)
 const formKey = ref(0)
 
@@ -30,6 +31,12 @@ function loadCase(id: string) {
   formKey.value += 1
 }
 
+onMounted(() => {
+  const fromQuery = typeof route.query.case === 'string' ? route.query.case : ''
+  const id = demoCases.some((c) => c.id === fromQuery) ? fromQuery : 'repo'
+  loadCase(id)
+})
+
 onBeforeRouteLeave(() => {
   store.error = null
 })
@@ -45,14 +52,16 @@ onBeforeRouteLeave(() => {
       </div>
       <div class="ws-chip-row">
         <span class="ws-chip ws-chip--hot">orbio live</span>
-        <span class="ws-chip">web · repo · pdf · json</span>
+        <span class="ws-chip">web · repo · chain · json</span>
       </div>
     </header>
 
     <section class="mb-6">
       <div class="mb-3 flex items-baseline justify-between gap-3">
         <p class="text-sm font-bold text-[var(--ink)]">Demo cases</p>
-        <p class="text-xs text-[var(--muted)]">Tap Hard first. Fills the form — you still hit Run.</p>
+        <p class="text-xs text-[var(--muted)]">
+          Tap Hard / Harder first. Fills the form — you still hit Run.
+        </p>
       </div>
       <div class="ws-cases">
         <button

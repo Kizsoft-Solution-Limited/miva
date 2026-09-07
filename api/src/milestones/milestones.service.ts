@@ -288,7 +288,9 @@ export class MilestonesService {
       verdictHistory: history,
       check: checkFromJson ?? {
         orbio: true,
-        webSearch: ['url', 'metric', 'repo', 'pdf'].includes(milestone.proofType),
+        webSearch: ['url', 'metric', 'repo', 'pdf', 'onchain'].includes(
+          milestone.proofType,
+        ),
         pdf:
           milestone.proofType === 'pdf' &&
           (Boolean(milestone.proofData) ||
@@ -296,6 +298,9 @@ export class MilestonesService {
         github:
           milestone.proofType === 'repo' ||
           Boolean(milestone.proofUrl?.includes('github.com')),
+        onchain:
+          milestone.proofType === 'onchain' ||
+          Boolean(milestone.proofUrl?.includes('etherscan.io')),
         structuredJson: Boolean(current),
       },
     };

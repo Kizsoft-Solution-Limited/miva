@@ -22,6 +22,20 @@ export const demoCases: DemoCase[] = [
     },
   },
   {
+    id: 'onchain',
+    label: 'Harder (on-chain)',
+    blurb: 'Ethereum contract via RPC — not a marketing site.',
+    payload: {
+      founderName: 'Circle',
+      title: 'USDC contract live on Ethereum',
+      claim:
+        'USD Coin (USDC) is deployed as a smart contract on Ethereum mainnet at 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+      proofType: 'onchain',
+      proofUrl:
+        'https://etherscan.io/address/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    },
+  },
+  {
     id: 'weak',
     label: 'Weak (no proof)',
     blurb: 'Bold claim, nothing to check.',

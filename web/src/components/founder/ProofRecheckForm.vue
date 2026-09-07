@@ -107,6 +107,7 @@ function onSubmit() {
         <option value="url">URL</option>
         <option value="pdf">PDF</option>
         <option value="repo">Repo</option>
+        <option value="onchain">On-chain</option>
         <option value="metric">Metric</option>
         <option value="text">Text</option>
       </select>

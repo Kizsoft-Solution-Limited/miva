@@ -53,7 +53,8 @@ const checkBits = () => {
   if (c.orbio) bits.push('Orbio key')
   if (c.webSearch) bits.push('web search')
   if (c.pdf) bits.push('PDF read')
-  if (c.github) bits.push('GitHub API')
+  if (c.github) bits.push('GitHub probe')
+  if (c.onchain) bits.push('Ethereum RPC')
   if (c.structuredJson) bits.push('structured JSON')
   return bits
 }

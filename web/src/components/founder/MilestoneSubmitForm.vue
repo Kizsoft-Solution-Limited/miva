@@ -17,6 +17,7 @@ const PROOF_TYPES: { id: ProofType; label: string; hint: string }[] = [
   { id: 'url', label: 'URL', hint: 'Public page or post' },
   { id: 'pdf', label: 'PDF', hint: 'Link or upload' },
   { id: 'repo', label: 'Repo', hint: 'Public GitHub / git URL' },
+  { id: 'onchain', label: 'On-chain', hint: 'Etherscan address / tx' },
   { id: 'metric', label: 'Metric', hint: 'Number + source' },
   { id: 'text', label: 'Text', hint: 'Paste excerpt only' },
 ]
@@ -186,7 +187,9 @@ function onSubmit() {
         :placeholder="
           form.proofType === 'repo'
             ? 'Paste a public repo link'
-            : form.proofType === 'pdf'
+            : form.proofType === 'onchain'
+              ? 'Etherscan address or tx URL'
+              : form.proofType === 'pdf'
               ? 'Paste a public PDF link'
               : 'Paste a public link'
         "

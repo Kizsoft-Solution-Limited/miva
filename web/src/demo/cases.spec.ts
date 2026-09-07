@@ -2,9 +2,22 @@ import { describe, expect, it } from 'vitest'
 import { demoCases } from '@/demo/cases'
 
 describe('demoCases', () => {
-  it('leads with Hard (repo), then weak / thin / strong', () => {
-    expect(demoCases.map((c) => c.id)).toEqual(['repo', 'weak', 'thin', 'strong'])
+  it('leads with Hard repo, then on-chain, then weak / thin / strong', () => {
+    expect(demoCases.map((c) => c.id)).toEqual([
+      'repo',
+      'onchain',
+      'weak',
+      'thin',
+      'strong',
+    ])
     expect(demoCases[0]?.payload.founderName).toBe('NestJS')
+  })
+
+  it('onchain case points at a mainnet contract on etherscan', () => {
+    const onchain = demoCases.find((c) => c.id === 'onchain')
+    expect(onchain?.payload.proofType).toBe('onchain')
+    expect(onchain?.payload.proofUrl).toMatch(/etherscan\.io\/address\/0x/i)
+    expect(onchain?.payload.claim.toLowerCase()).toMatch(/smart contract|ethereum/)
   })
 
   it('strong case has a public proof URL', () => {

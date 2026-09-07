@@ -4,7 +4,7 @@ export type InvestorDecision =
   | 'approved'
   | 'rejected'
   | 'more_info_requested'
-export type ProofType = 'url' | 'pdf' | 'repo' | 'text' | 'metric'
+export type ProofType = 'url' | 'pdf' | 'repo' | 'text' | 'metric' | 'onchain'
 
 export interface Finding {
   claim: string
@@ -45,6 +45,7 @@ export interface Milestone {
     webSearch: boolean
     pdf: boolean
     github?: boolean
+    onchain?: boolean
     structuredJson: boolean
   }
 }

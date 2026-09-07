@@ -14,7 +14,7 @@ export class CreateMilestoneDto {
   @MinLength(1)
   founderName!: string;
 
-  @IsIn(['url', 'pdf', 'repo', 'text', 'metric'])
+  @IsIn(['url', 'pdf', 'repo', 'text', 'metric', 'onchain'])
   proofType!: string;
 
   @IsOptional()

@@ -409,30 +409,35 @@ import { RouterLink } from 'vue-router'
         <div class="home-section__head">
           <p class="eyebrow text-[var(--signal)]">05 · try</p>
           <h2 id="try-heading" class="home-section__title text-[var(--night-fg)]">
-            Four cases. One cold demo.
+            Five cases. One cold demo.
           </h2>
           <p class="mt-3 max-w-2xl text-[var(--signal-dim)]">
-            Start on Hard. Weak and Thin show when proof is thin. Strong is a simple live URL if you want it.
+            Start on Hard, then Harder (on-chain). Weak and Thin show thin proof. Strong is a simple live URL.
           </p>
         </div>
 
         <div class="land-cases land-cases--night">
-          <RouterLink to="/founder" class="land-case land-case--night">
+          <RouterLink :to="{ path: '/founder', query: { case: 'repo' } }" class="land-case land-case--night">
             <span class="font-mono text-[11px] text-[var(--signal)]">hard</span>
             <h3>Public repo</h3>
             <p>GitHub repo + a release tag.</p>
           </RouterLink>
-          <RouterLink to="/founder" class="land-case land-case--night">
+          <RouterLink :to="{ path: '/founder', query: { case: 'onchain' } }" class="land-case land-case--night">
+            <span class="font-mono text-[11px] text-[var(--signal)]">harder</span>
+            <h3>On-chain</h3>
+            <p>Ethereum contract via RPC — not a marketing site.</p>
+          </RouterLink>
+          <RouterLink :to="{ path: '/founder', query: { case: 'weak' } }" class="land-case land-case--night">
             <span class="font-mono text-[11px] text-[#e8b84a]">weak</span>
             <h3>No proof</h3>
             <p>Claim only — expect a thin result.</p>
           </RouterLink>
-          <RouterLink to="/founder" class="land-case land-case--night">
+          <RouterLink :to="{ path: '/founder', query: { case: 'thin' } }" class="land-case land-case--night">
             <span class="font-mono text-[11px] text-[#f07178]">thin</span>
             <h3>Bad link</h3>
             <p>Broken URL — shows the failure path.</p>
           </RouterLink>
-          <RouterLink to="/founder" class="land-case land-case--night">
+          <RouterLink :to="{ path: '/founder', query: { case: 'strong' } }" class="land-case land-case--night">
             <span class="font-mono text-[11px] text-[var(--signal-dim)]">strong</span>
             <h3>Live URL</h3>
             <p>vuejs.org — site is up.</p>
@@ -447,7 +452,7 @@ import { RouterLink } from 'vue-router'
           <p class="font-mono text-[var(--signal)] text-xs tracking-[0.18em] uppercase">ready</p>
           <h2 id="close-heading" class="land-close__title">Run a real check in two minutes.</h2>
           <p class="mt-3 max-w-lg text-[var(--signal-dim)]">
-            Try Hard, then Weak or Thin. Sign in — Founder submits, Investor decides.
+            Try Hard, then Harder (on-chain). Sign in — Founder submits, Investor decides.
           </p>
         </div>
         <div class="land-close__actions">

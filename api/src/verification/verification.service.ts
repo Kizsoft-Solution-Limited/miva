@@ -13,6 +13,11 @@ import {
   probeGithubRepo,
   type GithubRepoProbe,
 } from '../lib/github-repo.js';
+import {
+  parseOnchainTarget,
+  probeOnchain,
+  type OnchainProbe,
+} from '../lib/onchain.js';
 
 export interface VerifyMilestoneInput {
   title: string;
@@ -60,6 +65,7 @@ Be thorough for EVERY claim type:
 - Repo: public repo existence, visibility, recent activity only if checkable; no fake stars/commits.
 - PDF / docs: ground in document text; quote or paraphrase precisely; do not invent clauses.
 - Metric: match the number/timeframe to a public source or mark unconfirmed; no invented dashboards.
+- On-chain: trust the server Ethereum RPC probe for contract bytecode or tx receipt. A marketing site is never enough. Cite explorerUrl.
 - Company age / registry: WHOIS/domain registration, About/footer copyright, LinkedIn company page, registry, press with an explicit founding year. If the server probe includes domainCreated, cite it as a PRIMARY unconfirmed/partial finding about domain age — clearly label it as domain registration, not company founding. Weak signals alone → needs_more_info. Never invent a year.
 - Founder / team: public LinkedIn/bio/press only with real URLs; do not invent profiles.
 - Press / coverage: find the article; if missing → unconfirmed/reject as appropriate.
@@ -91,6 +97,10 @@ export function claimTopics(title: string, claim: string) {
       text,
     ),
     press: /\b(press|techcrunch|featured|covered|article|news)\b/.test(text),
+    onchain:
+      /\b(on-?chain|ethereum|mainnet|smart\s*contract|bytecode|tx\s*hash|transaction|etherscan|0x[a-f0-9]{40})\b/.test(
+        text,
+      ),
   };
 }
 
@@ -132,6 +142,12 @@ export class VerificationService {
       (hasUpload || Boolean(proofUrl && this.looksLikePdf(proofUrl)));
     const github =
       input.proofType === 'repo' || Boolean(proofUrl && parseGithubRepoUrl(proofUrl));
+    const onchain =
+      input.proofType === 'onchain' ||
+      Boolean(
+        (proofUrl || input.proofText) &&
+          parseOnchainTarget(proofUrl || input.proofText),
+      );
     return {
       orbio: this.openRouter.hasKey,
       webSearch: this.shouldUseWebSearch(
@@ -141,6 +157,7 @@ export class VerificationService {
       ),
       pdf,
       github,
+      onchain,
       structuredJson: true,
     };
   }
@@ -197,6 +214,11 @@ export class VerificationService {
       input.proofType === 'repo' || (proofUrl && parseGithubRepoUrl(proofUrl))
         ? await probeGithubRepo(proofUrl)
         : null;
+    const onchainTarget = parseOnchainTarget(proofUrl || input.proofText);
+    const onchain =
+      input.proofType === 'onchain' || onchainTarget
+        ? await probeOnchain(proofUrl || input.proofText)
+        : null;
 
     const topics = claimTopics(input.title, input.claim);
     const playbook: string[] = [
@@ -224,6 +246,11 @@ export class VerificationService {
     if (input.proofType === 'metric' || topics.metric) {
       playbook.push(
         '- Metric: verify the number and timeframe against public sources; otherwise unconfirmed.',
+      );
+    }
+    if (input.proofType === 'onchain' || topics.onchain || onchain) {
+      playbook.push(
+        '- On-chain: trust the server Ethereum RPC probe. Contract with bytecode / successful tx receipt supports the claim. Do not invent chain data. Cite explorerUrl. A marketing homepage alone never verifies an on-chain claim.',
       );
     }
     if (input.proofType === 'text') {
@@ -266,6 +293,9 @@ export class VerificationService {
       github
         ? `Server GitHub probe (authoritative for public repos):\n${this.formatGithub(github)}`
         : null,
+      onchain
+        ? `Server Ethereum RPC probe (authoritative for on-chain claims):\n${this.formatOnchain(onchain)}`
+        : null,
       wantsWeb ? playbook.join('\n') : null,
       pdfRef
         ? 'A PDF is attached. Ground findings in what the document actually says — quote or paraphrase precisely.'
@@ -280,6 +310,7 @@ export class VerificationService {
       '- Every confirmed/unconfirmed item MUST include claim, evidence, confidence.',
       '- If the claim is about a live site/page and the server probe failed or returned non-OK, do not approve.',
       '- If the claim is about a public repo/release and the GitHub probe failed or found no repo, do not approve.',
+      '- If the claim is on-chain and the Ethereum RPC probe failed (no bytecode / missing tx), do not approve.',
       '- If evidence is thin, partial, or only the founder asserting it → needs_more_info.',
       '- Direct answers to THIS claim are PRIMARY findings (no Context · prefix).',
       '- Context · is bonus only when verifying a different claim; it alone never justifies approve.',
@@ -324,7 +355,7 @@ export class VerificationService {
     verdict = this.attachCitations(verdict, citations, proofUrl);
     verdict = this.promoteMisfiledContext(verdict, input);
     verdict = this.stripFounderLabelNoise(verdict, input);
-    verdict = this.enforceConsistency(verdict, input, probe, github);
+    verdict = this.enforceConsistency(verdict, input, probe, github, onchain);
     return verdict;
   }
 
@@ -395,6 +426,43 @@ export class VerificationService {
         ? `latestReleaseUrl: ${github.latestReleaseUrl}`
         : null,
       github.error ? `note: ${github.error}` : null,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  }
+
+  private formatOnchain(onchain: OnchainProbe): string {
+    if (!onchain.ok) {
+      return [
+        `input: ${onchain.input}`,
+        `kind: ${onchain.kind}`,
+        'ok: false',
+        onchain.chainId != null ? `chainId: ${onchain.chainId}` : null,
+        onchain.rpcUrl ? `rpcUrl: ${onchain.rpcUrl}` : null,
+        onchain.address ? `address: ${onchain.address}` : null,
+        onchain.txHash ? `txHash: ${onchain.txHash}` : null,
+        onchain.explorerUrl ? `explorerUrl: ${onchain.explorerUrl}` : null,
+        onchain.error ? `error: ${onchain.error}` : null,
+      ]
+        .filter(Boolean)
+        .join('\n');
+    }
+    return [
+      `input: ${onchain.input}`,
+      `kind: ${onchain.kind}`,
+      'ok: true',
+      onchain.chainId != null ? `chainId: ${onchain.chainId}` : null,
+      onchain.rpcUrl ? `rpcUrl: ${onchain.rpcUrl}` : null,
+      onchain.address ? `address: ${onchain.address}` : null,
+      onchain.txHash ? `txHash: ${onchain.txHash}` : null,
+      onchain.isContract != null ? `isContract: ${onchain.isContract}` : null,
+      onchain.bytecodeBytes != null
+        ? `bytecodeBytes: ${onchain.bytecodeBytes}`
+        : null,
+      onchain.txStatus ? `txStatus: ${onchain.txStatus}` : null,
+      onchain.blockNumber != null ? `blockNumber: ${onchain.blockNumber}` : null,
+      onchain.explorerUrl ? `explorerUrl: ${onchain.explorerUrl}` : null,
+      onchain.error ? `note: ${onchain.error}` : null,
     ]
       .filter(Boolean)
       .join('\n');
@@ -492,6 +560,7 @@ export class VerificationService {
     input: VerifyMilestoneInput,
     probe: UrlProbe | null,
     github: GithubRepoProbe | null = null,
+    onchain: OnchainProbe | null = null,
   ): VerdictResult {
     let recommendation = verdict.recommendation;
     const reasoningBits: string[] = [];
@@ -503,6 +572,11 @@ export class VerificationService {
     const claimLooksRepo =
       input.proofType === 'repo' ||
       /\b(repo|github|gitlab|release|open\s*source)\b/i.test(
+        `${input.title} ${input.claim}`,
+      );
+    const claimLooksOnchain =
+      input.proofType === 'onchain' ||
+      /\b(on-?chain|ethereum|smart\s*contract|tx\s*hash|etherscan)\b/i.test(
         `${input.title} ${input.claim}`,
       );
 
@@ -541,6 +615,17 @@ export class VerificationService {
       );
     }
 
+    if (
+      recommendation === 'approve' &&
+      onchain &&
+      !onchain.ok &&
+      claimLooksOnchain
+    ) {
+      recommendation = 'reject';
+      reasoningBits.push(
+        'Downgraded approve → reject because the Ethereum RPC probe failed (no contract bytecode or tx not successful).',
+      );
+    }
 
     if (
       recommendation === 'approve' &&
@@ -597,7 +682,7 @@ export class VerificationService {
     proofUrl?: string,
     founderName?: string | null,
   ): boolean {
-    if (['url', 'metric', 'repo', 'pdf'].includes(proofType)) return true;
+    if (['url', 'metric', 'repo', 'pdf', 'onchain'].includes(proofType)) return true;
     if (proofUrl) return true;
     if (founderName?.trim()) return true;
     return false;

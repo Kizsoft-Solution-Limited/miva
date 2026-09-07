@@ -10,7 +10,7 @@ export class UpdateProofDto {
   claim?: string;
 
   @IsOptional()
-  @IsIn(['url', 'pdf', 'repo', 'text', 'metric'])
+  @IsIn(['url', 'pdf', 'repo', 'text', 'metric', 'onchain'])
   proofType?: string;
 
   @IsOptional()
