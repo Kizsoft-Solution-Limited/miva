@@ -85,7 +85,10 @@ export async function recheckMilestone(
       },
       payload.file,
     )
-    const { data } = await http.post<Milestone>(`/milestones/${id}/recheck`, body)
+    const { data } = await http.post<Milestone>(
+      `/milestones/${id}/recheck`,
+      body,
+    )
     return data
   }
 

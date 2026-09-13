@@ -16,7 +16,12 @@ const { message, tone } = storeToRefs(toast)
         role="status"
       >
         <p>{{ message }}</p>
-        <button type="button" class="app-toast__close" aria-label="Dismiss" @click="toast.clear()">
+        <button
+          type="button"
+          class="app-toast__close"
+          aria-label="Dismiss"
+          @click="toast.clear()"
+        >
           ×
         </button>
       </div>

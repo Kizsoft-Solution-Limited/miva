@@ -55,7 +55,9 @@ function decisionLabel(item: (typeof store.items)[number]) {
       aria-busy="true"
       aria-live="polite"
     >
-      <p class="font-mono text-xs tracking-wide text-[var(--muted)]">Loading queue…</p>
+      <p class="font-mono text-xs tracking-wide text-[var(--muted)]">
+        Loading queue…
+      </p>
       <div v-for="n in 3" :key="n" class="surface animate-pulse p-4">
         <div class="h-4 w-2/5 rounded bg-[var(--paper-2)]" />
         <div class="mt-3 h-3 w-full rounded bg-[var(--paper-2)]" />
@@ -64,10 +66,15 @@ function decisionLabel(item: (typeof store.items)[number]) {
     </div>
 
     <div v-else-if="!store.items.length" class="ws-empty">
-      <p class="font-mono text-xs tracking-wide text-[var(--accent)]">queue · empty</p>
-      <h2 class="mt-2 text-2xl font-medium text-[var(--ink)]">No milestones yet</h2>
+      <p class="font-mono text-xs tracking-wide text-[var(--accent)]">
+        queue · empty
+      </p>
+      <h2 class="mt-2 text-2xl font-medium text-[var(--ink)]">
+        No milestones yet
+      </h2>
       <p class="mt-2 max-w-md text-[var(--muted)]">
-        Submit proof from Founder. When the agent finishes, the verdict lands here.
+        Submit proof from Founder. When the agent finishes, the verdict lands
+        here.
       </p>
       <RouterLink
         to="/founder"
@@ -89,9 +96,12 @@ function decisionLabel(item: (typeof store.items)[number]) {
             />
             <StatusBadge v-else label="verifying" tone="warn" />
           </div>
-          <p class="mt-1 line-clamp-2 text-sm text-[var(--muted)]">{{ item.claim }}</p>
+          <p class="mt-1 line-clamp-2 text-sm text-[var(--muted)]">
+            {{ item.claim }}
+          </p>
           <p class="mt-2 font-mono text-[11px] text-[var(--muted)]">
-            {{ item.founderName }} · {{ new Date(item.createdAt).toLocaleString() }}
+            {{ item.founderName }} ·
+            {{ new Date(item.createdAt).toLocaleString() }}
           </p>
         </RouterLink>
       </li>

@@ -80,7 +80,12 @@ function onSubmit() {
     }
   }
 
-  if (form.proofType === 'pdf' && !proofUrl && !file.value && !form.proofText.trim()) {
+  if (
+    form.proofType === 'pdf' &&
+    !proofUrl &&
+    !file.value &&
+    !form.proofText.trim()
+  ) {
     localError.message = 'Add a PDF link, upload a PDF, or paste an excerpt.'
     return
   }
@@ -101,7 +106,9 @@ function onSubmit() {
   <form class="ws-form space-y-4" autocomplete="off" @submit.prevent="onSubmit">
     <div class="ws-form__head">
       <h2 class="text-xl font-medium text-[var(--ink)]">Submit proof</h2>
-      <p class="mt-1 text-sm text-[var(--muted)]">Pick a proof type, then add a link, file, or paste.</p>
+      <p class="mt-1 text-sm text-[var(--muted)]">
+        Pick a proof type, then add a link, file, or paste.
+      </p>
     </div>
 
     <p
@@ -134,7 +141,9 @@ function onSubmit() {
 
     <div class="grid gap-4 sm:grid-cols-2">
       <label class="block text-sm">
-        <span class="mb-1.5 block font-bold text-[var(--ink)]">Founder name</span>
+        <span class="mb-1.5 block font-bold text-[var(--ink)]"
+          >Founder name</span
+        >
         <input
           v-model="form.founderName"
           required
@@ -145,7 +154,9 @@ function onSubmit() {
         />
       </label>
       <label class="block text-sm">
-        <span class="mb-1.5 block font-bold text-[var(--ink)]">Milestone title</span>
+        <span class="mb-1.5 block font-bold text-[var(--ink)]"
+          >Milestone title</span
+        >
         <input
           v-model="form.title"
           required
@@ -174,7 +185,11 @@ function onSubmit() {
 
     <label v-if="form.proofType !== 'text'" class="block text-sm">
       <span class="mb-1.5 block font-bold text-[var(--ink)]">
-        {{ form.proofType === 'pdf' ? 'PDF URL (optional if uploading)' : 'Proof URL' }}
+        {{
+          form.proofType === 'pdf'
+            ? 'PDF URL (optional if uploading)'
+            : 'Proof URL'
+        }}
       </span>
       <input
         v-model="form.proofUrl"
@@ -190,8 +205,8 @@ function onSubmit() {
             : form.proofType === 'onchain'
               ? 'Etherscan address or tx URL'
               : form.proofType === 'pdf'
-              ? 'Paste a public PDF link'
-              : 'Paste a public link'
+                ? 'Paste a public PDF link'
+                : 'Paste a public link'
         "
       />
     </label>
@@ -207,12 +222,18 @@ function onSubmit() {
       <p v-if="file" class="mt-1.5 text-xs text-[var(--muted)]">
         Selected: {{ file.name }} ({{ Math.round(file.size / 1024) }} KB)
       </p>
-      <p v-else class="mt-1.5 text-xs text-[var(--muted)]">Max 4MB. Or use a public PDF link above.</p>
+      <p v-else class="mt-1.5 text-xs text-[var(--muted)]">
+        Max 4MB. Or use a public PDF link above.
+      </p>
     </label>
 
     <label class="block text-sm">
       <span class="mb-1.5 block font-bold text-[var(--ink)]">
-        {{ form.proofType === 'text' ? 'Proof text' : 'Extra notes / excerpt (optional)' }}
+        {{
+          form.proofType === 'text'
+            ? 'Proof text'
+            : 'Extra notes / excerpt (optional)'
+        }}
       </span>
       <textarea
         v-model="form.proofText"

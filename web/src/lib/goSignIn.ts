@@ -6,7 +6,12 @@ import { useToastStore } from '@/stores/toast'
 export function safeLoginNext(raw: unknown): string | null {
   if (typeof raw !== 'string' || !raw.startsWith('/')) return null
   if (raw.startsWith('//')) return null
-  if (!(raw === '/founder' || raw.startsWith('/founder/') || raw === '/investor' || raw.startsWith('/investor/'))) {
+  if (!(
+    raw === '/founder' ||
+    raw.startsWith('/founder/') ||
+    raw === '/investor' ||
+    raw.startsWith('/investor/')
+  )) {
     return null
   }
   return raw

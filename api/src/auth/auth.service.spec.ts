@@ -8,7 +8,9 @@ vi.mock('./password.js', async (importOriginal) => {
   return {
     ...actual,
     hashPassword: vi.fn(async (p: string) => `hash:${p}`),
-    verifyPassword: vi.fn(async (p: string, hash: string) => hash === `hash:${p}`),
+    verifyPassword: vi.fn(
+      async (p: string, hash: string) => hash === `hash:${p}`,
+    ),
   };
 });
 

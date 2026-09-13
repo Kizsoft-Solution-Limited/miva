@@ -51,15 +51,20 @@ export function verifyToken(
   if (!token) return null;
   const [payload, sig] = token.split('.');
   if (!payload || !sig) return null;
-  const expected = b64url(createHmac('sha256', secret).update(payload).digest());
+  const expected = b64url(
+    createHmac('sha256', secret).update(payload).digest(),
+  );
   const a = Buffer.from(sig);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
   try {
-    const session = JSON.parse(fromB64url(payload).toString('utf8')) as AuthSession;
+    const session = JSON.parse(
+      fromB64url(payload).toString('utf8'),
+    ) as AuthSession;
     if (session.role !== 'founder' && session.role !== 'investor') return null;
     if (!session.userId || !session.email) return null;
-    if (!session.exp || session.exp < Math.floor(Date.now() / 1000)) return null;
+    if (!session.exp || session.exp < Math.floor(Date.now() / 1000))
+      return null;
     return session;
   } catch {
     return null;

@@ -14,5 +14,15 @@ export default defineConfig({
     environment: 'happy-dom',
     include: ['src/**/*.spec.ts'],
     exclude: ['node_modules', 'dist'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text'],
+      thresholds: {
+        lines: 60,
+        statements: 60,
+        functions: 65,
+        branches: 55,
+      },
+    },
   },
 })

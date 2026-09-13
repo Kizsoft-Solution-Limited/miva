@@ -20,7 +20,8 @@ defineProps<{
         !variant || variant === 'primary',
       'border border-[var(--line-strong)] bg-black/25 text-[var(--ink)] hover:border-[var(--signal)] hover:text-[var(--signal)]':
         variant === 'secondary',
-      'bg-[var(--danger)] text-[#1a0808] hover:brightness-110': variant === 'danger',
+      'bg-[var(--danger)] text-[#1a0808] hover:brightness-110':
+        variant === 'danger',
     }"
   >
     <slot />

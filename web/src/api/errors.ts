@@ -5,7 +5,10 @@ export function apiErrorMessage(error: unknown, fallback: string): string {
     return error instanceof Error ? error.message : fallback
   }
 
-  if (error.code === 'ECONNABORTED' || error.message.toLowerCase().includes('timeout')) {
+  if (
+    error.code === 'ECONNABORTED' ||
+    error.message.toLowerCase().includes('timeout')
+  ) {
     return 'Request timed out. Try again in a moment.'
   }
 
@@ -15,8 +18,7 @@ export function apiErrorMessage(error: unknown, fallback: string): string {
 
   const status = error.response.status
   const data = error.response.data as
-    | { message?: string | string[]; error?: string }
-    | undefined
+    { message?: string | string[]; error?: string } | undefined
 
   if (status === 400) {
     if (Array.isArray(data?.message)) return data.message.join(' · ')
@@ -39,7 +41,8 @@ export function apiErrorMessage(error: unknown, fallback: string): string {
     return 'That email is already registered.'
   }
 
-  if (status === 404) return 'That milestone is gone. It may have been cleared after a restart.'
+  if (status === 404)
+    return 'That milestone is gone. It may have been cleared after a restart.'
   if (status >= 500) {
     return 'Server error while verifying. Check API logs and retry.'
   }

@@ -1,116 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  Finding,
   VerdictResult,
   VerdictSchema,
   normalizeVerdictPayload,
 } from './verdict.schema.js';
 import { OpenRouterService } from '../openrouter/openrouter.service.js';
 import { redactSecrets, sanitizePublicUrl } from '../lib/public-url.js';
-import { probePublicUrl, type UrlProbe } from '../lib/url-probe.js';
+import { probePublicUrl } from '../lib/url-probe.js';
+import { parseGithubRepoUrl, probeGithubRepo } from '../lib/github-repo.js';
+import { parseOnchainTarget, probeOnchain } from '../lib/onchain.js';
+import type { VerifyMilestoneInput } from './verify.types.js';
+import { claimTopics } from './claim-topics.js';
+import { SYSTEM_PROMPT, VERDICT_JSON_SHAPE } from './agent.prompts.js';
+import { formatGithub, formatOnchain, formatProbe } from './probe-format.js';
 import {
-  parseGithubRepoUrl,
-  probeGithubRepo,
-  type GithubRepoProbe,
-} from '../lib/github-repo.js';
-import {
-  parseOnchainTarget,
-  probeOnchain,
-  type OnchainProbe,
-} from '../lib/onchain.js';
+  attachCitations,
+  enforceConsistency,
+  promoteMisfiledContext,
+  stripFounderLabelNoise,
+} from './verdict.postprocess.js';
 
-export interface VerifyMilestoneInput {
-  title: string;
-  claim: string;
-  founderName?: string | null;
-  proofType: string;
-  proofUrl?: string | null;
-  proofText?: string | null;
-  proofFileName?: string | null;
-  proofMime?: string | null;
-  /** Raw base64 (no data: prefix) */
-  proofData?: string | null;
-}
-
-const VERDICT_JSON_SHAPE = `{
-  "recommendation": "approve" | "reject" | "needs_more_info",
-  "summary": "one short paragraph for the investor",
-  "confirmed": [{ "claim": string, "evidence": string, "sourceUrl"?: string, "confidence": 0-1 }],
-  "unconfirmed": [{ "claim": string, "evidence": string, "sourceUrl"?: string, "confidence": 0-1 }],
-  "reasoning": "plain explanation of the call"
-}`;
-
-const SYSTEM_PROMPT = `You are MIVA, a skeptical milestone verification agent for investors.
-
-Mission: verify the factual milestone claim against checkable evidence. Do not cheerlead. Do not give investment advice ("good to invest" / "raise" / "pass").
-
-Output valid JSON only. Never invent sources, metrics, press, customers, registry filings, LinkedIn profiles, ages, founding years, funding rounds, or URLs.
-
-Decision rubric:
-- approve — the core claim is clearly backed by independent, checkable evidence. Confirmed[] must include ≥1 PRIMARY finding that directly answers the claim.
-- needs_more_info — default when evidence is thin, partial, self-attested, ambiguous, or only weakly related. Prefer this over a weak approve.
-- reject — proof contradicts the claim, or required proof is clearly bogus / unreachable when the claim depends on it.
-
-PRIMARY vs SECONDARY findings (critical):
-1) PRIMARY (no prefix) — any finding that directly answers THIS milestone claim. Always use primary for the main question, whatever it is (site live, company age, founder identity, metric, repo activity, PDF contents, press coverage, etc.).
-2) SECONDARY context — ONLY bonus extras when the claim is about something else. Prefix exactly:
-   - "Context · Company"
-   - "Context · Founder"
-   - "Context · Metric trend"
-   Secondary context alone never justifies approve.
-   Wrong: claim is "confirm founding year" and you only emit "Context · Company". Right: emit a normal confirmed/unconfirmed finding about the founding year.
-
-Be thorough for EVERY claim type:
-- Live URL / product site: use server probe + page title/content + search. Non-OK probe → do not approve reachability claims.
-- Repo: public repo existence, visibility, recent activity only if checkable; no fake stars/commits.
-- PDF / docs: ground in document text; quote or paraphrase precisely; do not invent clauses.
-- Metric: match the number/timeframe to a public source or mark unconfirmed; no invented dashboards.
-- On-chain: trust the server Ethereum RPC probe for contract bytecode or tx receipt. A marketing site is never enough. Cite explorerUrl.
-- Company age / registry: WHOIS/domain registration, About/footer copyright, LinkedIn company page, registry, press with an explicit founding year. If the server probe includes domainCreated, cite it as a PRIMARY unconfirmed/partial finding about domain age — clearly label it as domain registration, not company founding. Weak signals alone → needs_more_info. Never invent a year.
-- Founder / team: public LinkedIn/bio/press only with real URLs; do not invent profiles.
-- Press / coverage: find the article; if missing → unconfirmed/reject as appropriate.
-
-Always separate what is proven from what is missing. Put leftovers in unconfirmed even on approve.
-
-Confidence: 0.8+ direct evidence; 0.4–0.7 partial; <0.4 weak/hearsay.`;
-
-export function claimTopics(title: string, claim: string) {
-  const text = `${title} ${claim}`.toLowerCase();
-  return {
-    companyAge:
-      /\b(age|founded|founding|incorporated|incorporation|registry|how old|established|since\s+\d{4}|company age)\b/.test(
-        text,
-      ),
-    founder:
-      /\b(founder|co-?founder|ceo|linkedin|who\s+is|team lead|director)\b/.test(
-        text,
-      ),
-    metric:
-      /\b(metric|users|mau|dau|revenue|mrr|arr|gmv|growth|%\s*mo|customers|subscribers)\b/.test(
-        text,
-      ),
-    liveSite:
-      /\b(live|online|up|reachable|deployed|public site|website|domain|url)\b/.test(
-        text,
-      ),
-    repo: /\b(repo|github|gitlab|commit|open\s*source|pull request)\b/.test(
-      text,
-    ),
-    press: /\b(press|techcrunch|featured|covered|article|news)\b/.test(text),
-    onchain:
-      /\b(on-?chain|ethereum|mainnet|smart\s*contract|bytecode|tx\s*hash|transaction|etherscan|0x[a-f0-9]{40})\b/.test(
-        text,
-      ),
-  };
-}
-
-function isContextFinding(claim: string) {
-  return claim.toLowerCase().startsWith('context ·');
-}
-
-function stripContextPrefix(claim: string) {
-  return claim.replace(/^context\s*·\s*/i, '').trim();
-}
+export type { VerifyMilestoneInput } from './verify.types.js';
+export { claimTopics } from './claim-topics.js';
 
 @Injectable()
 export class VerificationService {
@@ -141,12 +52,13 @@ export class VerificationService {
       input.proofType === 'pdf' &&
       (hasUpload || Boolean(proofUrl && this.looksLikePdf(proofUrl)));
     const github =
-      input.proofType === 'repo' || Boolean(proofUrl && parseGithubRepoUrl(proofUrl));
+      input.proofType === 'repo' ||
+      Boolean(proofUrl && parseGithubRepoUrl(proofUrl));
     const onchain =
       input.proofType === 'onchain' ||
       Boolean(
         (proofUrl || input.proofText) &&
-          parseOnchainTarget(proofUrl || input.proofText),
+        parseOnchainTarget(proofUrl || input.proofText),
       );
     return {
       orbio: this.openRouter.hasKey,
@@ -288,13 +200,13 @@ export class VerificationService {
       input.proofFileName ? `Uploaded file: ${input.proofFileName}` : null,
       input.proofText ? `Proof text/excerpt:\n${input.proofText}` : null,
       probe
-        ? `Server probe (authoritative reachability):\n${this.formatProbe(probe)}`
+        ? `Server probe (authoritative reachability):\n${formatProbe(probe)}`
         : null,
       github
-        ? `Server GitHub probe (authoritative for public repos):\n${this.formatGithub(github)}`
+        ? `Server GitHub probe (authoritative for public repos):\n${formatGithub(github)}`
         : null,
       onchain
-        ? `Server Ethereum RPC probe (authoritative for on-chain claims):\n${this.formatOnchain(onchain)}`
+        ? `Server Ethereum RPC probe (authoritative for on-chain claims):\n${formatOnchain(onchain)}`
         : null,
       wantsWeb ? playbook.join('\n') : null,
       pdfRef
@@ -352,311 +264,11 @@ export class VerificationService {
     let verdict = VerdictSchema.parse(
       normalizeVerdictPayload(parsed, input.claim),
     );
-    verdict = this.attachCitations(verdict, citations, proofUrl);
-    verdict = this.promoteMisfiledContext(verdict, input);
-    verdict = this.stripFounderLabelNoise(verdict, input);
-    verdict = this.enforceConsistency(verdict, input, probe, github, onchain);
+    verdict = attachCitations(verdict, citations, proofUrl);
+    verdict = promoteMisfiledContext(verdict, input);
+    verdict = stripFounderLabelNoise(verdict, input);
+    verdict = enforceConsistency(verdict, input, probe, github, onchain);
     return verdict;
-  }
-
-  private stripFounderLabelNoise(
-    verdict: VerdictResult,
-    input: VerifyMilestoneInput,
-  ): VerdictResult {
-    const name = input.founderName?.trim().toLowerCase();
-    if (!name) return verdict;
-    if (claimTopics(input.title, input.claim).founder) return verdict;
-
-    const isLabel = (claim: string) => {
-      const c = claim.toLowerCase().trim();
-      if (c === name || c === `founder name: ${name}` || c === `founder: ${name}`) {
-        return true;
-      }
-      return (
-        (c.includes('founder name') || c.startsWith('founder ')) &&
-        c.includes(name) &&
-        c.length < name.length + 40
-      );
-    };
-
-    return {
-      ...verdict,
-      confirmed: verdict.confirmed.filter((f) => !isLabel(f.claim)),
-      unconfirmed: verdict.unconfirmed.filter((f) => !isLabel(f.claim)),
-    };
-  }
-
-  private formatGithub(github: GithubRepoProbe): string {
-    if (!github.ok) {
-      return [
-        `url: ${github.url}`,
-        'ok: false',
-        github.source ? `source: ${github.source}` : null,
-        github.rateLimited ? 'rateLimited: true' : null,
-        github.fullName ? `fullName: ${github.fullName}` : null,
-        github.error ? `error: ${github.error}` : null,
-      ]
-        .filter(Boolean)
-        .join('\n');
-    }
-    return [
-      `url: ${github.url}`,
-      'ok: true',
-      github.source ? `source: ${github.source}` : null,
-      github.rateLimited
-        ? 'rateLimited: true (API blocked; HTML fallback — still usable)'
-        : null,
-      github.fullName ? `fullName: ${github.fullName}` : null,
-      github.htmlUrl ? `htmlUrl: ${github.htmlUrl}` : null,
-      github.description != null
-        ? `description: ${github.description || '(none)'}`
-        : null,
-      github.defaultBranch ? `defaultBranch: ${github.defaultBranch}` : null,
-      github.createdAt ? `createdAt: ${github.createdAt}` : null,
-      github.pushedAt ? `pushedAt: ${github.pushedAt}` : null,
-      github.stars != null ? `stars: ${github.stars}` : null,
-      github.forks != null ? `forks: ${github.forks}` : null,
-      github.latestReleaseTag
-        ? `latestReleaseTag: ${github.latestReleaseTag}`
-        : 'latestReleaseTag: (none or not found)',
-      github.latestReleasePublishedAt
-        ? `latestReleasePublishedAt: ${github.latestReleasePublishedAt}`
-        : null,
-      github.latestReleaseUrl
-        ? `latestReleaseUrl: ${github.latestReleaseUrl}`
-        : null,
-      github.error ? `note: ${github.error}` : null,
-    ]
-      .filter(Boolean)
-      .join('\n');
-  }
-
-  private formatOnchain(onchain: OnchainProbe): string {
-    if (!onchain.ok) {
-      return [
-        `input: ${onchain.input}`,
-        `kind: ${onchain.kind}`,
-        'ok: false',
-        onchain.chainId != null ? `chainId: ${onchain.chainId}` : null,
-        onchain.rpcUrl ? `rpcUrl: ${onchain.rpcUrl}` : null,
-        onchain.address ? `address: ${onchain.address}` : null,
-        onchain.txHash ? `txHash: ${onchain.txHash}` : null,
-        onchain.explorerUrl ? `explorerUrl: ${onchain.explorerUrl}` : null,
-        onchain.error ? `error: ${onchain.error}` : null,
-      ]
-        .filter(Boolean)
-        .join('\n');
-    }
-    return [
-      `input: ${onchain.input}`,
-      `kind: ${onchain.kind}`,
-      'ok: true',
-      onchain.chainId != null ? `chainId: ${onchain.chainId}` : null,
-      onchain.rpcUrl ? `rpcUrl: ${onchain.rpcUrl}` : null,
-      onchain.address ? `address: ${onchain.address}` : null,
-      onchain.txHash ? `txHash: ${onchain.txHash}` : null,
-      onchain.isContract != null ? `isContract: ${onchain.isContract}` : null,
-      onchain.bytecodeBytes != null
-        ? `bytecodeBytes: ${onchain.bytecodeBytes}`
-        : null,
-      onchain.txStatus ? `txStatus: ${onchain.txStatus}` : null,
-      onchain.blockNumber != null ? `blockNumber: ${onchain.blockNumber}` : null,
-      onchain.explorerUrl ? `explorerUrl: ${onchain.explorerUrl}` : null,
-      onchain.error ? `note: ${onchain.error}` : null,
-    ]
-      .filter(Boolean)
-      .join('\n');
-  }
-
-  private promoteMisfiledContext(
-    verdict: VerdictResult,
-    input: VerifyMilestoneInput,
-  ): VerdictResult {
-    const topics = claimTopics(input.title, input.claim);
-    const shouldPromote = (claim: string) => {
-      if (!isContextFinding(claim)) return false;
-      const lower = claim.toLowerCase();
-      if (topics.companyAge && lower.startsWith('context · company')) {
-        return true;
-      }
-      if (topics.founder && lower.startsWith('context · founder')) return true;
-      if (topics.metric && lower.startsWith('context · metric')) return true;
-      if (
-        !topics.liveSite &&
-        (lower.startsWith('context · company') ||
-          lower.startsWith('context · founder') ||
-          lower.startsWith('context · metric'))
-      ) {
-        return true;
-      }
-      return false;
-    };
-
-    const mapFinding = (f: Finding): Finding =>
-      shouldPromote(f.claim)
-        ? { ...f, claim: stripContextPrefix(f.claim) || f.claim }
-        : f;
-
-    const next = {
-      ...verdict,
-      confirmed: verdict.confirmed.map(mapFinding),
-      unconfirmed: verdict.unconfirmed.map(mapFinding),
-    };
-
-    const changed =
-      next.confirmed.some((f, i) => f.claim !== verdict.confirmed[i]?.claim) ||
-      next.unconfirmed.some(
-        (f, i) => f.claim !== verdict.unconfirmed[i]?.claim,
-      );
-
-    if (!changed) return verdict;
-    return {
-      ...next,
-      reasoning: `${verdict.reasoning} Promoted claim-relevant Context findings to primary.`,
-    };
-  }
-
-  private formatProbe(probe: UrlProbe): string {
-    const whoisLines = probe.whois
-      ? [
-          `domainHost: ${probe.whois.host}`,
-          probe.whois.created
-            ? `domainCreated: ${probe.whois.created} (domain registration — NOT company founding year)`
-            : null,
-          probe.whois.expires ? `domainExpires: ${probe.whois.expires}` : null,
-          probe.whois.registrar ? `registrar: ${probe.whois.registrar}` : null,
-          probe.whois.error ? `domainWhoisError: ${probe.whois.error}` : null,
-        ].filter(Boolean)
-      : [];
-
-    if (!probe.ok) {
-      return [
-        `url: ${probe.url}`,
-        `reachable: no`,
-        probe.status != null ? `status: ${probe.status}` : null,
-        probe.error ? `error: ${probe.error}` : null,
-        ...whoisLines,
-      ]
-        .filter(Boolean)
-        .join('\n');
-    }
-    return [
-      `url: ${probe.url}`,
-      `reachable: yes`,
-      `status: ${probe.status}`,
-      probe.finalUrl && probe.finalUrl !== probe.url
-        ? `finalUrl: ${probe.finalUrl}`
-        : null,
-      probe.contentType ? `contentType: ${probe.contentType}` : null,
-      probe.title ? `title: ${probe.title}` : null,
-      ...whoisLines,
-    ]
-      .filter(Boolean)
-      .join('\n');
-  }
-
-  private enforceConsistency(
-    verdict: VerdictResult,
-    input: VerifyMilestoneInput,
-    probe: UrlProbe | null,
-    github: GithubRepoProbe | null = null,
-    onchain: OnchainProbe | null = null,
-  ): VerdictResult {
-    let recommendation = verdict.recommendation;
-    const reasoningBits: string[] = [];
-
-    const claimLooksLive =
-      /\b(live|online|up|reachable|deployed|public site|website|url|domain)\b/i.test(
-        `${input.title} ${input.claim}`,
-      );
-    const claimLooksRepo =
-      input.proofType === 'repo' ||
-      /\b(repo|github|gitlab|release|open\s*source)\b/i.test(
-        `${input.title} ${input.claim}`,
-      );
-    const claimLooksOnchain =
-      input.proofType === 'onchain' ||
-      /\b(on-?chain|ethereum|smart\s*contract|tx\s*hash|etherscan)\b/i.test(
-        `${input.title} ${input.claim}`,
-      );
-
-    const coreConfirmed = verdict.confirmed.filter(
-      (f) => !isContextFinding(f.claim),
-    );
-
-    if (recommendation === 'approve' && coreConfirmed.length === 0) {
-      recommendation = 'needs_more_info';
-      reasoningBits.push(
-        'Downgraded approve → needs_more_info because confirmed[] had no non-context evidence for the claim.',
-      );
-    }
-
-    if (
-      recommendation === 'approve' &&
-      probe &&
-      !probe.ok &&
-      (input.proofType === 'url' || claimLooksLive)
-    ) {
-      recommendation = 'reject';
-      reasoningBits.push(
-        'Downgraded approve → reject because the proof URL was not reachable.',
-      );
-    }
-
-    if (
-      recommendation === 'approve' &&
-      github &&
-      !github.ok &&
-      claimLooksRepo
-    ) {
-      recommendation = 'reject';
-      reasoningBits.push(
-        'Downgraded approve → reject because the GitHub repo probe failed or the repo is not public.',
-      );
-    }
-
-    if (
-      recommendation === 'approve' &&
-      onchain &&
-      !onchain.ok &&
-      claimLooksOnchain
-    ) {
-      recommendation = 'reject';
-      reasoningBits.push(
-        'Downgraded approve → reject because the Ethereum RPC probe failed (no contract bytecode or tx not successful).',
-      );
-    }
-
-    if (
-      recommendation === 'approve' &&
-      claimLooksRepo &&
-      /\brelease\b/i.test(`${input.title} ${input.claim}`) &&
-      github?.ok &&
-      !github.latestReleaseTag
-    ) {
-      recommendation = 'needs_more_info';
-      reasoningBits.push(
-        'Downgraded approve → needs_more_info because the claim mentions a release but GitHub returned no latest release tag.',
-      );
-    }
-
-    if (
-      recommendation === 'approve' &&
-      coreConfirmed.every((f) => f.confidence < 0.55)
-    ) {
-      recommendation = 'needs_more_info';
-      reasoningBits.push(
-        'Downgraded approve → needs_more_info because confirmed confidence stayed low.',
-      );
-    }
-
-    if (recommendation === verdict.recommendation) return verdict;
-
-    return {
-      ...verdict,
-      recommendation,
-      reasoning: [verdict.reasoning, ...reasoningBits].join(' '),
-    };
   }
 
   private resolvePdfRef(
@@ -682,7 +294,8 @@ export class VerificationService {
     proofUrl?: string,
     founderName?: string | null,
   ): boolean {
-    if (['url', 'metric', 'repo', 'pdf', 'onchain'].includes(proofType)) return true;
+    if (['url', 'metric', 'repo', 'pdf', 'onchain'].includes(proofType))
+      return true;
     if (proofUrl) return true;
     if (founderName?.trim()) return true;
     return false;
@@ -691,41 +304,6 @@ export class VerificationService {
   private looksLikePdf(url: string): boolean {
     const lower = url.toLowerCase();
     return lower.includes('.pdf') || lower.includes('application/pdf');
-  }
-
-  private attachCitations(
-    verdict: VerdictResult,
-    citations: Array<{ url: string; title?: string; excerpt?: string }>,
-    proofUrl?: string,
-  ): VerdictResult {
-    if (!citations.length && !proofUrl) return verdict;
-
-    const fill = (items: Finding[]): Finding[] =>
-      items.map((item) => {
-        if (item.sourceUrl) return item;
-        const match =
-          citations.find((c) => {
-            try {
-              const host = new URL(c.url).hostname.toLowerCase();
-              return item.evidence.toLowerCase().includes(host);
-            } catch {
-              return false;
-            }
-          }) || citations[0];
-        if (match?.url) {
-          return { ...item, sourceUrl: match.url };
-        }
-        if (proofUrl && item.confidence >= 0.5) {
-          return { ...item, sourceUrl: proofUrl };
-        }
-        return item;
-      });
-
-    return {
-      ...verdict,
-      confirmed: fill(verdict.confirmed),
-      unconfirmed: fill(verdict.unconfirmed),
-    };
   }
 
   private offlineVerdict(

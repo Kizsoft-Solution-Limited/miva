@@ -1,9 +1,6 @@
 export type Recommendation = 'approve' | 'reject' | 'needs_more_info'
 export type InvestorDecision =
-  | 'pending'
-  | 'approved'
-  | 'rejected'
-  | 'more_info_requested'
+  'pending' | 'approved' | 'rejected' | 'more_info_requested'
 export type ProofType = 'url' | 'pdf' | 'repo' | 'text' | 'metric' | 'onchain'
 
 export interface Finding {

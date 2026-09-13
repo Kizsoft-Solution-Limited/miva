@@ -18,11 +18,19 @@ import { RouterLink } from 'vue-router'
           </p>
 
           <div class="home-brand-row">
-            <img src="/logo.png" alt="" width="76" height="76" class="home-brand-mark" />
+            <img
+              src="/logo.png"
+              alt=""
+              width="76"
+              height="76"
+              class="home-brand-mark"
+            />
             <h1 id="home-brand" class="home-brand">MIVA</h1>
           </div>
 
-          <p class="home-headline">Milestone proof, checked — then you decide.</p>
+          <p class="home-headline">
+            Milestone proof, checked — then you decide.
+          </p>
 
           <p class="home-lede">
             Founders submit proof. The agent checks what it can against live
@@ -33,7 +41,9 @@ import { RouterLink } from 'vue-router'
             <RouterLink to="/founder" class="home-btn home-btn--primary">
               Submit proof
             </RouterLink>
-            <a href="#protocol" class="home-btn home-btn--ghost">Why it exists</a>
+            <a href="#protocol" class="home-btn home-btn--ghost"
+              >Why it exists</a
+            >
           </div>
 
           <div class="land-trust" aria-label="Stack">
@@ -45,14 +55,20 @@ import { RouterLink } from 'vue-router'
 
         <aside class="verdict-panel" aria-label="Example verdict">
           <div class="verdict-panel__bar">
-            <span class="verdict-panel__dots" aria-hidden="true"><i /><i /><i /></span>
-            <span class="font-mono text-[11px] tracking-wide text-[var(--signal-dim)]">
+            <span class="verdict-panel__dots" aria-hidden="true"
+              ><i /><i /><i
+            /></span>
+            <span
+              class="font-mono text-[11px] tracking-wide text-[var(--signal-dim)]"
+            >
               miva://verdict · sample
             </span>
             <span class="verdict-panel__status">approve</span>
           </div>
           <div class="verdict-panel__body">
-            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--signal-dim)]">
+            <p
+              class="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--signal-dim)]"
+            >
               Claim
             </p>
             <p class="mt-2 text-[15px] leading-snug text-[var(--night-fg)]">
@@ -61,10 +77,14 @@ import { RouterLink } from 'vue-router'
 
             <div class="mt-5">
               <div class="flex items-center justify-between gap-2">
-                <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal-dim)]">
+                <span
+                  class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal-dim)]"
+                >
                   confidence
                 </span>
-                <span class="font-mono text-[12px] text-[var(--signal)]">0.91</span>
+                <span class="font-mono text-[12px] text-[var(--signal)]"
+                  >0.91</span
+                >
               </div>
               <div class="land-meter" aria-hidden="true">
                 <span class="land-meter__fill" style="width: 91%" />
@@ -73,13 +93,19 @@ import { RouterLink } from 'vue-router'
 
             <div class="mt-6 grid gap-3 sm:grid-cols-2">
               <div class="verdict-chip verdict-chip--ok">
-                <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal)]">
+                <span
+                  class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal)]"
+                >
                   confirmed
                 </span>
-                <p class="mt-1 text-sm text-[var(--night-fg)]">Repo live · release tag found</p>
+                <p class="mt-1 text-sm text-[var(--night-fg)]">
+                  Repo live · release tag found
+                </p>
               </div>
               <div class="verdict-chip">
-                <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal-dim)]">
+                <span
+                  class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal-dim)]"
+                >
                   source
                 </span>
                 <p class="mt-1 truncate font-mono text-xs text-[var(--signal)]">
@@ -89,7 +115,9 @@ import { RouterLink } from 'vue-router'
             </div>
 
             <div class="mt-6 border-t border-white/10 pt-5">
-              <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--signal-dim)]">
+              <p
+                class="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--signal-dim)]"
+              >
                 Agent stack
               </p>
               <ul class="mt-3 flex flex-wrap gap-2">
@@ -105,22 +133,15 @@ import { RouterLink } from 'vue-router'
 
     <div class="land-ticker" aria-hidden="true">
       <div class="land-ticker__track">
-        <span>VERIFY</span><span>·</span>
-        <span>CHECK</span><span>·</span>
-        <span>DECIDE</span><span>·</span>
-        <span>ORBIO</span><span>·</span>
-        <span>WEB SEARCH</span><span>·</span>
-        <span>PDF READ</span><span>·</span>
-        <span>JSON VERDICT</span><span>·</span>
-        <span>HUMAN FINAL</span><span>·</span>
-        <span>VERIFY</span><span>·</span>
-        <span>CHECK</span><span>·</span>
-        <span>DECIDE</span><span>·</span>
-        <span>ORBIO</span><span>·</span>
-        <span>WEB SEARCH</span><span>·</span>
-        <span>PDF READ</span><span>·</span>
-        <span>JSON VERDICT</span><span>·</span>
-        <span>HUMAN FINAL</span><span>·</span>
+        <span>VERIFY</span><span>·</span> <span>CHECK</span><span>·</span>
+        <span>DECIDE</span><span>·</span> <span>ORBIO</span><span>·</span>
+        <span>WEB SEARCH</span><span>·</span> <span>PDF READ</span
+        ><span>·</span> <span>JSON VERDICT</span><span>·</span>
+        <span>HUMAN FINAL</span><span>·</span> <span>VERIFY</span><span>·</span>
+        <span>CHECK</span><span>·</span> <span>DECIDE</span><span>·</span>
+        <span>ORBIO</span><span>·</span> <span>WEB SEARCH</span><span>·</span>
+        <span>PDF READ</span><span>·</span> <span>JSON VERDICT</span
+        ><span>·</span> <span>HUMAN FINAL</span><span>·</span>
       </div>
     </div>
 
@@ -144,7 +165,11 @@ import { RouterLink } from 'vue-router'
       </div>
     </section>
 
-    <section id="protocol" class="land-manifesto" aria-labelledby="protocol-heading">
+    <section
+      id="protocol"
+      class="land-manifesto"
+      aria-labelledby="protocol-heading"
+    >
       <div class="land-manifesto__glow" aria-hidden="true" />
       <div class="home-shell">
         <p class="land-manifesto__eye font-mono">01 · why miva exists</p>
@@ -195,16 +220,23 @@ import { RouterLink } from 'vue-router'
       </div>
     </section>
 
-    <section id="interface" class="land-band land-band--void" aria-labelledby="iface-heading">
+    <section
+      id="interface"
+      class="land-band land-band--void"
+      aria-labelledby="iface-heading"
+    >
       <div class="home-shell">
         <div class="home-section__head">
           <p class="eyebrow text-[var(--signal)]">02 · interface</p>
-          <h2 id="iface-heading" class="home-section__title text-[var(--night-fg)]">
+          <h2
+            id="iface-heading"
+            class="home-section__title text-[var(--night-fg)]"
+          >
             Operator desk, not a brochure.
           </h2>
           <p class="mt-3 max-w-2xl text-[var(--signal-dim)]">
-            Founder console on the left. Investor verdict on the right.
-            Same JSON shape every run.
+            Founder console on the left. Investor verdict on the right. Same
+            JSON shape every run.
           </p>
         </div>
 
@@ -221,11 +253,17 @@ import { RouterLink } from 'vue-router'
               </label>
               <label class="land-field land-field--dark">
                 <span>Proof URL</span>
-                <div class="font-mono text-[var(--signal)]">https://github.com/nestjs/nest</div>
+                <div class="font-mono text-[var(--signal)]">
+                  https://github.com/nestjs/nest
+                </div>
               </label>
               <div class="land-window__actions">
-                <span class="land-fake-btn land-fake-btn--ok">Run verification</span>
-                <span class="font-mono text-[11px] text-[var(--signal-dim)]">orbio · searching…</span>
+                <span class="land-fake-btn land-fake-btn--ok"
+                  >Run verification</span
+                >
+                <span class="font-mono text-[11px] text-[var(--signal-dim)]"
+                  >orbio · searching…</span
+                >
               </div>
             </div>
           </article>
@@ -233,17 +271,23 @@ import { RouterLink } from 'vue-router'
           <article class="land-window land-window--dark">
             <header class="land-window__bar">
               <span class="font-mono">investor · verdict</span>
-              <span class="land-window__pill land-window__pill--ok">approve</span>
+              <span class="land-window__pill land-window__pill--ok"
+                >approve</span
+              >
             </header>
             <div class="land-window__body">
-              <p class="font-mono text-[11px] uppercase tracking-wider text-[var(--signal-dim)]">
+              <p
+                class="font-mono text-[11px] uppercase tracking-wider text-[var(--signal-dim)]"
+              >
                 confirmed
               </p>
               <ul class="land-findings">
                 <li>github.com/nestjs/nest is public</li>
                 <li>Latest release tag present</li>
               </ul>
-              <p class="mt-4 font-mono text-[11px] uppercase tracking-wider text-[var(--signal-dim)]">
+              <p
+                class="mt-4 font-mono text-[11px] uppercase tracking-wider text-[var(--signal-dim)]"
+              >
                 unconfirmed
               </p>
               <ul class="land-findings land-findings--dim">
@@ -251,7 +295,9 @@ import { RouterLink } from 'vue-router'
               </ul>
               <div class="land-window__actions mt-5">
                 <span class="land-fake-btn land-fake-btn--ok">Approve</span>
-                <span class="land-fake-btn land-fake-btn--ghost">Need more info</span>
+                <span class="land-fake-btn land-fake-btn--ghost"
+                  >Need more info</span
+                >
               </div>
             </div>
           </article>
@@ -259,11 +305,18 @@ import { RouterLink } from 'vue-router'
       </div>
     </section>
 
-    <section id="how-it-works" class="land-band land-band--ink2" aria-labelledby="flow-heading">
+    <section
+      id="how-it-works"
+      class="land-band land-band--ink2"
+      aria-labelledby="flow-heading"
+    >
       <div class="home-shell">
         <div class="home-section__head home-section__head--center">
           <p class="eyebrow text-[var(--signal)]">03 · pipeline</p>
-          <h2 id="flow-heading" class="home-section__title text-[var(--night-fg)]">
+          <h2
+            id="flow-heading"
+            class="home-section__title text-[var(--night-fg)]"
+          >
             Submit. Check. Decide.
           </h2>
           <p class="mt-3 max-w-xl text-[var(--signal-dim)] mx-auto">
@@ -275,7 +328,13 @@ import { RouterLink } from 'vue-router'
           <li class="flow-node flow-node--night">
             <div class="flow-node__badge" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                  d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
             </div>
             <p class="flow-node__verb font-mono">01 · submit</p>
@@ -303,13 +362,20 @@ import { RouterLink } from 'vue-router'
           <li class="flow-node flow-node--hot flow-node--night">
             <div class="flow-node__badge" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
             </div>
             <p class="flow-node__verb font-mono">02 · check</p>
             <h3 class="flow-node__title">Agent verifies</h3>
             <p class="flow-node__text">
-              Live web + docs when the claim needs them. Unconfirmed stays unconfirmed.
+              Live web + docs when the claim needs them. Unconfirmed stays
+              unconfirmed.
             </p>
           </li>
 
@@ -331,7 +397,13 @@ import { RouterLink } from 'vue-router'
           <li class="flow-node flow-node--night">
             <div class="flow-node__badge" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
             </div>
             <p class="flow-node__verb font-mono">03 · decide</p>
@@ -348,7 +420,10 @@ import { RouterLink } from 'vue-router'
       <div class="home-shell home-orbio__inner">
         <div>
           <p class="eyebrow text-[var(--signal)]">04 · orbio</p>
-          <h2 id="orbio-heading" class="home-section__title text-[var(--night-fg)]">
+          <h2
+            id="orbio-heading"
+            class="home-section__title text-[var(--night-fg)]"
+          >
             Built where the agent can prove its work.
           </h2>
           <p class="mt-4 max-w-lg text-[var(--signal-dim)]">
@@ -372,12 +447,23 @@ import { RouterLink } from 'vue-router'
               running
             </span>
           </div>
-          <p class="font-mono text-[11px] text-[var(--signal-dim)]">miva@orbio ~ verify</p>
-          <p class="font-mono text-sm text-[var(--night-fg)] mt-2">
-            <span class="text-[var(--signal)]">$</span> openrouter · web_search · pdf · json_schema
+          <p class="font-mono text-[11px] text-[var(--signal-dim)]">
+            miva@orbio ~ verify
           </p>
-          <p class="font-mono text-sm text-[var(--signal-dim)] mt-3 flex items-center gap-2">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <p class="font-mono text-sm text-[var(--night-fg)] mt-2">
+            <span class="text-[var(--signal)]">$</span> openrouter · web_search
+            · pdf · json_schema
+          </p>
+          <p
+            class="font-mono text-sm text-[var(--signal-dim)] mt-3 flex items-center gap-2"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
               <path
                 d="M5 12h12m0 0l-5-5m5 5l-5 5"
                 stroke="currentColor"
@@ -388,8 +474,16 @@ import { RouterLink } from 'vue-router'
             </svg>
             confirmed[] · unconfirmed[] · recommendation
           </p>
-          <p class="font-mono text-sm text-[var(--signal)] mt-2 flex items-center gap-2">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <p
+            class="font-mono text-sm text-[var(--signal)] mt-2 flex items-center gap-2"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
               <path
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 stroke="currentColor"
@@ -404,41 +498,68 @@ import { RouterLink } from 'vue-router'
       </div>
     </section>
 
-    <section id="try" class="land-band land-band--void land-band--try" aria-labelledby="try-heading">
+    <section
+      id="try"
+      class="land-band land-band--void land-band--try"
+      aria-labelledby="try-heading"
+    >
       <div class="home-shell">
         <div class="home-section__head">
           <p class="eyebrow text-[var(--signal)]">05 · try</p>
-          <h2 id="try-heading" class="home-section__title text-[var(--night-fg)]">
+          <h2
+            id="try-heading"
+            class="home-section__title text-[var(--night-fg)]"
+          >
             Five cases. One cold demo.
           </h2>
           <p class="mt-3 max-w-2xl text-[var(--signal-dim)]">
-            Start on Hard, then Harder (on-chain). Weak and Thin show thin proof. Strong is a simple live URL.
+            Start on Hard, then Harder (on-chain). Weak and Thin show thin
+            proof. Strong is a simple live URL.
           </p>
         </div>
 
         <div class="land-cases land-cases--night">
-          <RouterLink :to="{ path: '/founder', query: { case: 'repo' } }" class="land-case land-case--night">
+          <RouterLink
+            :to="{ path: '/founder', query: { case: 'repo' } }"
+            class="land-case land-case--night"
+          >
             <span class="font-mono text-[11px] text-[var(--signal)]">hard</span>
             <h3>Public repo</h3>
             <p>GitHub repo + a release tag.</p>
           </RouterLink>
-          <RouterLink :to="{ path: '/founder', query: { case: 'onchain' } }" class="land-case land-case--night">
-            <span class="font-mono text-[11px] text-[var(--signal)]">harder</span>
+          <RouterLink
+            :to="{ path: '/founder', query: { case: 'onchain' } }"
+            class="land-case land-case--night"
+          >
+            <span class="font-mono text-[11px] text-[var(--signal)]"
+              >harder</span
+            >
             <h3>On-chain</h3>
             <p>Ethereum contract via RPC — not a marketing site.</p>
           </RouterLink>
-          <RouterLink :to="{ path: '/founder', query: { case: 'weak' } }" class="land-case land-case--night">
+          <RouterLink
+            :to="{ path: '/founder', query: { case: 'weak' } }"
+            class="land-case land-case--night"
+          >
             <span class="font-mono text-[11px] text-[#e8b84a]">weak</span>
             <h3>No proof</h3>
             <p>Claim only — expect a thin result.</p>
           </RouterLink>
-          <RouterLink :to="{ path: '/founder', query: { case: 'thin' } }" class="land-case land-case--night">
+          <RouterLink
+            :to="{ path: '/founder', query: { case: 'thin' } }"
+            class="land-case land-case--night"
+          >
             <span class="font-mono text-[11px] text-[#f07178]">thin</span>
             <h3>Bad link</h3>
             <p>Broken URL — shows the failure path.</p>
           </RouterLink>
-          <RouterLink :to="{ path: '/founder', query: { case: 'strong' } }" class="land-case land-case--night">
-            <span class="font-mono text-[11px] text-[var(--signal-dim)]">strong</span>
+          <RouterLink
+            :to="{ path: '/founder', query: { case: 'strong' } }"
+            class="land-case land-case--night"
+          >
+            <span class="font-mono text-[11px] text-[var(--signal-dim)]"
+              >strong</span
+            >
             <h3>Live URL</h3>
             <p>vuejs.org — site is up.</p>
           </RouterLink>
@@ -449,10 +570,17 @@ import { RouterLink } from 'vue-router'
     <section class="land-close" aria-labelledby="close-heading">
       <div class="home-shell land-close__inner">
         <div>
-          <p class="font-mono text-[var(--signal)] text-xs tracking-[0.18em] uppercase">ready</p>
-          <h2 id="close-heading" class="land-close__title">Run a real check in two minutes.</h2>
+          <p
+            class="font-mono text-[var(--signal)] text-xs tracking-[0.18em] uppercase"
+          >
+            ready
+          </p>
+          <h2 id="close-heading" class="land-close__title">
+            Run a real check in two minutes.
+          </h2>
           <p class="mt-3 max-w-lg text-[var(--signal-dim)]">
-            Try Hard, then Harder (on-chain). Sign in — Founder submits, Investor decides.
+            Try Hard, then Harder (on-chain). Sign in — Founder submits,
+            Investor decides.
           </p>
         </div>
         <div class="land-close__actions">

@@ -64,11 +64,17 @@ onMounted(() => {
   })()
 })
 
-watch(() => route.params.id, () => {
-  void load()
-})
+watch(
+  () => route.params.id,
+  () => {
+    void load()
+  },
+)
 
-async function onDecide(decision: 'approved' | 'rejected' | 'more_info_requested', note?: string) {
+async function onDecide(
+  decision: 'approved' | 'rejected' | 'more_info_requested',
+  note?: string,
+) {
   if (!roleStore.isInvestor) return
   const id = String(route.params.id)
   try {
@@ -138,7 +144,9 @@ async function requireFounder() {
       aria-busy="true"
       aria-live="polite"
     >
-      <p class="font-mono text-xs tracking-wide text-[var(--muted)]">Loading milestone…</p>
+      <p class="font-mono text-xs tracking-wide text-[var(--muted)]">
+        Loading milestone…
+      </p>
       <div class="surface animate-pulse p-6">
         <div class="h-4 w-1/3 rounded bg-[var(--paper-2)]" />
         <div class="mt-4 h-3 w-full rounded bg-[var(--paper-2)]" />
@@ -172,7 +180,9 @@ async function requireFounder() {
           </div>
           <div v-if="store.current.hasProofFile" class="sm:col-span-2">
             <dt class="text-[var(--muted)]">Uploaded file</dt>
-            <dd class="font-bold">{{ store.current.proofFileName || 'PDF on file' }}</dd>
+            <dd class="font-bold">
+              {{ store.current.proofFileName || 'PDF on file' }}
+            </dd>
           </div>
           <div v-if="store.current.proofText" class="sm:col-span-2">
             <dt class="text-[var(--muted)]">Text</dt>
@@ -191,7 +201,9 @@ async function requireFounder() {
         class="ws-empty border-solid border-[var(--warn)]/30 bg-[var(--warn-soft)]"
         aria-live="polite"
       >
-        <p class="font-mono text-xs tracking-wide text-[var(--warn)]">orbio · in progress</p>
+        <p class="font-mono text-xs tracking-wide text-[var(--warn)]">
+          orbio · in progress
+        </p>
         <p class="mt-2 font-bold text-[var(--ink)]">No verdict yet</p>
       </div>
 
@@ -211,7 +223,11 @@ async function requireFounder() {
         class="surface p-4 text-sm text-[var(--muted)]"
       >
         More info requested.
-        <button type="button" class="font-bold text-[var(--accent)] underline" @click="requireFounder">
+        <button
+          type="button"
+          class="font-bold text-[var(--accent)] underline"
+          @click="requireFounder"
+        >
           Sign in as Founder
         </button>
         to update proof and re-run the check.

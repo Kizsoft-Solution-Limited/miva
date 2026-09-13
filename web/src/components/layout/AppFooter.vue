@@ -7,7 +7,11 @@ import MivaLogo from '@/components/brand/MivaLogo.vue'
   <footer class="app-chrome-footer">
     <div class="app-chrome-footer__inner">
       <div>
-        <RouterLink to="/" class="inline-flex no-underline" aria-label="MIVA home">
+        <RouterLink
+          to="/"
+          class="inline-flex no-underline"
+          aria-label="MIVA home"
+        >
           <MivaLogo :size="40" wordmark />
         </RouterLink>
         <p class="mt-3 max-w-sm text-sm text-[var(--signal-dim)]">
@@ -18,10 +22,24 @@ import MivaLogo from '@/components/brand/MivaLogo.vue'
       <div class="app-chrome-footer__cols">
         <div>
           <p class="eyebrow text-[var(--signal)]">Go</p>
-          <ul class="mt-3 space-y-2 text-sm font-semibold text-[var(--night-fg)]">
-            <li><RouterLink class="hover:text-[var(--signal)]" to="/founder">Submit proof</RouterLink></li>
-            <li><RouterLink class="hover:text-[var(--signal)]" to="/investor">Investor queue</RouterLink></li>
-            <li><RouterLink class="hover:text-[var(--signal)]" to="/">Home</RouterLink></li>
+          <ul
+            class="mt-3 space-y-2 text-sm font-semibold text-[var(--night-fg)]"
+          >
+            <li>
+              <RouterLink class="hover:text-[var(--signal)]" to="/founder"
+                >Submit proof</RouterLink
+              >
+            </li>
+            <li>
+              <RouterLink class="hover:text-[var(--signal)]" to="/investor"
+                >Investor queue</RouterLink
+              >
+            </li>
+            <li>
+              <RouterLink class="hover:text-[var(--signal)]" to="/"
+                >Home</RouterLink
+              >
+            </li>
           </ul>
         </div>
         <div>

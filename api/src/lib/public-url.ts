@@ -10,7 +10,11 @@ export function isBlockedHostname(host: string): boolean {
   ) {
     return true;
   }
-  if (h.startsWith('10.') || h.startsWith('192.168.') || h.startsWith('169.254.')) {
+  if (
+    h.startsWith('10.') ||
+    h.startsWith('192.168.') ||
+    h.startsWith('169.254.')
+  ) {
     return true;
   }
   // 172.16.0.0 – 172.31.255.255

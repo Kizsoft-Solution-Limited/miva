@@ -4,7 +4,10 @@ export const DEFAULT_DESCRIPTION =
   'MIVA checks founder milestone proof against live sources and returns a verdict. You still decide.'
 
 export function siteUrl(): string {
-  const raw = (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, '')
+  const raw = (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(
+    /\/$/,
+    '',
+  )
   if (raw) return raw
   if (typeof window !== 'undefined' && window.location?.origin) {
     return window.location.origin
@@ -20,7 +23,9 @@ export interface SeoPayload {
 }
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string) {
-  let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`)
+  let el = document.head.querySelector<HTMLMetaElement>(
+    `meta[${attr}="${key}"]`,
+  )
   if (!el) {
     el = document.createElement('meta')
     el.setAttribute(attr, key)
@@ -47,7 +52,11 @@ export function applySeo(payload: SeoPayload) {
 
   document.title = title
   upsertMeta('name', 'description', payload.description)
-  upsertMeta('name', 'robots', payload.noindex ? 'noindex,nofollow' : 'index,follow')
+  upsertMeta(
+    'name',
+    'robots',
+    payload.noindex ? 'noindex,nofollow' : 'index,follow',
+  )
   const image = `${siteUrl()}/og.png`
   upsertMeta('property', 'og:title', title)
   upsertMeta('property', 'og:description', payload.description)

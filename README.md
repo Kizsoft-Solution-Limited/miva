@@ -4,6 +4,12 @@ Milestone Verification Agent. Founder submits proof, the agent checks what it ca
 
 Built for Orbio Build Week (Orbio key = OpenRouter).
 
+## Architecture
+
+- `api/` — NestJS + Prisma. Controllers stay thin; services run verification. Probes for URL / GitHub / PDF / on-chain live in `api/src/lib/`. Orbio (OpenRouter) only from the API.
+- `web/` — Vue 3 + Pinia. Submit and review screens call the API. No secrets in the client.
+- Flow: submit proof → agent verdict → investor decide.
+
 ## Orbio bits in use
 
 | Bit | Where |
@@ -15,30 +21,28 @@ Built for Orbio Build Week (Orbio key = OpenRouter).
 
 Shows on the verdict screen (“This check used …”) and in the expandable JSON.
 
-## Layout
-
-- `api/` — NestJS, Prisma, agent
-- `web/` — Vue (submit + review)
-
 ## Run locally
 
 ```bash
 cd api
 cp .env.example .env
-# OPENROUTER_API_KEY=...
+# put OPENROUTER_API_KEY in .env
 npx prisma migrate dev
 npm run start:dev
 ```
 
 ```bash
 cd web
+cp .env.example .env
 npm run dev
 ```
 
 - API: http://localhost:3000/api
 - App: http://localhost:5173
 
-## Env (API)
+## Env
+
+Copy `api/.env.example` → `api/.env`. Main knobs:
 
 ```
 DATABASE_URL=file:./dev.db
@@ -48,6 +52,17 @@ PORT=3000
 CORS_ORIGIN=http://localhost:5173
 AUTH_SECRET=change-me
 ```
+
+Optional: `GITHUB_TOKEN`, `ETH_RPC_URL`, `COOKIE_SAMESITE`. Web: `VITE_API_BASE_URL`, `VITE_SITE_URL` (see `web/.env.example`).
+
+## Testing
+
+```bash
+cd api && npm test && npm run test:e2e
+cd web && npm test
+```
+
+Coverage floors: `npm run test:cov` in each package. Format check: `npm run format:check`. Orbio/OpenRouter is mocked in tests — no live key needed. CI runs lint, format, tests, and build on every push (`.github/workflows/ci.yml`).
 
 ## Host
 

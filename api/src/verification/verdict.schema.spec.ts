@@ -50,7 +50,12 @@ describe('normalizeVerdictPayload', () => {
   it('maps reject aliases', () => {
     const verdict = VerdictSchema.parse(
       normalizeVerdictPayload(
-        { recommendation: 'failed', summary: 'Bad', confirmed: [], unconfirmed: [] },
+        {
+          recommendation: 'failed',
+          summary: 'Bad',
+          confirmed: [],
+          unconfirmed: [],
+        },
         'x',
       ),
     );

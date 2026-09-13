@@ -9,5 +9,15 @@ export default defineConfig({
     environment: 'node',
     include: ['src/**/*.spec.ts'],
     exclude: ['dist', 'node_modules', 'test'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text'],
+      thresholds: {
+        lines: 50,
+        statements: 50,
+        functions: 55,
+        branches: 40,
+      },
+    },
   },
 });

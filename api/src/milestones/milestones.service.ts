@@ -28,7 +28,12 @@ export class MilestonesService {
   ) {}
 
   async create(dto: CreateMilestoneDto, file?: UploadedProofFile) {
-    const proof = this.normalizeProofInput(dto.proofType, dto.proofUrl, dto.proofText, file);
+    const proof = this.normalizeProofInput(
+      dto.proofType,
+      dto.proofUrl,
+      dto.proofText,
+      file,
+    );
     const milestone = await this.prisma.milestone.create({
       data: {
         title: dto.title,
@@ -94,9 +99,13 @@ export class MilestonesService {
 
     const proofType = dto.proofType ?? existing.proofType;
     const nextUrl =
-      dto.proofUrl !== undefined ? dto.proofUrl : existing.proofUrl ?? undefined;
+      dto.proofUrl !== undefined
+        ? dto.proofUrl
+        : (existing.proofUrl ?? undefined);
     const nextText =
-      dto.proofText !== undefined ? dto.proofText : existing.proofText ?? undefined;
+      dto.proofText !== undefined
+        ? dto.proofText
+        : (existing.proofText ?? undefined);
 
     let proofFileName = existing.proofFileName;
     let proofMime = existing.proofMime;

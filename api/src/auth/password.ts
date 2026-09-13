@@ -37,7 +37,8 @@ export async function verifyPassword(
   const p = Number(parts[3]);
   const salt = Buffer.from(parts[4], 'hex');
   const expected = Buffer.from(parts[5], 'hex');
-  if (!N || !r || !p || salt.length === 0 || expected.length === 0) return false;
+  if (!N || !r || !p || salt.length === 0 || expected.length === 0)
+    return false;
   const actual = await scrypt(password, salt, expected.length, { N, r, p });
   if (actual.length !== expected.length) return false;
   return timingSafeEqual(actual, expected);

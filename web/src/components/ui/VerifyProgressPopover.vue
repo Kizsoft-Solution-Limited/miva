@@ -91,11 +91,19 @@ const displayPercent = computed(() => Math.min(100, Math.round(percent.value)))
         <div class="verify-pop__card">
           <p class="verify-pop__eyebrow font-mono">orbio · verifying</p>
           <h2 class="verify-pop__title">{{ title || 'Running check' }}</h2>
-          <p class="verify-pop__pct font-mono" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="displayPercent">
+          <p
+            class="verify-pop__pct font-mono"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            :aria-valuenow="displayPercent"
+          >
             {{ displayPercent }}%
           </p>
           <div class="verify-pop__track" aria-hidden="true">
-            <div class="verify-pop__bar" :style="{ width: `${displayPercent}%` }" />
+            <div
+              class="verify-pop__bar"
+              :style="{ width: `${displayPercent}%` }"
+            />
           </div>
           <p class="verify-pop__step">{{ activeLabel }}</p>
         </div>

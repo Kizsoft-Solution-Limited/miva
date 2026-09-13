@@ -24,8 +24,10 @@ function labelFor(recommendation: Verdict['recommendation']) {
 }
 
 function panelClass(recommendation: Verdict['recommendation']) {
-  if (recommendation === 'approve') return 'bg-[var(--ok-soft)] ring-[var(--signal)]/30'
-  if (recommendation === 'reject') return 'bg-[var(--danger-soft)] ring-[var(--danger)]/35'
+  if (recommendation === 'approve')
+    return 'bg-[var(--ok-soft)] ring-[var(--signal)]/30'
+  if (recommendation === 'reject')
+    return 'bg-[var(--danger-soft)] ring-[var(--danger)]/35'
   return 'bg-[var(--warn-soft)] ring-[var(--warn)]/35'
 }
 
@@ -62,7 +64,10 @@ const checkBits = () => {
 
 <template>
   <section class="surface space-y-5 p-6">
-    <div class="rounded-[12px] px-4 py-3 ring-1" :class="panelClass(verdict.recommendation)">
+    <div
+      class="rounded-[12px] px-4 py-3 ring-1"
+      :class="panelClass(verdict.recommendation)"
+    >
       <div class="flex flex-wrap items-center gap-2">
         <p class="eyebrow !tracking-[0.16em]">Agent says</p>
         <StatusBadge
@@ -70,10 +75,17 @@ const checkBits = () => {
           :label="`v${verdict.version}`"
           tone="neutral"
         />
-        <StatusBadge :label="labelFor(verdict.recommendation)" :tone="toneFor(verdict.recommendation)" />
-        <StatusBadge :label="`you: ${verdict.investorDecision.replaceAll('_', ' ')}`" />
+        <StatusBadge
+          :label="labelFor(verdict.recommendation)"
+          :tone="toneFor(verdict.recommendation)"
+        />
+        <StatusBadge
+          :label="`you: ${verdict.investorDecision.replaceAll('_', ' ')}`"
+        />
       </div>
-      <p class="mt-2 text-sm font-semibold text-[var(--ink)]">{{ verdict.summary }}</p>
+      <p class="mt-2 text-sm font-semibold text-[var(--ink)]">
+        {{ verdict.summary }}
+      </p>
     </div>
 
     <p v-if="checkBits().length" class="text-xs text-[var(--muted)]">
@@ -133,7 +145,8 @@ const checkBits = () => {
     <div v-if="contextFindings.length">
       <h3 class="mb-1 text-sm font-bold text-[var(--ink)]">Context</h3>
       <p class="mb-2 text-xs text-[var(--muted)]">
-        Company / founder / metric extras from public search. Helpful — not enough alone to approve.
+        Company / founder / metric extras from public search. Helpful — not
+        enough alone to approve.
       </p>
       <ul class="space-y-2">
         <li
@@ -141,10 +154,16 @@ const checkBits = () => {
           :key="`x-${i}`"
           class="rounded-[10px] border border-[var(--line)] bg-black/20 p-3 text-sm text-[var(--ink)]"
         >
-          <p class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal)]">
-            {{ item.tone === 'ok' ? 'confirmed context' : 'unconfirmed context' }}
+          <p
+            class="font-mono text-[10px] uppercase tracking-wider text-[var(--signal)]"
+          >
+            {{
+              item.tone === 'ok' ? 'confirmed context' : 'unconfirmed context'
+            }}
           </p>
-          <p class="mt-1 font-semibold">{{ item.claim.replace(/^Context ·\s*/i, '') }}</p>
+          <p class="mt-1 font-semibold">
+            {{ item.claim.replace(/^Context ·\s*/i, '') }}
+          </p>
           <p class="mt-1 text-[var(--ink-soft)]">{{ item.evidence }}</p>
           <a
             v-if="item.sourceUrl"
@@ -161,24 +180,32 @@ const checkBits = () => {
 
     <div>
       <h3 class="mb-1 text-sm font-bold text-[var(--ink)]">Reasoning</h3>
-      <p class="whitespace-pre-wrap text-sm text-[var(--ink-soft)]">{{ verdict.reasoning }}</p>
+      <p class="whitespace-pre-wrap text-sm text-[var(--ink-soft)]">
+        {{ verdict.reasoning }}
+      </p>
     </div>
 
-    <details class="rounded-[10px] border border-[var(--line)] bg-[var(--accent-mist)] px-3 py-2 text-sm text-[var(--ink-soft)]">
-      <summary class="cursor-pointer font-semibold text-[var(--ink)]">Structured verdict (JSON)</summary>
-      <pre class="mt-2 max-h-64 overflow-auto whitespace-pre-wrap break-words text-xs">{{
-        JSON.stringify(
-          {
-            recommendation: verdict.recommendation,
-            summary: verdict.summary,
-            confirmed: verdict.confirmed,
-            unconfirmed: verdict.unconfirmed,
-            reasoning: verdict.reasoning,
-          },
-          null,
-          2,
-        )
-      }}</pre>
+    <details
+      class="rounded-[10px] border border-[var(--line)] bg-[var(--accent-mist)] px-3 py-2 text-sm text-[var(--ink-soft)]"
+    >
+      <summary class="cursor-pointer font-semibold text-[var(--ink)]">
+        Structured verdict (JSON)
+      </summary>
+      <pre
+        class="mt-2 max-h-64 overflow-auto whitespace-pre-wrap break-words text-xs"
+        >{{
+          JSON.stringify(
+            {
+              recommendation: verdict.recommendation,
+              summary: verdict.summary,
+              confirmed: verdict.confirmed,
+              unconfirmed: verdict.unconfirmed,
+              reasoning: verdict.reasoning,
+            },
+            null,
+            2,
+          )
+        }}</pre>
     </details>
   </section>
 </template>

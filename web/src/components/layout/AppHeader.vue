@@ -33,7 +33,11 @@ watch(() => route.fullPath, closeMenu)
 <template>
   <header class="app-chrome-header">
     <div class="app-chrome-header__inner">
-      <RouterLink to="/" class="app-chrome-header__brand no-underline" aria-label="MIVA home">
+      <RouterLink
+        to="/"
+        class="app-chrome-header__brand no-underline"
+        aria-label="MIVA home"
+      >
         <MivaLogo :size="36" wordmark />
       </RouterLink>
 
@@ -61,10 +65,15 @@ watch(() => route.fullPath, closeMenu)
 
       <div class="app-chrome-header__auth">
         <template v-if="roleStore.isSignedIn">
-          <span class="app-chrome-header__who font-mono" :title="roleStore.email || ''">
+          <span
+            class="app-chrome-header__who font-mono"
+            :title="roleStore.email || ''"
+          >
             {{ roleStore.role }}
           </span>
-          <button type="button" class="app-nav-link" @click="signOut">Sign out</button>
+          <button type="button" class="app-nav-link" @click="signOut">
+            Sign out
+          </button>
         </template>
         <RouterLink
           v-else
@@ -76,7 +85,9 @@ watch(() => route.fullPath, closeMenu)
         </RouterLink>
       </div>
 
-      <RouterLink to="/founder" class="app-chrome-header__cta">Submit proof</RouterLink>
+      <RouterLink to="/founder" class="app-chrome-header__cta"
+        >Submit proof</RouterLink
+      >
 
       <button
         type="button"
@@ -86,11 +97,35 @@ watch(() => route.fullPath, closeMenu)
         :aria-label="menuOpen ? 'Close menu' : 'Open menu'"
         @click="toggleMenu"
       >
-        <svg v-if="!menuOpen" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+        <svg
+          v-if="!menuOpen"
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M3 5h14M3 10h14M3 15h14"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+          />
         </svg>
-        <svg v-else width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+        <svg
+          v-else
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M5 5l10 10M15 5L5 15"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+          />
         </svg>
       </button>
     </div>
@@ -102,7 +137,9 @@ watch(() => route.fullPath, closeMenu)
       aria-label="Mobile"
     >
       <template v-if="isActive('/')">
-        <a class="app-mobile-nav-link" href="#protocol" @click="closeMenu">Protocol</a>
+        <a class="app-mobile-nav-link" href="#protocol" @click="closeMenu"
+          >Protocol</a
+        >
         <a class="app-mobile-nav-link" href="#try" @click="closeMenu">Try</a>
       </template>
       <RouterLink

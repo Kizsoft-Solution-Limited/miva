@@ -111,9 +111,7 @@ export async function lookupDomainWhois(
       try {
         text = await whoisQuery(server, host);
         if (/creat|regist/i.test(text)) break;
-        const referral = text.match(
-          /Registrar WHOIS Server:\s*(\S+)/i,
-        )?.[1];
+        const referral = text.match(/Registrar WHOIS Server:\s*(\S+)/i)?.[1];
         if (referral && !servers.includes(referral.toLowerCase())) {
           const referred = await whoisQuery(referral.toLowerCase(), host);
           if (/creat|regist/i.test(referred)) {

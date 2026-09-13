@@ -10,9 +10,9 @@ describe('parseGithubRepoUrl', () => {
   });
 
   it('strips .git and ignores www', () => {
-    expect(
-      parseGithubRepoUrl('https://www.github.com/vuejs/core.git'),
-    ).toEqual({ owner: 'vuejs', repo: 'core' });
+    expect(parseGithubRepoUrl('https://www.github.com/vuejs/core.git')).toEqual(
+      { owner: 'vuejs', repo: 'core' },
+    );
   });
 
   it('rejects non-github hosts', () => {
@@ -23,7 +23,6 @@ describe('parseGithubRepoUrl', () => {
     expect(parseGithubRepoUrl('https://github.com/nestjs')).toBeNull();
   });
 });
-
 
 describe('parseGithubHtmlFallback', () => {
   it('extracts a release tag from public HTML', () => {

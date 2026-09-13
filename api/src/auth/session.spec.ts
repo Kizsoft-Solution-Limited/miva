@@ -13,7 +13,9 @@ describe('auth session', () => {
       'test-secret',
     );
     expect(session.role).toBe('founder');
-    expect(verifyToken(token, 'test-secret')?.email).toBe('founder@example.com');
+    expect(verifyToken(token, 'test-secret')?.email).toBe(
+      'founder@example.com',
+    );
   });
 
   it('rejects tampered tokens', () => {

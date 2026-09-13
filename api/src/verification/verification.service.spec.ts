@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { VerificationService } from './verification.service.js';
-import { claimTopics } from './verification.service.js';
+import { claimTopics } from './claim-topics.js';
 import type { OpenRouterService } from '../openrouter/openrouter.service.js';
 
 vi.mock('../lib/url-probe.js', () => ({
@@ -92,9 +92,7 @@ describe('VerificationService', () => {
   });
 
   it('returns offline scaffold when OpenRouter key is missing', async () => {
-    const service = new VerificationService(
-      mockOpenRouter({ hasKey: false }),
-    );
+    const service = new VerificationService(mockOpenRouter({ hasKey: false }));
     const result = await service.verifyMilestone({
       title: 'X',
       claim: 'Site is live at billspot.co',
@@ -137,9 +135,13 @@ describe('VerificationService', () => {
 
     expect(chat).toHaveBeenCalled();
     expect(
-      result.unconfirmed.some((f) => f.claim.toLowerCase().startsWith('context ·')),
+      result.unconfirmed.some((f) =>
+        f.claim.toLowerCase().startsWith('context ·'),
+      ),
     ).toBe(false);
-    expect(result.unconfirmed[0]?.claim.toLowerCase()).not.toContain('context ·');
+    expect(result.unconfirmed[0]?.claim.toLowerCase()).not.toContain(
+      'context ·',
+    );
   });
 
   it('downgrades approve with empty confirmed to needs_more_info', async () => {

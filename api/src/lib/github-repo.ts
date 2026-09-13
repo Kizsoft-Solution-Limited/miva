@@ -37,7 +37,8 @@ export function parseGithubRepoUrl(
     if (parts.length < 2) return null;
     const owner = parts[0];
     const repo = parts[1].replace(/\.git$/i, '');
-    if (!owner || !repo || owner === 'orgs' || owner === 'settings') return null;
+    if (!owner || !repo || owner === 'orgs' || owner === 'settings')
+      return null;
     return { owner, repo };
   } catch {
     return null;
@@ -70,9 +71,12 @@ export function parseGithubHtmlFallback(
   const lower = repoHtml.toLowerCase();
   if (
     lower.includes('not found') &&
-    lower.includes("this is not the web page you are looking for")
+    lower.includes('this is not the web page you are looking for')
   ) {
-    return { pageLooksPublic: false, error: 'GitHub HTML: repository not found' };
+    return {
+      pageLooksPublic: false,
+      error: 'GitHub HTML: repository not found',
+    };
   }
   if (lower.includes('this repository is private')) {
     return {
@@ -189,7 +193,8 @@ async function probeGithubHtml(
       ok: false,
       source: 'html',
       rateLimited,
-      error: error instanceof Error ? error.message : 'GitHub HTML probe failed',
+      error:
+        error instanceof Error ? error.message : 'GitHub HTML probe failed',
     };
   }
 }
@@ -269,7 +274,12 @@ export async function probeGithubRepo(
         latestReleaseUrl = rel.html_url;
         latestReleasePublishedAt = rel.published_at?.slice(0, 10);
       } else if (relRes.status === 403 || relRes.status === 429) {
-        const html = await probeGithubHtml(url, parsed.owner, parsed.repo, true);
+        const html = await probeGithubHtml(
+          url,
+          parsed.owner,
+          parsed.repo,
+          true,
+        );
         // Repo already proven public via API; keep ok even if HTML release scrape is thin.
         return {
           url,

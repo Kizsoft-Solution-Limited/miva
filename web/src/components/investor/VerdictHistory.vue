@@ -29,7 +29,9 @@ function toggle(id: string) {
   <section v-if="history.length" class="surface p-5">
     <div class="flex items-baseline justify-between gap-3">
       <h2 class="text-sm font-bold text-[var(--ink)]">Verdict history</h2>
-      <p class="font-mono text-xs text-[var(--muted)]">{{ history.length }} run{{ history.length === 1 ? '' : 's' }}</p>
+      <p class="font-mono text-xs text-[var(--muted)]">
+        {{ history.length }} run{{ history.length === 1 ? '' : 's' }}
+      </p>
     </div>
 
     <ul class="mt-4 space-y-2">
@@ -43,8 +45,13 @@ function toggle(id: string) {
           class="flex w-full items-center gap-2 px-3 py-2.5 text-left"
           @click="toggle(item.id)"
         >
-          <span class="font-mono text-xs text-[var(--accent)]">v{{ item.version }}</span>
-          <StatusBadge :label="label(item.recommendation)" :tone="tone(item.recommendation)" />
+          <span class="font-mono text-xs text-[var(--accent)]"
+            >v{{ item.version }}</span
+          >
+          <StatusBadge
+            :label="label(item.recommendation)"
+            :tone="tone(item.recommendation)"
+          />
           <span
             v-if="item.id === currentId"
             class="rounded-full bg-[var(--accent-soft)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--signal)]"
@@ -55,12 +62,19 @@ function toggle(id: string) {
             {{ new Date(item.createdAt).toLocaleString() }}
           </span>
         </button>
-        <div v-if="openId === item.id" class="border-t border-[var(--line)] px-3 py-3 text-sm">
+        <div
+          v-if="openId === item.id"
+          class="border-t border-[var(--line)] px-3 py-3 text-sm"
+        >
           <p class="font-semibold text-[var(--ink)]">{{ item.summary }}</p>
-          <p class="mt-2 whitespace-pre-wrap text-[var(--ink-soft)]">{{ item.reasoning }}</p>
+          <p class="mt-2 whitespace-pre-wrap text-[var(--ink-soft)]">
+            {{ item.reasoning }}
+          </p>
           <p class="mt-2 font-mono text-[11px] text-[var(--muted)]">
             decision: {{ item.investorDecision.replaceAll('_', ' ') }}
-            <template v-if="item.investorNote"> · {{ item.investorNote }}</template>
+            <template v-if="item.investorNote">
+              · {{ item.investorNote }}</template
+            >
           </p>
         </div>
       </li>

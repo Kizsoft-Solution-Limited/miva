@@ -13,7 +13,9 @@ export const useRoleStore = defineStore('role', () => {
   const hydrated = ref(false)
 
   const isSignedIn = computed(() => Boolean(role.value && email.value))
-  const isInvestor = computed(() => isSignedIn.value && role.value === 'investor')
+  const isInvestor = computed(
+    () => isSignedIn.value && role.value === 'investor',
+  )
   const isFounder = computed(() => isSignedIn.value && role.value === 'founder')
 
   function persist(session: { role: AuthRole; email: string }) {

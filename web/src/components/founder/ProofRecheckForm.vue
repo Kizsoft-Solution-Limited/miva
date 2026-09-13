@@ -74,12 +74,21 @@ function onSubmit() {
 </script>
 
 <template>
-  <form class="ws-form space-y-4 border-[var(--warn)]/40" autocomplete="off" @submit.prevent="onSubmit">
+  <form
+    class="ws-form space-y-4 border-[var(--warn)]/40"
+    autocomplete="off"
+    @submit.prevent="onSubmit"
+  >
     <div class="ws-form__head">
-      <p class="font-mono text-xs tracking-wide text-[var(--warn)]">more info · update proof</p>
-      <h2 class="mt-1 text-xl font-medium text-[var(--ink)]">Update proof & re-run</h2>
+      <p class="font-mono text-xs tracking-wide text-[var(--warn)]">
+        more info · update proof
+      </p>
+      <h2 class="mt-1 text-xl font-medium text-[var(--ink)]">
+        Update proof & re-run
+      </h2>
       <p class="mt-1 text-sm text-[var(--muted)]">
-        Investor asked for more. Change the proof, then run a new verdict version.
+        Investor asked for more. Change the proof, then run a new verdict
+        version.
       </p>
       <p
         v-if="milestone.verdict?.investorNote"
@@ -98,7 +107,13 @@ function onSubmit() {
 
     <label class="block text-sm">
       <span class="mb-1.5 block font-bold text-[var(--ink)]">Claim</span>
-      <textarea v-model="form.claim" required minlength="5" rows="3" class="field" />
+      <textarea
+        v-model="form.claim"
+        required
+        minlength="5"
+        rows="3"
+        class="field"
+      />
     </label>
 
     <label class="block text-sm">
@@ -129,14 +144,24 @@ function onSubmit() {
 
     <label v-if="form.proofType === 'pdf'" class="block text-sm">
       <span class="mb-1.5 block font-bold text-[var(--ink)]">Upload PDF</span>
-      <input type="file" accept="application/pdf,.pdf" class="field" @change="onFileChange" />
-      <p v-if="milestone.hasProofFile && !file" class="mt-1 text-xs text-[var(--muted)]">
+      <input
+        type="file"
+        accept="application/pdf,.pdf"
+        class="field"
+        @change="onFileChange"
+      />
+      <p
+        v-if="milestone.hasProofFile && !file"
+        class="mt-1 text-xs text-[var(--muted)]"
+      >
         Current file on record: {{ milestone.proofFileName || 'upload.pdf' }}
       </p>
     </label>
 
     <label class="block text-sm">
-      <span class="mb-1.5 block font-bold text-[var(--ink)]">Proof text / excerpt</span>
+      <span class="mb-1.5 block font-bold text-[var(--ink)]"
+        >Proof text / excerpt</span
+      >
       <textarea v-model="form.proofText" rows="3" class="field" />
     </label>
 

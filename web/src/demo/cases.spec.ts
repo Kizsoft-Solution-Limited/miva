@@ -17,7 +17,9 @@ describe('demoCases', () => {
     const onchain = demoCases.find((c) => c.id === 'onchain')
     expect(onchain?.payload.proofType).toBe('onchain')
     expect(onchain?.payload.proofUrl).toMatch(/etherscan\.io\/address\/0x/i)
-    expect(onchain?.payload.claim.toLowerCase()).toMatch(/smart contract|ethereum/)
+    expect(onchain?.payload.claim.toLowerCase()).toMatch(
+      /smart contract|ethereum/,
+    )
   })
 
   it('strong case has a public proof URL', () => {

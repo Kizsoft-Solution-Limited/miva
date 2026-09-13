@@ -30,7 +30,9 @@ const DEFAULT_RPCS = [
 
 function rpcList(): string[] {
   const fromEnv = process.env.ETH_RPC_URL?.trim();
-  return fromEnv ? [fromEnv, ...DEFAULT_RPCS.filter((u) => u !== fromEnv)] : DEFAULT_RPCS;
+  return fromEnv
+    ? [fromEnv, ...DEFAULT_RPCS.filter((u) => u !== fromEnv)]
+    : DEFAULT_RPCS;
 }
 
 /** Extract mainnet address or tx from an etherscan (or similar) URL / raw hex. */
@@ -120,7 +122,8 @@ async function ethRpc<T>(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'User-Agent': 'MIVA-Verify/1.0 (+https://github.com/Kizsoft-Solution-Limited/miva)',
+      'User-Agent':
+        'MIVA-Verify/1.0 (+https://github.com/Kizsoft-Solution-Limited/miva)',
     },
     body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
     signal: AbortSignal.timeout(12_000),

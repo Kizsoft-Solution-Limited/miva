@@ -18,7 +18,9 @@ const showPassword = ref(false)
 const role = ref<AuthRole>('founder')
 const localError = ref<string | null>(null)
 
-const title = computed(() => (mode.value === 'signin' ? 'Sign in' : 'Create account'))
+const title = computed(() =>
+  mode.value === 'signin' ? 'Sign in' : 'Create account',
+)
 const blurb = computed(() =>
   mode.value === 'signin'
     ? 'Email and password for your account.'
@@ -107,7 +109,10 @@ async function submit() {
       </button>
     </div>
 
-    <ErrorBanner v-if="localError || roleStore.error" :message="localError || roleStore.error || ''" />
+    <ErrorBanner
+      v-if="localError || roleStore.error"
+      :message="localError || roleStore.error || ''"
+    />
 
     <form class="surface space-y-4 p-5 sm:p-6" @submit.prevent="submit">
       <label class="block text-sm">
@@ -130,7 +135,9 @@ async function submit() {
             class="field field-password__input"
             :type="showPassword ? 'text' : 'password'"
             name="password"
-            :autocomplete="mode === 'register' ? 'new-password' : 'current-password'"
+            :autocomplete="
+              mode === 'register' ? 'new-password' : 'current-password'
+            "
             :minlength="mode === 'register' ? 8 : undefined"
             required
           />
@@ -177,12 +184,30 @@ async function submit() {
       </label>
 
       <div v-if="mode === 'register'" class="login-role-pick">
-        <label class="login-role-pick__option" :class="{ 'is-active': role === 'founder' }">
-          <input v-model="role" type="radio" name="role" value="founder" class="sr-only" />
+        <label
+          class="login-role-pick__option"
+          :class="{ 'is-active': role === 'founder' }"
+        >
+          <input
+            v-model="role"
+            type="radio"
+            name="role"
+            value="founder"
+            class="sr-only"
+          />
           <span class="font-bold">Founder</span>
         </label>
-        <label class="login-role-pick__option" :class="{ 'is-active': role === 'investor' }">
-          <input v-model="role" type="radio" name="role" value="investor" class="sr-only" />
+        <label
+          class="login-role-pick__option"
+          :class="{ 'is-active': role === 'investor' }"
+        >
+          <input
+            v-model="role"
+            type="radio"
+            name="role"
+            value="investor"
+            class="sr-only"
+          />
           <span class="font-bold">Investor</span>
         </label>
       </div>
@@ -196,7 +221,11 @@ async function submit() {
       Signed in as
       <span class="font-bold text-[var(--ink)]">{{ roleStore.email }}</span>
       ({{ roleStore.role }}).
-      <button type="button" class="ml-1 font-bold text-[var(--accent)] underline" @click="roleStore.signOut()">
+      <button
+        type="button"
+        class="ml-1 font-bold text-[var(--accent)] underline"
+        @click="roleStore.signOut()"
+      >
         Sign out
       </button>
     </p>

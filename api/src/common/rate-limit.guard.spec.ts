@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { ExecutionContext, HttpException } from '@nestjs/common';
-import { AuthRateLimitGuard, VerifyRateLimitGuard } from './rate-limit.guard.js';
+import {
+  AuthRateLimitGuard,
+  VerifyRateLimitGuard,
+} from './rate-limit.guard.js';
 
 function mockContext(ip = '1.2.3.4'): ExecutionContext {
   return {
