@@ -11,6 +11,9 @@ jobs:
     defaults:
       run:
         working-directory: api
+    env:
+      DATABASE_URL: file:./prisma/ci.db
+      AUTH_SECRET: ci-auth-secret
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
