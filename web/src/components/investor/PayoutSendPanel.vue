@@ -107,7 +107,9 @@ async function onSend() {
     <div>
       <p class="eyebrow">{{ approved ? 'Send CREDIT' : 'Founder wallet' }}</p>
       <h2 class="text-xl font-medium text-[var(--ink)]">
-        {{ approved ? 'Activate for founder' : 'Where CREDIT goes if you approve' }}
+        {{
+          approved ? 'Activate for founder' : 'Where CREDIT goes if you approve'
+        }}
       </h2>
       <p class="mt-1 text-sm text-[var(--muted)]">
         Buy &amp; activate on Robinhood Chain with the founder as beneficiary —
@@ -118,9 +120,10 @@ async function onSend() {
     <div
       class="flex flex-wrap items-center gap-2 rounded-[10px] border border-[var(--line)] bg-black/20 px-3 py-2"
     >
-      <code class="min-w-0 flex-1 break-all font-mono text-xs text-[var(--ink)]">{{
-        wallet
-      }}</code>
+      <code
+        class="min-w-0 flex-1 break-all font-mono text-xs text-[var(--ink)]"
+        >{{ wallet }}</code
+      >
       <AppButton type="button" variant="secondary" @click="copyAddress">
         {{ copied ? 'Copied' : 'Copy' }}
       </AppButton>

@@ -64,7 +64,11 @@ export class VerificationService {
     const platform = this.openRouter.hasKey;
     return {
       orbio: userKey || platform,
-      orbioSource: userKey ? ('user' as const) : platform ? ('platform' as const) : undefined,
+      orbioSource: userKey
+        ? ('user' as const)
+        : platform
+          ? ('platform' as const)
+          : undefined,
       webSearch: this.shouldUseWebSearch(
         input.proofType,
         proofUrl ?? undefined,

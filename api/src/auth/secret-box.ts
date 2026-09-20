@@ -1,4 +1,9 @@
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  randomBytes,
+} from 'node:crypto';
 import { authSecret } from './session.js';
 
 function keyBytes(): Buffer {
@@ -22,7 +27,9 @@ export function openSecret(stored: string): string | null {
     const data = Buffer.from(parts[3], 'hex');
     const decipher = createDecipheriv('aes-256-gcm', keyBytes(), iv);
     decipher.setAuthTag(tag);
-    return Buffer.concat([decipher.update(data), decipher.final()]).toString('utf8');
+    return Buffer.concat([decipher.update(data), decipher.final()]).toString(
+      'utf8',
+    );
   } catch {
     return null;
   }

@@ -37,7 +37,9 @@ export async function fetchMe(): Promise<AuthSessionResponse> {
   return data
 }
 
-export async function setOrbioKey(apiKey: string): Promise<{ hasOrbioKey: boolean }> {
+export async function setOrbioKey(
+  apiKey: string,
+): Promise<{ hasOrbioKey: boolean }> {
   const { data } = await http.put<{ hasOrbioKey: boolean }>('/auth/orbio-key', {
     apiKey,
   })
@@ -45,7 +47,9 @@ export async function setOrbioKey(apiKey: string): Promise<{ hasOrbioKey: boolea
 }
 
 export async function clearOrbioKey(): Promise<{ hasOrbioKey: boolean }> {
-  const { data } = await http.delete<{ hasOrbioKey: boolean }>('/auth/orbio-key')
+  const { data } = await http.delete<{ hasOrbioKey: boolean }>(
+    '/auth/orbio-key',
+  )
   return data
 }
 

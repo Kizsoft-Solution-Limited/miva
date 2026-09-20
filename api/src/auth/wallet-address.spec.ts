@@ -9,8 +9,6 @@ describe('normalizeWalletAddress', () => {
   });
 
   it('rejects junk', () => {
-    expect(() => normalizeWalletAddress('not-a-wallet')).toThrow(
-      /0x address/,
-    );
+    expect(() => normalizeWalletAddress('not-a-wallet')).toThrow(/0x address/);
   });
 });

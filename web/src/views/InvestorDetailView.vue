@@ -274,7 +274,9 @@ async function requireFounder() {
         class="mt-4 text-sm text-[var(--muted)]"
       >
         Payout wallet on this run:
-        <code class="font-mono text-xs text-[var(--ink)]">{{ payoutWallet }}</code>
+        <code class="font-mono text-xs text-[var(--ink)]">{{
+          payoutWallet
+        }}</code>
       </p>
     </template>
   </div>

@@ -121,7 +121,11 @@ async function onClearWallet() {
             />
           </label>
           <div class="flex shrink-0 gap-2">
-            <AppButton type="button" :disabled="roleStore.busy" @click="onSaveKey">
+            <AppButton
+              type="button"
+              :disabled="roleStore.busy"
+              @click="onSaveKey"
+            >
               Save key
             </AppButton>
             <AppButton
@@ -135,8 +139,12 @@ async function onClearWallet() {
             </AppButton>
           </div>
         </div>
-        <p v-if="keyError" class="text-sm text-[var(--danger)]">{{ keyError }}</p>
-        <p v-else-if="keySaved" class="text-sm text-[var(--signal)]">Key saved.</p>
+        <p v-if="keyError" class="text-sm text-[var(--danger)]">
+          {{ keyError }}
+        </p>
+        <p v-else-if="keySaved" class="text-sm text-[var(--signal)]">
+          Key saved.
+        </p>
       </div>
 
       <div class="space-y-2 border-t border-[var(--line)] pt-4">
