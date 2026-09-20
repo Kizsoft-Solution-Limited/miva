@@ -15,6 +15,7 @@ Seven days. Path: submit proof → agent verdict → investor decides.
 | 7 Freeze + submit | done |
 
 
+
 Week’s built. Demo’s recorded. Api + web unit/e2e are green. I smoke-checked the live path. Ready to ship.
 
 ---
