@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import { useRoleStore } from '@/stores/role'
 
@@ -11,6 +11,12 @@ const walletError = ref('')
 const keySaved = ref(false)
 const walletSaved = ref(false)
 const open = ref(!roleStore.hasOrbioKey || !roleStore.walletAddress)
+
+onMounted(() => {
+  if (roleStore.hasOrbioKey) {
+    void roleStore.refreshOrbioBalance()
+  }
+})
 
 async function onSaveKey() {
   keyError.value = ''
@@ -85,6 +91,9 @@ async function onClearWallet() {
             :class="{ 'ws-chip--hot': roleStore.hasOrbioKey }"
           >
             {{ roleStore.hasOrbioKey ? 'your key' : 'no key' }}
+          </span>
+          <span v-if="roleStore.orbioAvailable" class="ws-chip ws-chip--hot">
+            ${{ roleStore.orbioAvailable }} left
           </span>
           <span
             class="ws-chip"

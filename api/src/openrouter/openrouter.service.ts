@@ -173,6 +173,50 @@ export class OpenRouterService {
     return { content, citations };
   }
 
+  async fetchKeyBalance(apiKey: string): Promise<{
+    available: string;
+    used: string;
+    currency: string;
+  } | null> {
+    const key = apiKey.trim();
+    if (!key) return null;
+    try {
+      const response = await fetch(`${this.baseURL}/key`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${key}`,
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (!response.ok) {
+        this.logger.warn(`Orbio key balance HTTP ${response.status}`);
+        return null;
+      }
+      const payload = (await response.json()) as {
+        balance?: {
+          currency?: string;
+          available?: string;
+          used?: string;
+        };
+      };
+      const available = payload.balance?.available?.trim();
+      if (!available) return null;
+      return {
+        available,
+        used: payload.balance?.used?.trim() || '0',
+        currency: payload.balance?.currency?.trim() || 'USD',
+      };
+    } catch (error) {
+      this.logger.warn(
+        `Orbio key balance failed: ${redactSecrets(
+          error instanceof Error ? error.message : String(error),
+        )}`,
+      );
+      return null;
+    }
+  }
+
   private filenameFromUrl(url: string): string {
     try {
       const path = new URL(url).pathname;

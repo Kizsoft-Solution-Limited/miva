@@ -69,6 +69,12 @@ export class AuthController {
     return this.auth.me(req);
   }
 
+  @Get('orbio-balance')
+  async orbioBalance(@Req() req: Request) {
+    const session = this.auth.requireSession(req);
+    return this.auth.getOrbioBalance(session.userId);
+  }
+
   @Put('orbio-key')
   async setOrbioKey(@Req() req: Request, @Body() dto: OrbioKeyDto) {
     const session = this.auth.requireSession(req);

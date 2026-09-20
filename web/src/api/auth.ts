@@ -66,3 +66,14 @@ export async function clearWallet(): Promise<{ walletAddress: null }> {
   const { data } = await http.delete<{ walletAddress: null }>('/auth/wallet')
   return data
 }
+
+export type OrbioBalance = {
+  available: string | null
+  used: string | null
+  currency: string | null
+}
+
+export async function fetchOrbioBalance(): Promise<OrbioBalance> {
+  const { data } = await http.get<OrbioBalance>('/auth/orbio-balance')
+  return data
+}

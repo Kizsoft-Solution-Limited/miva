@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { OpenRouterService } from '../openrouter/openrouter.service.js';
 import { readSessionToken } from './cookie.js';
 import { hashPassword, verifyPassword } from './password.js';
 import { openSecret, sealSecret } from './secret-box.js';
@@ -22,7 +23,10 @@ import { milestonesForFounderWalletSync } from './milestone-wallet-sync.js';
 export class AuthService {
   private timingPadHash: string | null = null;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly openRouter: OpenRouterService,
+  ) {}
 
   async register(email: string, password: string, role: AuthRole) {
     const normalized = email.trim().toLowerCase();
@@ -178,6 +182,22 @@ export class AuthService {
         founderUserId: userId,
       },
     });
+  }
+
+  async getOrbioBalance(userId: string) {
+    const key = await this.getDecryptedOrbioKey(userId);
+    if (!key) {
+      return { available: null, used: null, currency: null };
+    }
+    const balance = await this.openRouter.fetchKeyBalance(key);
+    if (!balance) {
+      return { available: null, used: null, currency: null };
+    }
+    return {
+      available: balance.available,
+      used: balance.used,
+      currency: balance.currency,
+    };
   }
 
   async getWalletAddress(userId: string): Promise<string | null> {

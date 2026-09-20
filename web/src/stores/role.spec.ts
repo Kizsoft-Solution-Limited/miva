@@ -27,6 +27,11 @@ vi.mock('@/api/auth', () => ({
     walletAddress: '0xAa07A0e9209e16aC99708C3EC70159c6eF3128A3',
   })),
   clearWallet: vi.fn(async () => ({ walletAddress: null })),
+  fetchOrbioBalance: vi.fn(async () => ({
+    available: '12.34',
+    used: '1.00',
+    currency: 'USD',
+  })),
 }))
 
 describe('useRoleStore', () => {

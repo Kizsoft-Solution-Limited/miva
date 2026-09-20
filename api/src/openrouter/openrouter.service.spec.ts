@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { OpenRouterService } from './openrouter.service.js';
 import { ConfigService } from '@nestjs/config';
 
@@ -36,5 +36,35 @@ describe('OpenRouterService', () => {
     const service = new OpenRouterService(config);
     expect(service.hasKey).toBe(false);
     expect(service.hasKeyFor('sk-orbio-user')).toBe(true);
+  });
+
+  it('parses Orbio key balance from /key', async () => {
+    const config = {
+      get: (key: string) =>
+        key === 'OPENAI_BASE_URL' ? 'https://api.orbio.so/api/v1' : undefined,
+    } as ConfigService;
+    const service = new OpenRouterService(config);
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        object: 'key',
+        balance: { currency: 'USD', available: '12.34', used: '7.66' },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    try {
+      const balance = await service.fetchKeyBalance('sk-orbio-test');
+      expect(balance).toEqual({
+        available: '12.34',
+        used: '7.66',
+        currency: 'USD',
+      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        'https://api.orbio.so/api/v1/key',
+        expect.objectContaining({ method: 'GET' }),
+      );
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

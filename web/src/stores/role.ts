@@ -4,6 +4,7 @@ import {
   clearOrbioKey,
   clearWallet,
   fetchMe,
+  fetchOrbioBalance,
   login,
   logout,
   register,
@@ -20,6 +21,7 @@ export const useRoleStore = defineStore('role', () => {
   const email = ref<string | null>(null)
   const hasOrbioKey = ref(false)
   const walletAddress = ref<string | null>(null)
+  const orbioAvailable = ref<string | null>(null)
   const busy = ref(false)
   const error = ref<string | null>(null)
   const hydrated = ref(false)
@@ -48,6 +50,7 @@ export const useRoleStore = defineStore('role', () => {
     email.value = null
     hasOrbioKey.value = false
     walletAddress.value = null
+    orbioAvailable.value = null
   }
 
   async function signIn(input: { email: string; password: string }) {
@@ -109,6 +112,7 @@ export const useRoleStore = defineStore('role', () => {
     try {
       const res = await setOrbioKey(apiKey)
       hasOrbioKey.value = res.hasOrbioKey
+      await refreshOrbioBalance()
     } catch (e) {
       error.value = apiErrorMessage(e, 'Could not save Orbio key')
       throw e
@@ -123,11 +127,25 @@ export const useRoleStore = defineStore('role', () => {
     try {
       const res = await clearOrbioKey()
       hasOrbioKey.value = res.hasOrbioKey
+      orbioAvailable.value = null
     } catch (e) {
       error.value = apiErrorMessage(e, 'Could not clear Orbio key')
       throw e
     } finally {
       busy.value = false
+    }
+  }
+
+  async function refreshOrbioBalance() {
+    if (!hasOrbioKey.value) {
+      orbioAvailable.value = null
+      return
+    }
+    try {
+      const bal = await fetchOrbioBalance()
+      orbioAvailable.value = bal.available
+    } catch {
+      orbioAvailable.value = null
     }
   }
 
@@ -164,6 +182,7 @@ export const useRoleStore = defineStore('role', () => {
     email,
     hasOrbioKey,
     walletAddress,
+    orbioAvailable,
     busy,
     error,
     hydrated,
@@ -176,6 +195,7 @@ export const useRoleStore = defineStore('role', () => {
     signOut,
     saveOrbioKey,
     removeOrbioKey,
+    refreshOrbioBalance,
     saveWallet,
     removeWallet,
   }
