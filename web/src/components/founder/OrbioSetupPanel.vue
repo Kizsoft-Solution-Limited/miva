@@ -153,7 +153,7 @@ async function onClearWallet() {
         <p class="text-sm font-bold text-[var(--ink)]">Payout wallet</p>
         <p class="text-xs text-[var(--muted)]">
           Investors buy &amp; activate CREDIT to this 0x in MIVA (or on Orbio).
-          We don’t move funds.
+          Saving updates it on your milestones too. We don’t move funds.
         </p>
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end">
           <label class="min-w-0 flex-1">

@@ -48,6 +48,7 @@ model Milestone {
   /// Base64 PDF (small uploads only; demo-sized)
   proofData     String?
   payoutWallet  String?
+  founderUserId String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   verdicts      Verdict[]

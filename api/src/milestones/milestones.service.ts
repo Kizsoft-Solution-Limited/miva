@@ -56,6 +56,7 @@ export class MilestonesService {
         proofMime: proof.proofMime,
         proofData: proof.proofData,
         payoutWallet,
+        founderUserId: founderUserId || null,
       },
     });
 

@@ -16,6 +16,7 @@ import {
   verifyToken,
 } from './session.js';
 import { normalizeWalletAddress } from './wallet-address.js';
+import { milestonesForFounderWalletSync } from './milestone-wallet-sync.js';
 
 @Injectable()
 export class AuthService {
@@ -132,19 +133,51 @@ export class AuthService {
 
   async setWalletAddress(userId: string, address: string) {
     const walletAddress = normalizeWalletAddress(address);
+    const existing = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { walletAddress: true },
+    });
     await this.prisma.user.update({
       where: { id: userId },
       data: { walletAddress },
     });
+    await this.syncMilestonePayoutWallets(
+      userId,
+      walletAddress,
+      existing?.walletAddress ?? null,
+    );
     return { walletAddress };
   }
 
   async clearWalletAddress(userId: string) {
+    const existing = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { walletAddress: true },
+    });
     await this.prisma.user.update({
       where: { id: userId },
       data: { walletAddress: null },
     });
+    await this.syncMilestonePayoutWallets(
+      userId,
+      null,
+      existing?.walletAddress ?? null,
+    );
     return { walletAddress: null as string | null };
+  }
+
+  private async syncMilestonePayoutWallets(
+    userId: string,
+    nextWallet: string | null,
+    previousWallet: string | null,
+  ) {
+    await this.prisma.milestone.updateMany({
+      where: milestonesForFounderWalletSync(userId, previousWallet),
+      data: {
+        payoutWallet: nextWallet,
+        founderUserId: userId,
+      },
+    });
   }
 
   async getWalletAddress(userId: string): Promise<string | null> {
