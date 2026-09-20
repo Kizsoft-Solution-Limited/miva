@@ -79,10 +79,10 @@ async function onClearWallet() {
       <div>
         <p class="eyebrow">Orbio</p>
         <p class="text-sm font-bold text-[var(--ink)]">
-          Key for checks · wallet for payouts
+          Bring your own key · wallet for payouts
         </p>
         <p class="mt-0.5 text-xs text-[var(--muted)]">
-          <span v-if="roleStore.hasOrbioKey">Key saved</span>
+          <span v-if="roleStore.hasOrbioKey">Your key saved</span>
           <span v-else>No key yet</span>
           <span aria-hidden="true"> · </span>
           <span v-if="roleStore.walletAddress">Wallet set</span>
@@ -96,16 +96,18 @@ async function onClearWallet() {
 
     <div v-if="open" class="space-y-5 border-t border-[var(--line)] px-5 py-4">
       <div class="space-y-2">
-        <p class="text-sm font-bold text-[var(--ink)]">CREDIT key</p>
+        <p class="text-sm font-bold text-[var(--ink)]">Your Orbio key</p>
         <p class="text-xs text-[var(--muted)]">
-          Claim on
+          Bring your own. Claim a key on
           <a
             class="underline underline-offset-2 hover:text-[var(--signal)]"
             href="https://www.orbio.so"
             target="_blank"
             rel="noopener noreferrer"
             >orbio.so</a
-          >, paste here. Stored encrypted on the server.
+          >
+          — checks spend your CREDIT. Stored encrypted on the server, never in
+          the browser.
         </p>
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end">
           <label class="min-w-0 flex-1">
