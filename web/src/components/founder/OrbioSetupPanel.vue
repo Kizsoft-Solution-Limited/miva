@@ -76,20 +76,25 @@ async function onClearWallet() {
       :aria-expanded="open"
       @click="open = !open"
     >
-      <div>
+      <div class="min-w-0">
         <p class="eyebrow">Orbio</p>
-        <p class="text-sm font-bold text-[var(--ink)]">
-          Bring your own key · wallet for payouts
-        </p>
-        <p class="mt-0.5 text-xs text-[var(--muted)]">
-          <span v-if="roleStore.hasOrbioKey">Your key saved</span>
-          <span v-else>No key yet</span>
-          <span aria-hidden="true"> · </span>
-          <span v-if="roleStore.walletAddress">Wallet set</span>
-          <span v-else>No wallet yet</span>
-        </p>
+        <p class="text-sm font-bold text-[var(--ink)]">Orbio setup</p>
+        <div class="ws-chip-row mt-2">
+          <span
+            class="ws-chip"
+            :class="{ 'ws-chip--hot': roleStore.hasOrbioKey }"
+          >
+            {{ roleStore.hasOrbioKey ? 'your key' : 'no key' }}
+          </span>
+          <span
+            class="ws-chip"
+            :class="{ 'ws-chip--hot': roleStore.walletAddress }"
+          >
+            {{ roleStore.walletAddress ? 'wallet' : 'no wallet' }}
+          </span>
+        </div>
       </div>
-      <span class="text-sm font-bold text-[var(--muted)]">{{
+      <span class="shrink-0 text-sm font-bold text-[var(--muted)]">{{
         open ? 'Hide' : 'Edit'
       }}</span>
     </button>

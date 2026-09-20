@@ -27,6 +27,9 @@ describe('OrbioSetupPanel', () => {
     store.role = 'founder'
     store.email = 'f@example.com'
     const wrapper = mount(OrbioSetupPanel)
+    expect(wrapper.text()).toContain('Orbio setup')
+    expect(wrapper.text()).toContain('no key')
+    expect(wrapper.text()).toContain('no wallet')
     const inputs = wrapper.findAll('input')
     expect(inputs).toHaveLength(2)
 
@@ -38,6 +41,7 @@ describe('OrbioSetupPanel', () => {
     await saveKey!.trigger('click')
     await flushPromises()
     expect(store.hasOrbioKey).toBe(true)
+    expect(wrapper.text()).toContain('your key')
 
     await inputs[1].setValue('0xAa07A0e9209e16aC99708C3EC70159c6eF3128A3')
     const saveWallet = wrapper
@@ -48,5 +52,6 @@ describe('OrbioSetupPanel', () => {
     expect(store.walletAddress).toBe(
       '0xAa07A0e9209e16aC99708C3EC70159c6eF3128A3',
     )
+    expect(wrapper.text()).toContain('wallet')
   })
 })
