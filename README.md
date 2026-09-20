@@ -26,7 +26,7 @@ Shows on the verdict screen (“This check used …”) and in the expandable JS
 ```bash
 cd api
 cp .env.example .env
-# put OPENROUTER_API_KEY in .env
+# put OPENAI_API_KEY in .env (Orbio key)
 npx prisma migrate dev
 npm run start:dev
 ```
@@ -46,8 +46,8 @@ Copy `api/.env.example` → `api/.env`. Main knobs:
 
 ```
 DATABASE_URL=file:./dev.db
-OPENROUTER_API_KEY=
-OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+OPENAI_API_KEY=
+OPENAI_BASE_URL=https://api.orbio.so/api/v1
 PORT=3000
 CORS_ORIGIN=http://localhost:5173
 AUTH_SECRET=change-me
@@ -62,7 +62,7 @@ cd api && npm test && npm run test:e2e
 cd web && npm test
 ```
 
-Coverage floors: `npm run test:cov` in each package. Format check: `npm run format:check`. Orbio/OpenRouter is mocked in tests — no live key needed. CI runs lint, format, tests, and build on every push (`.github/workflows/ci.yml`).
+Coverage floors: `npm run test:cov` in each package. Format check: `npm run format:check`. Orbio is mocked in tests — no live key needed. CI runs lint, format, tests, and build on every push (`.github/workflows/ci.yml`).
 
 ## Host
 

@@ -33,10 +33,14 @@ export class OpenRouterService {
   private readonly baseURL: string;
 
   constructor(private readonly config: ConfigService) {
-    this.apiKey = this.config.get<string>('OPENROUTER_API_KEY')?.trim() || '';
+    this.apiKey =
+      this.config.get<string>('OPENAI_API_KEY')?.trim() ||
+      this.config.get<string>('OPENROUTER_API_KEY')?.trim() ||
+      '';
     this.baseURL =
-      this.config.get<string>('OPENROUTER_BASE_URL') ||
-      'https://openrouter.ai/api/v1';
+      this.config.get<string>('OPENAI_BASE_URL')?.trim() ||
+      this.config.get<string>('OPENROUTER_BASE_URL')?.trim() ||
+      'https://api.orbio.so/api/v1';
     this.client = new OpenAI({
       apiKey: this.apiKey || 'missing-key',
       baseURL: this.baseURL,
@@ -55,7 +59,7 @@ export class OpenRouterService {
     input: OpenRouterChatInput,
   ): Promise<OpenRouterChatResult> {
     if (!this.hasKey) {
-      throw new Error('OPENROUTER_API_KEY is not set');
+      throw new Error('OPENAI_API_KEY is not set');
     }
 
     const userContent: ChatContentPart[] = [
@@ -77,7 +81,8 @@ export class OpenRouterService {
     }
 
     const plugins: Array<Record<string, unknown>> = [];
-    if (input.webSearch) {
+    const openRouterPlugins = this.baseURL.includes('openrouter.ai');
+    if (openRouterPlugins && input.webSearch) {
       plugins.push({
         id: 'web',
         max_results: 8,
@@ -85,7 +90,7 @@ export class OpenRouterService {
           'Verify the milestone claim thoroughly with live primary sources. Whatever the claim is (live site, company age/founding, founder identity, metric, repo, press, PDF contents), put direct answers as normal findings — not as bonus context. For age/founding check WHOIS, About/footer, LinkedIn company, registry, press with an explicit year. For metrics match the number/timeframe. For founders use real public profiles only. Never invent URLs, ages, metrics, or profiles. Note gaps clearly. Do not give investment advice.',
       });
     }
-    if (input.pdfUrl) {
+    if (openRouterPlugins && input.pdfUrl) {
       plugins.push({
         id: 'file-parser',
         pdf: { engine: 'cloudflare-ai' },
@@ -94,6 +99,7 @@ export class OpenRouterService {
 
     const model =
       input.model ||
+      this.config.get<string>('OPENAI_MODEL')?.trim() ||
       this.config.get<string>('OPENROUTER_MODEL')?.trim() ||
       'openai/gpt-4o-mini';
 
@@ -141,9 +147,9 @@ export class OpenRouterService {
 
     if (!response.ok) {
       const msg = redactSecrets(
-        payload.error?.message || `OpenRouter HTTP ${response.status}`,
+        payload.error?.message || `LLM HTTP ${response.status}`,
       );
-      this.logger.error(`OpenRouter chat failed: ${msg}`);
+      this.logger.error(`Orbio chat failed: ${msg}`);
       throw new Error(msg);
     }
 

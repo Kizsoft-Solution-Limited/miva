@@ -317,7 +317,7 @@ export class VerificationService {
       recommendation: hasProof ? 'needs_more_info' : 'reject',
       summary: failed
         ? 'Agent run failed; returning a conservative placeholder verdict.'
-        : 'No Orbio/OpenRouter key configured; returning a scaffold verdict.',
+        : 'No Orbio key configured; returning a scaffold verdict.',
       confirmed: [],
       unconfirmed: [
         {
@@ -331,7 +331,7 @@ export class VerificationService {
       ],
       reasoning: failed
         ? 'Live model call failed validation or transport. Retry the submission; if it keeps failing, check API logs.'
-        : 'Set OPENROUTER_API_KEY in api/.env to enable live verification.',
+        : 'Set OPENAI_API_KEY in api/.env to enable live verification.',
     });
   }
 }
