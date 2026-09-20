@@ -42,8 +42,11 @@ function mockOpenRouter(
     chatForVerification?: OpenRouterService['chatForVerification'];
   } = {},
 ) {
+  const hasKey = overrides.hasKey ?? true;
   return {
-    hasKey: true,
+    hasKey,
+    hasKeyFor: (override?: string | null) =>
+      Boolean(override?.trim()) || Boolean(hasKey),
     chatForVerification: vi.fn(),
     ...overrides,
   } as unknown as OpenRouterService;
@@ -169,6 +172,19 @@ describe('VerificationService', () => {
     expect(result.recommendation).toBe('needs_more_info');
   });
 
+  it('buildCheckMeta marks user key source when provided', () => {
+    const service = new VerificationService(mockOpenRouter({ hasKey: false }));
+    expect(
+      service.buildCheckMeta({
+        title: 't',
+        claim: 'c',
+        proofType: 'url',
+        proofUrl: 'https://billspot.co',
+        orbioApiKey: 'sk-orbio-user',
+      }),
+    ).toMatchObject({ orbio: true, orbioSource: 'user' });
+  });
+
   it('buildCheckMeta reflects web + structured JSON', () => {
     const service = new VerificationService(mockOpenRouter());
     expect(
@@ -180,6 +196,7 @@ describe('VerificationService', () => {
       }),
     ).toMatchObject({
       orbio: true,
+      orbioSource: 'platform',
       webSearch: true,
       github: false,
       structuredJson: true,

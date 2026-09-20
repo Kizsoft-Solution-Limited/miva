@@ -28,4 +28,13 @@ describe('OpenRouterService', () => {
     const service = new OpenRouterService(config);
     expect(service.hasKey).toBe(true);
   });
+
+  it('reports hasKeyFor with override when platform key missing', () => {
+    const config = {
+      get: () => undefined,
+    } as ConfigService;
+    const service = new OpenRouterService(config);
+    expect(service.hasKey).toBe(false);
+    expect(service.hasKeyFor('sk-orbio-user')).toBe(true);
+  });
 });

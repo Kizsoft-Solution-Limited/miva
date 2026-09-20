@@ -52,7 +52,9 @@ const checkBits = () => {
   const c = props.check
   if (!c) return [] as string[]
   const bits: string[] = []
-  if (c.orbio) bits.push('Orbio key')
+  if (c.orbio) {
+    bits.push(c.orbioSource === 'user' ? 'your Orbio key' : 'Orbio key')
+  }
   if (c.webSearch) bits.push('web search')
   if (c.pdf) bits.push('PDF read')
   if (c.github) bits.push('GitHub probe')

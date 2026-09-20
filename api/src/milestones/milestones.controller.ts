@@ -5,11 +5,14 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { Request } from 'express';
+import type { AuthSession } from '../auth/session.js';
 import { FounderGuard, InvestorGuard } from '../auth/role.guard.js';
 import {
   DecideRateLimitGuard,
@@ -27,6 +30,8 @@ type IncomingFile = {
   size: number;
 };
 
+type AuthedRequest = Request & { auth?: AuthSession };
+
 @Controller('milestones')
 export class MilestonesController {
   constructor(private readonly milestonesService: MilestonesService) {}
@@ -34,8 +39,12 @@ export class MilestonesController {
   @Post()
   @UseGuards(VerifyRateLimitGuard, FounderGuard)
   @UseInterceptors(FileInterceptor('file'))
-  create(@Body() dto: CreateMilestoneDto, @UploadedFile() file?: IncomingFile) {
-    return this.milestonesService.create(dto, file);
+  create(
+    @Req() req: AuthedRequest,
+    @Body() dto: CreateMilestoneDto,
+    @UploadedFile() file?: IncomingFile,
+  ) {
+    return this.milestonesService.create(dto, file, req.auth?.userId);
   }
 
   @Get()
@@ -69,10 +78,11 @@ export class MilestonesController {
   @UseGuards(VerifyRateLimitGuard, FounderGuard)
   @UseInterceptors(FileInterceptor('file'))
   recheck(
+    @Req() req: AuthedRequest,
     @Param('id') id: string,
     @Body() dto: UpdateProofDto,
     @UploadedFile() file?: IncomingFile,
   ) {
-    return this.milestonesService.recheck(id, dto, file);
+    return this.milestonesService.recheck(id, dto, file, req.auth?.userId);
   }
 }

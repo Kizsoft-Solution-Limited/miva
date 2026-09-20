@@ -8,4 +8,5 @@ export interface VerifyMilestoneInput {
   proofFileName?: string | null;
   proofMime?: string | null;
   proofData?: string | null;
+  orbioApiKey?: string | null;
 }

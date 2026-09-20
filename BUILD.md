@@ -10,11 +10,11 @@ Seven days. Path: submit proof → agent verdict → investor decides.
 | 2 Search + PDF | done |
 | 3 Demo polish | done |
 | 4 Hardening | done |
-| 5 Deploy | done (live API + web) |
+| 5 Deploy | done |
 | 6 Package | done |
-| 7 Freeze + submit | **video left** — then smoke-test and submit |
+| 7 Freeze + submit | done |
 
-Almost finished. What’s left: short demo recording, last smoke, submit.
+Week’s built. Demo’s recorded. Api + web unit/e2e are green. I smoke-checked the live path. Ready to ship.
 
 ---
 
@@ -42,13 +42,8 @@ API + web are up. CORS set. Health at `/api/health`. (Coolify was the original p
 
 README covers what it is, how to run, Orbio bits. Verdict shows what ran + expandable JSON. No TTS.
 
-### Day 7 — freeze + submit
+### Day 7 — freeze + submit ✅
 
-**Still to do**
-
-- Shoot a short clip: Hard (NestJS repo + tag) → Weak or Thin → Investor decides
-- Hit the live site once more and make sure nothing’s broken
-- Submit the way Orbio wants
-- Don’t let the wallet drop under 1k $ORBIO
-
-No new features. Wording stays plain. Ship it.
+- Demo video (Hard → Weak/Thin → investor decides)
+- Tests: `api` unit + e2e, `web` unit — all passing
+- Live smoke: submit → verdict → decide still works

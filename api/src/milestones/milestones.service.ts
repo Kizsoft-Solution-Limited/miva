@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InvestorDecision, Recommendation, Verdict } from '@prisma/client';
+import { AuthService } from '../auth/auth.service.js';
 import { sanitizePublicUrl } from '../lib/public-url.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { VerificationService } from '../verification/verification.service.js';
@@ -25,15 +26,24 @@ export class MilestonesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly verification: VerificationService,
+    private readonly auth: AuthService,
   ) {}
 
-  async create(dto: CreateMilestoneDto, file?: UploadedProofFile) {
+  async create(
+    dto: CreateMilestoneDto,
+    file?: UploadedProofFile,
+    founderUserId?: string,
+  ) {
     const proof = this.normalizeProofInput(
       dto.proofType,
       dto.proofUrl,
       dto.proofText,
       file,
     );
+    const payoutWallet = founderUserId
+      ? await this.auth.getWalletAddress(founderUserId)
+      : null;
+
     const milestone = await this.prisma.milestone.create({
       data: {
         title: dto.title,
@@ -45,10 +55,11 @@ export class MilestonesService {
         proofFileName: proof.proofFileName,
         proofMime: proof.proofMime,
         proofData: proof.proofData,
+        payoutWallet,
       },
     });
 
-    return this.runVerification(milestone.id);
+    return this.runVerification(milestone.id, founderUserId);
   }
 
   async findAll() {
@@ -148,14 +159,19 @@ export class MilestonesService {
     return this.findOne(id);
   }
 
-  async recheck(id: string, dto?: UpdateProofDto, file?: UploadedProofFile) {
+  async recheck(
+    id: string,
+    dto?: UpdateProofDto,
+    file?: UploadedProofFile,
+    founderUserId?: string,
+  ) {
     if (dto || file) {
       await this.updateProof(id, dto || {}, file);
     }
-    return this.runVerification(id);
+    return this.runVerification(id, founderUserId);
   }
 
-  private async runVerification(milestoneId: string) {
+  private async runVerification(milestoneId: string, founderUserId?: string) {
     const milestone = await this.prisma.milestone.findUnique({
       where: { id: milestoneId },
       include: { verdicts: { orderBy: { version: 'desc' }, take: 1 } },
@@ -163,6 +179,10 @@ export class MilestonesService {
     if (!milestone) {
       throw new NotFoundException(`Milestone ${milestoneId} not found`);
     }
+
+    const orbioApiKey = founderUserId
+      ? await this.auth.getDecryptedOrbioKey(founderUserId)
+      : null;
 
     const input = {
       title: milestone.title,
@@ -174,6 +194,7 @@ export class MilestonesService {
       proofFileName: milestone.proofFileName,
       proofMime: milestone.proofMime,
       proofData: milestone.proofData,
+      orbioApiKey,
     };
 
     const result = await this.verification.verifyMilestone(input);
@@ -269,6 +290,7 @@ export class MilestonesService {
       proofFileName: string | null;
       proofMime: string | null;
       proofData: string | null;
+      payoutWallet: string | null;
       createdAt: Date;
       updatedAt: Date;
     },
@@ -291,6 +313,7 @@ export class MilestonesService {
       proofText: milestone.proofText,
       proofFileName: milestone.proofFileName,
       hasProofFile: Boolean(milestone.proofData),
+      payoutWallet: milestone.payoutWallet,
       createdAt: milestone.createdAt,
       updatedAt: milestone.updatedAt,
       verdict: history[0] ?? null,

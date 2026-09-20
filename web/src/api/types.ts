@@ -33,12 +33,14 @@ export interface Milestone {
   proofText: string | null
   proofFileName: string | null
   hasProofFile: boolean
+  payoutWallet: string | null
   createdAt: string
   updatedAt: string
   verdict: Verdict | null
   verdictHistory: Verdict[]
   check?: {
     orbio: boolean
+    orbioSource?: 'user' | 'platform'
     webSearch: boolean
     pdf: boolean
     github?: boolean

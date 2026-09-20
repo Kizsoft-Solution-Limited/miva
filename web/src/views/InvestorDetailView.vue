@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DecisionPanel from '@/components/investor/DecisionPanel.vue'
+import PayoutSendPanel from '@/components/investor/PayoutSendPanel.vue'
 import VerdictCard from '@/components/investor/VerdictCard.vue'
 import VerdictHistory from '@/components/investor/VerdictHistory.vue'
 import ProofRecheckForm from '@/components/founder/ProofRecheckForm.vue'
@@ -41,6 +42,12 @@ const canDecide = computed(
 
 const showInvestorGate = computed(
   () => pendingDecision.value && roleStore.hydrated && !roleStore.isInvestor,
+)
+
+const payoutWallet = computed(() => store.current?.payoutWallet || null)
+
+const payoutApproved = computed(
+  () => store.current?.verdict?.investorDecision === 'approved',
 )
 
 async function load() {
@@ -254,6 +261,20 @@ async function requireFounder() {
       >
         Decision recorded:
         {{ store.current.verdict.investorDecision.replaceAll('_', ' ') }}.
+      </p>
+
+      <PayoutSendPanel
+        v-if="payoutWallet && roleStore.isInvestor"
+        class="mt-4"
+        :wallet="payoutWallet"
+        :approved="payoutApproved"
+      />
+      <p
+        v-else-if="payoutWallet && roleStore.isFounder"
+        class="mt-4 text-sm text-[var(--muted)]"
+      >
+        Payout wallet on this run:
+        <code class="font-mono text-xs text-[var(--ink)]">{{ payoutWallet }}</code>
       </p>
     </template>
   </div>

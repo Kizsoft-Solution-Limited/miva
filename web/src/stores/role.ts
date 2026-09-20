@@ -1,6 +1,16 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { fetchMe, login, logout, register, type AuthRole } from '@/api/auth'
+import {
+  clearOrbioKey,
+  clearWallet,
+  fetchMe,
+  login,
+  logout,
+  register,
+  setOrbioKey,
+  setWallet,
+  type AuthRole,
+} from '@/api/auth'
 import { apiErrorMessage } from '@/api/errors'
 
 export type { AuthRole }
@@ -8,6 +18,8 @@ export type { AuthRole }
 export const useRoleStore = defineStore('role', () => {
   const role = ref<AuthRole | null>(null)
   const email = ref<string | null>(null)
+  const hasOrbioKey = ref(false)
+  const walletAddress = ref<string | null>(null)
   const busy = ref(false)
   const error = ref<string | null>(null)
   const hydrated = ref(false)
@@ -18,15 +30,24 @@ export const useRoleStore = defineStore('role', () => {
   )
   const isFounder = computed(() => isSignedIn.value && role.value === 'founder')
 
-  function persist(session: { role: AuthRole; email: string }) {
+  function persist(session: {
+    role: AuthRole
+    email: string
+    hasOrbioKey?: boolean
+    walletAddress?: string | null
+  }) {
     role.value = session.role
     email.value = session.email
+    hasOrbioKey.value = Boolean(session.hasOrbioKey)
+    walletAddress.value = session.walletAddress ?? null
     hydrated.value = true
   }
 
   function clearSession() {
     role.value = null
     email.value = null
+    hasOrbioKey.value = false
+    walletAddress.value = null
   }
 
   async function signIn(input: { email: string; password: string }) {
@@ -66,8 +87,7 @@ export const useRoleStore = defineStore('role', () => {
   async function restore() {
     try {
       const me = await fetchMe()
-      role.value = me.role
-      email.value = me.email
+      persist(me)
     } catch {
       clearSession()
     } finally {
@@ -83,9 +103,67 @@ export const useRoleStore = defineStore('role', () => {
     error.value = null
   }
 
+  async function saveOrbioKey(apiKey: string) {
+    busy.value = true
+    error.value = null
+    try {
+      const res = await setOrbioKey(apiKey)
+      hasOrbioKey.value = res.hasOrbioKey
+    } catch (e) {
+      error.value = apiErrorMessage(e, 'Could not save Orbio key')
+      throw e
+    } finally {
+      busy.value = false
+    }
+  }
+
+  async function removeOrbioKey() {
+    busy.value = true
+    error.value = null
+    try {
+      const res = await clearOrbioKey()
+      hasOrbioKey.value = res.hasOrbioKey
+    } catch (e) {
+      error.value = apiErrorMessage(e, 'Could not clear Orbio key')
+      throw e
+    } finally {
+      busy.value = false
+    }
+  }
+
+  async function saveWallet(address: string) {
+    busy.value = true
+    error.value = null
+    try {
+      const res = await setWallet(address)
+      walletAddress.value = res.walletAddress
+    } catch (e) {
+      error.value = apiErrorMessage(e, 'Could not save wallet')
+      throw e
+    } finally {
+      busy.value = false
+    }
+  }
+
+  async function removeWallet() {
+    busy.value = true
+    error.value = null
+    try {
+      await clearWallet()
+      walletAddress.value = null
+    } catch (e) {
+      error.value = apiErrorMessage(e, 'Could not clear wallet')
+      throw e
+    } finally {
+      busy.value = false
+    }
+  }
+
   return {
     role,
     email,
+    hasOrbioKey,
+    walletAddress,
     busy,
     error,
     hydrated,
@@ -96,5 +174,9 @@ export const useRoleStore = defineStore('role', () => {
     signUp,
     restore,
     signOut,
+    saveOrbioKey,
+    removeOrbioKey,
+    saveWallet,
+    removeWallet,
   }
 })

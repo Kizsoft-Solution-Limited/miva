@@ -26,11 +26,13 @@ enum UserRole {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  role         UserRole
-  createdAt    DateTime @default(now())
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  role          UserRole
+  orbioKeyEnc   String?
+  walletAddress String?
+  createdAt     DateTime @default(now())
 }
 
 model Milestone {
@@ -45,6 +47,7 @@ model Milestone {
   proofMime     String?
   /// Base64 PDF (small uploads only; demo-sized)
   proofData     String?
+  payoutWallet  String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   verdicts      Verdict[]

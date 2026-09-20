@@ -30,7 +30,7 @@ export class VerificationService {
   constructor(private readonly openRouter: OpenRouterService) {}
 
   async verifyMilestone(input: VerifyMilestoneInput): Promise<VerdictResult> {
-    if (!this.openRouter.hasKey) {
+    if (!this.openRouter.hasKeyFor(input.orbioApiKey)) {
       return this.offlineVerdict(input);
     }
 
@@ -60,8 +60,11 @@ export class VerificationService {
         (proofUrl || input.proofText) &&
         parseOnchainTarget(proofUrl || input.proofText),
       );
+    const userKey = Boolean(input.orbioApiKey?.trim());
+    const platform = this.openRouter.hasKey;
     return {
-      orbio: this.openRouter.hasKey,
+      orbio: userKey || platform,
+      orbioSource: userKey ? ('user' as const) : platform ? ('platform' as const) : undefined,
       webSearch: this.shouldUseWebSearch(
         input.proofType,
         proofUrl ?? undefined,
@@ -239,6 +242,7 @@ export class VerificationService {
       webSearch: wantsWeb,
       pdfUrl: pdfRef?.data,
       pdfFilename: pdfRef?.filename,
+      apiKeyOverride: input.orbioApiKey?.trim() || undefined,
     });
 
     let parsed: unknown;

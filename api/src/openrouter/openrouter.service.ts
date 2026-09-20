@@ -18,6 +18,7 @@ export interface OpenRouterChatInput {
   pdfFilename?: string;
   webSearch?: boolean;
   model?: string;
+  apiKeyOverride?: string;
 }
 
 export interface OpenRouterChatResult {
@@ -55,10 +56,15 @@ export class OpenRouterService {
     return this.apiKey.length > 0;
   }
 
+  hasKeyFor(override?: string | null): boolean {
+    return Boolean(override?.trim()) || this.hasKey;
+  }
+
   async chatForVerification(
     input: OpenRouterChatInput,
   ): Promise<OpenRouterChatResult> {
-    if (!this.hasKey) {
+    const apiKey = input.apiKeyOverride?.trim() || this.apiKey;
+    if (!apiKey) {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
@@ -119,7 +125,7 @@ export class OpenRouterService {
     const response = await fetch(`${this.baseURL}/chat/completions`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://github.com/Kizsoft-Solution-Limited/miva',
         'X-Title': 'MIVA',

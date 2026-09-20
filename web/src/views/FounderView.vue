@@ -2,12 +2,15 @@
 import { onMounted, ref } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import MilestoneSubmitForm from '@/components/founder/MilestoneSubmitForm.vue'
+import OrbioSetupPanel from '@/components/founder/OrbioSetupPanel.vue'
 import ErrorBanner from '@/components/ui/ErrorBanner.vue'
 import { demoCases } from '@/demo/cases'
 import { useMilestoneStore } from '@/stores/milestones'
+import { useRoleStore } from '@/stores/role'
 import type { CreateMilestonePayload } from '@/api/types'
 
 const store = useMilestoneStore()
+const roleStore = useRoleStore()
 const router = useRouter()
 const route = useRoute()
 const preset = ref<CreateMilestonePayload | null>(null)
@@ -85,5 +88,7 @@ onBeforeRouteLeave(() => {
       :busy="store.loading"
       @submit="onSubmit"
     />
+
+    <OrbioSetupPanel v-if="roleStore.isFounder" class="mt-6" />
   </div>
 </template>
