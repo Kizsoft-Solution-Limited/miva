@@ -78,7 +78,7 @@ function decisionLabel(item: (typeof store.items)[number]) {
       </p>
       <RouterLink
         to="/founder"
-        class="mt-5 inline-flex rounded-full bg-[var(--signal)] px-4 py-2.5 text-sm font-bold text-[#052816] shadow-[0_0_24px_var(--glow)] hover:bg-[var(--accent-hover)]"
+        class="mt-5 inline-flex rounded-full border border-[var(--line-strong)] bg-black/25 px-4 py-2.5 text-sm font-medium text-[var(--ink)] hover:border-[var(--signal)] hover:text-[var(--signal)]"
       >
         Submit proof
       </RouterLink>
