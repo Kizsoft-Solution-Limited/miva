@@ -11,6 +11,7 @@ import {
   type ActivationQuote,
 } from '@/lib/orbio/activate'
 import { shortAddress } from '@/lib/orbio/beneficiary'
+import { walletErrorMessage } from '@/lib/orbio/wallet-error'
 
 const props = defineProps<{
   wallet: string
@@ -49,7 +50,7 @@ async function onConnect() {
   try {
     account.value = await connectOrbioWallet()
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Could not connect wallet.'
+    error.value = walletErrorMessage(e, 'Could not connect wallet.')
   } finally {
     busy.value = false
   }
@@ -62,7 +63,7 @@ async function onQuote() {
   try {
     quote.value = await quoteBuyAndActivate(amount.value)
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Could not get quote.'
+    error.value = walletErrorMessage(e, 'Could not get quote.')
   } finally {
     busy.value = false
   }
@@ -94,8 +95,7 @@ async function onSend() {
       })
     }
   } catch (e) {
-    error.value =
-      e instanceof Error ? e.message : 'Transaction failed or was rejected.'
+    error.value = walletErrorMessage(e, 'Transaction failed.')
   } finally {
     busy.value = false
   }
@@ -132,7 +132,7 @@ async function onSend() {
     <div class="flex flex-wrap gap-2">
       <button
         type="button"
-        class="rounded-full px-3 py-1.5 text-xs font-bold"
+        class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold"
         :class="
           mode === 'buy'
             ? 'bg-[var(--signal)] text-[#052816]'
@@ -140,7 +140,23 @@ async function onSend() {
         "
         @click="mode = 'buy'"
       >
-        Buy USDG → activate
+        Buy USDG
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M5 12h12m0 0l-5-5m5 5l-5 5"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        activate
       </button>
       <button
         type="button"
