@@ -1,5 +1,8 @@
 export function walletErrorMessage(error: unknown, fallback: string): string {
-  if (!(error instanceof Error) && (typeof error !== 'object' || error === null)) {
+  if (
+    !(error instanceof Error) &&
+    (typeof error !== 'object' || error === null)
+  ) {
     return fallback
   }
 
